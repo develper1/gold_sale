@@ -42,6 +42,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
 
         Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
+        Route::get('/users', [AdminHomeController::class, 'users'])->name('users');
 
     });
 });
