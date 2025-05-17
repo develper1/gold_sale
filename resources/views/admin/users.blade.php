@@ -120,7 +120,16 @@
                         <td>{{ $user->id }}</td>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td></td>
+                        <td>
+                            <div class="d-inline-block">
+                                <a href="javascript:void(0);" class="btn btn-sm btn-icon edit-record" data-id="{{ $user->id }}">
+                                    <i class="ti ti-edit"></i>
+                                </a>
+                                <a href="javascript:void(0);" class="btn btn-sm btn-icon delete-record" data-id="{{ $user->id }}">
+                                    <i class="ti ti-trash"></i>
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>
