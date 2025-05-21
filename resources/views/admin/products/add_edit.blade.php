@@ -1,0 +1,261 @@
+@extends('admin.layouts.app')
+
+@php
+    $addEdit = isset($crm) ? 'Edit' : 'Add';
+    $addUpdate = isset($crm) ? 'Update' : 'Add';
+@endphp
+@section('page-title', $addEdit . ' product')
+
+@push('styles')
+
+<link href="{{ asset('assets/plugins/filepond/css/filepond.css') }}" rel="stylesheet">
+<link href="{{ asset('assets/plugins/filepond/css/filepond-plugin-image-preview.css') }}" rel="stylesheet">
+
+<style>
+    .filepond--item {
+        width: calc(20% - 0.5em);
+        margin-right: 0.5em;
+        margin-bottom: 0.5em;
+        height: 100px; /* Set a fixed height */
+    }
+    .filepond--item:nth-child(5n) {
+        margin-right: 0;
+    }
+    .filepond--item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ensure the image covers the container */
+    }
+    .filepond--credits {
+        display: none; /* Hide FilePond credits if you want */
+    }
+</style>
+@endpush
+@section('content')
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="card">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="card-header">{{ $addEdit }} Product</h5>
+            </div>
+            <div class="col-md-6">
+                <div style="text-align: end;">
+                    <a href="{{ route('admin.products.index') }}" target="_blank" class="btn btn-primary mt-3" style="margin-right: 5px;">All Products</a>
+                </div>
+            </div>
+        </div>
+        
+        <hr class="my-0">
+        <div class="card-body">
+            @if ($product)
+                    <form action="{{ route('admin.products.update', $product->id) }}" method="POST"
+                        enctype="multipart/form-data">
+
+                        @csrf
+                        @method('PUT')
+                    @else
+                        <form action="{{ route('admin.products.store') }}" method="POST"
+                            enctype="multipart/form-data">
+
+                            @csrf
+                @endif
+
+
+                <div class="row push">
+
+                    <div class="col-lg-12 ">
+
+                        <div class="row mb-4">
+
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Name<span
+                                        class="text-danger">*</span></label>
+
+                                <input name="name" class="form-control" required>
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Slug<span
+                                        class="text-danger">*</span></label>
+
+                                <input name="slug" class="form-control" required>
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Product Type<span
+                                        class="text-danger">*</span></label>
+
+                                <select name="product_type" class="form-control" required>
+                                    <option value="">--select type--</option>
+                                    <option value="gold">Gold</option>
+                                    <option value="silver">Silver</option>
+                                </select>
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Pricing Type<span
+                                        class="text-danger">*</span></label>
+
+                                <select name="product_type" class="form-control" required>
+                                    <option value="">--select price type--</option>
+                                    <option value="spot">Spot</option>
+                                    <option value="fixed">Fixed</option>
+                                </select>
+
+                            </div>
+                            
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Fixed Price<span
+                                        class="text-danger">*</span></label>
+
+                                <input type="number" step="0.01"
+                                value="{{ $product ? $product->fixed_price : '' }}" class="form-control"
+                                id="fixed_price" name="fixed_price">
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Inventory Type<span
+                                        class="text-danger">*</span></label>
+
+                                <select name="inventory_type" class="form-control" required>
+                                    <option value="">--select inventory type--</option>
+                                    <option value="limited">Limited</option>
+                                    <option value="unlimited">Unlimited</option>
+                                </select>
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Quantity Available<span
+                                        class="text-danger">*</span></label>
+
+                                <input type="number" step="1"
+                                value="{{ $product ? $product->quantity_available : '' }}" class="form-control"
+                                id="quantity_available" name="quantity_available">
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Low Inventory Threshold<span
+                                        class="text-danger">*</span></label>
+
+                                <input type="number" step="1"
+                                value="{{ $product ? $product->low_inventory_threshold : '' }}" class="form-control"
+                                id="low_inventory_threshold" name="low_inventory_threshold">
+
+                            </div>
+
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Blanket Markup Percentage<span
+                                        class="text-danger">*</span></label>
+
+                                <input type="number" step="0.01"
+                                value="{{ $product ? $product->blanket_markup_percentage : '' }}" class="form-control"
+                                id="blanket_markup_percentage" name="blanket_markup_percentage">
+
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" id="use_override_markup"  name="use_override_markup"
+                                        >
+                                    <label class="form-check-label" for="use_override_markup" >Override Markup </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12">
+                                <label class="form-label" for="label">Override Markup Percentage<span
+                                        class="text-danger">*</span></label>
+
+                                <input type="number" step="0.01"
+                                value="{{ $product ? $product->override_markup_percentage : '' }}" class="form-control"
+                                id="override_markup_percentage" name="override_markup_percentage">
+
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="form-check form-switch mt-4">
+                                    <input class="form-check-input" type="checkbox" id="is_active"  name="is_active"
+                                        >
+                                    <label class="form-check-label" for="is_active" >Active</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label" for="label">Description</label>
+                                <textarea name="description" id="editor" class="form-control"></textarea>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label" for="label">Image <span class="text-danger">*</span></label>
+                                
+                                <input type="file" class="filepond" name="images[]" multiple>
+                                <div id="dropzone" style="display:none; border: 2px dashed #ccc; padding: 20px; text-align: center;">
+                                    Drop your files here
+                                </div> 
+                            </div>
+
+                            
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+                </div>
+
+                <div class="d-flex justify-content-end mb-4">
+
+                    <button type="submit" id="submitBtn" class="btn btn-primary  border">{{ $addUpdate }}</button>
+
+                </div>
+
+
+
+
+                </form>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<!-- Include FilePond library and plugins -->
+<script src="{{ asset('assets/plugins/filepond/js/filepond.js') }}"></script>
+<script src="{{ asset('assets/plugins/filepond/js/filepond-plugin-file-encode.js') }}"></script>
+<script src="{{ asset('assets/plugins/filepond/js/filepond-plugin-file-validate-size.js') }}"></script>
+<script src="{{ asset('assets/plugins/filepond/js/filepond-plugin-image-exif-orientation.js') }}"></script>
+<script src="{{ asset('assets/plugins/filepond/js/filepond-plugin-image-preview.js') }}"></script>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/26.0.0/classic/ckeditor.js"></script>
+
+<script>
+    ClassicEditor
+    .create(document.querySelector('#editor'), {
+        ckfinder: {
+            uploadUrl: 'ckeditor-upload.php', // Your upload route
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+        },
+        // Do not override the toolbar to retain all default options
+    })
+    .catch(error => {
+        console.error(error);
+    });
+
+     // Register FilePond plugins
+     FilePond.registerPlugin(
+        FilePondPluginFileEncode,
+        FilePondPluginFileValidateSize,
+        FilePondPluginImageExifOrientation,
+        FilePondPluginImagePreview
+    );
+
+        // Turn all file input elements into ponds
+    const pond = FilePond.create(document.querySelector('input.filepond'), {
+        allowMultiple: true,
+        allowReorder: true, // Enable reordering
+    });
+</script>
+    
+@endpush

@@ -4,10 +4,13 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\AdminHomeController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\GuestAdminMiddleware;
 use App\Http\Middleware\GuestUserMiddleware;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +45,10 @@ Route::prefix('admin')->name('admin.')->group(function(){
 
         Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
-        Route::get('/users', [AdminHomeController::class, 'users'])->name('users');
+        Route::get('/users', [UserController::class, 'users'])->name('users');
+
+        Route::resource("/users", UserController::class);
+        Route::resource("/products", ProductController::class);
 
     });
 });
