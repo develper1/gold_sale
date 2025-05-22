@@ -73,4 +73,10 @@ class SubscriberController extends Controller
             ], 500);
         }
     }
+
+    public function index()
+    {
+        $subscribers = Subscriber::with('details')->get();
+        return view('admin.subscribers.index', compact('subscribers'));
+    }
 } 

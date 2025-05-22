@@ -12,4 +12,9 @@ class Subscriber extends Model
     protected $fillable = [
         'email'
     ];
+
+    public function details()
+    {
+        return $this->hasOne(SubscriberDetail::class, 'email', 'email');
+    }
 } 

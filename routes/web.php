@@ -10,7 +10,7 @@ use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\GuestAdminMiddleware;
 use App\Http\Middleware\GuestUserMiddleware;
-
+use App\Http\Controllers\SubscriberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,9 +27,8 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::get('/landingpage', function () {
-    return view('landingpage.index');
-});
+Route::post('/subscriber', [App\Http\Controllers\SubscriberController::class, 'store'])->name('subscriber.store');
+Route::post('/subscriber/detail', [App\Http\Controllers\SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
 
 Route::prefix('admin')->name('admin.')->group(function(){
 
@@ -48,6 +47,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/users', [UserController::class, 'users'])->name('users');
 
+        Route::resource("/subscribers", SubscriberController::class);
         Route::resource("/users", UserController::class);
         Route::resource("/products", ProductController::class);
 
@@ -70,6 +70,3 @@ Route::group(['middleware' => ['auth:web', 'user']], function () {
     Route::post('/logout', [App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('logout');
 
 });
-
-Route::post('/subscriber', [App\Http\Controllers\SubscriberController::class, 'store'])->name('subscriber.store');
-Route::post('/subscriber/detail', [App\Http\Controllers\SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
