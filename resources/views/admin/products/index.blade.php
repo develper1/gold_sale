@@ -29,8 +29,9 @@
                        
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Description</th>
-                        {{-- <th>Action</th> --}}
+                        <th>Image</th>
+                        <th>Active</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
@@ -40,22 +41,31 @@
                       <tr >
                           <td>{{ $data->id }}</td>
                           <td>{{ $data->name }}</td>
-                          <td>{{ $data->description }}</td>
-                          {{-- <td>
-                              <div class="dropdown">
-                                  <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                      <i class="ti ti-dots-vertical"></i>
-                                  </button>
-                                  <div class="dropdown-menu">
-                                      <a class="dropdown-item delete-btn" data-id="{{ $data->id }}" href="javascript:void(0)">
-                                          <i class="fa-solid fa-trash me-1"></i> Delete
-                                      </a>
-                                      <a class="dropdown-item" data-id="{{ $data->id }}" >
-                                          <i class="fa-solid fa-edit me-1"></i> Edit
-                                      </a>
-                                  </div>
-                              </div>
-                          </td> --}}
+                          <td><img src="{{ asset('storage/' . $data->image_path) }}" alt="Example" width="100">
+                          </td>
+                          <td>
+                            @if($data->is_active)
+                                <span class="badge bg-label-success">Yes</span>
+                            @else
+                                <span class='badge bg-label-danger'>No</span>
+                            @endif
+                            </td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                                    <div class="dropdown-menu">
+                                        <form id="form-{{ $data->id }}" action="{{ route('admin.products.destroy', $data->id) }}" method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                            <a class="dropdown-item delete-btn" onclick="confirmDelete({{ $data->id }}, '{{ route('admin.products.destroy', $data->id) }}')" href="javascript:void(0)">
+                                                <i class="fa-solid fa-trash me-1"></i> Delete
+                                            </a>
+                                        </form>
+                                    <a class="dropdown-item "   href="{{ route('admin.products.edit', $data->id) }}"><i class="fa-solid fa-edit me-1"></i> Edit</a>
+                                    </div>
+                                </div>
+                            </td>
+                          
                       </tr>
                   @endforeach
               
@@ -71,7 +81,11 @@
 @endsection
 
 @push('scripts')
-
-{{-- <script src="{{ asset('assets/js/app-user-list.js') }}"></script> --}}
-    
+<script>
+function confirmDelete(id, url) {
+    if (confirm('Are you sure you want to delete this item?')) {
+        document.getElementById(`form-${id}`).submit();
+    }
+}    
+</script>
 @endpush

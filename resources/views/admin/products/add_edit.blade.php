@@ -1,8 +1,8 @@
 @extends('admin.layouts.app')
 
 @php
-    $addEdit = isset($crm) ? 'Edit' : 'Add';
-    $addUpdate = isset($crm) ? 'Update' : 'Add';
+    $addEdit = isset($product) ? 'Edit' : 'Add';
+    $addUpdate = isset($product) ? 'Update' : 'Add';
 @endphp
 @section('page-title', $addEdit . ' product')
 
@@ -12,11 +12,14 @@
 <link href="{{ asset('assets/plugins/filepond/css/filepond-plugin-image-preview.css') }}" rel="stylesheet">
 
 <style>
+    .ck-editor__editable {
+    min-height: 300px; /* Adjust this value as needed */
+}
     .filepond--item {
-        width: calc(20% - 0.5em);
+        width: calc(30% - 0.5em);
         margin-right: 0.5em;
         margin-bottom: 0.5em;
-        height: 100px; /* Set a fixed height */
+        /* height: 100px; Set a fixed height */
     }
     .filepond--item:nth-child(5n) {
         margin-right: 0;
@@ -48,6 +51,15 @@
         
         <hr class="my-0">
         <div class="card-body">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             @if ($product)
                     <form action="{{ route('admin.products.update', $product->id) }}" method="POST"
                         enctype="multipart/form-data">
@@ -67,132 +79,109 @@
                     <div class="col-lg-12 ">
 
                         <div class="row mb-4">
-
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Name<span
-                                        class="text-danger">*</span></label>
-
-                                <input name="name" class="form-control" required>
-
+                            <!-- Name -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="label">Name<span class="text-danger">*</span></label>
+                                <input name="name" class="form-control" required value="{{ $product->name ?? '' }}">
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Slug<span
-                                        class="text-danger">*</span></label>
-
-                                <input name="slug" class="form-control" required>
-
+                        
+                            <!-- Slug -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="label">Slug<span class="text-danger">*</span></label>
+                                <input name="slug" class="form-control" required value="{{ $product->slug ?? '' }}">
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Product Type<span
-                                        class="text-danger">*</span></label>
-
+                        
+                            <!-- Product Type -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="label">Product Type<span class="text-danger">*</span></label>
+                                @php 
+                                    $product_type = $product->product_type ?? 'gold';
+                                @endphp
                                 <select name="product_type" class="form-control" required>
                                     <option value="">--select type--</option>
-                                    <option value="gold">Gold</option>
-                                    <option value="silver">Silver</option>
+                                    <option value="gold" {{ $product_type == 'gold' ? 'selected' : '' }}>Gold</option>
+                                    <option value="silver" {{ $product_type == 'silver' ? 'selected' : '' }}>Silver</option>
                                 </select>
-
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Pricing Type<span
-                                        class="text-danger">*</span></label>
-
-                                <select name="product_type" class="form-control" required>
+                        
+                            <!-- Pricing Type (triggers fixed price visibility) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="label">Pricing Type<span class="text-danger">*</span></label>
+                                @php 
+                                    $pricing_type = $product->pricing_type ?? 'spot';
+                                @endphp
+                                <select name="pricing_type" id="pricing_type" class="form-control" required>
                                     <option value="">--select price type--</option>
-                                    <option value="spot">Spot</option>
-                                    <option value="fixed">Fixed</option>
+                                    <option value="spot" {{ $pricing_type == 'spot' ? 'selected' : '' }}>Spot</option>
+                                    <option value="fixed" {{ $pricing_type == 'fixed' ? 'selected' : '' }}>Fixed</option>
                                 </select>
-
                             </div>
-                            
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Fixed Price<span
-                                        class="text-danger">*</span></label>
-
-                                <input type="number" step="0.01"
-                                value="{{ $product ? $product->fixed_price : '' }}" class="form-control"
-                                id="fixed_price" name="fixed_price">
-
+                        
+                            <!-- Fixed Price (conditionally shown) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 fixed-price-field" style="display: {{ $pricing_type == 'fixed' ? 'block' : 'none' }};">
+                                <label class="form-label" for="label">Fixed Price</label>
+                                <input type="number" step="0.01" value="{{ $product->fixed_price ?? '' }}" class="form-control" id="fixed_price" name="fixed_price">
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Inventory Type<span
-                                        class="text-danger">*</span></label>
-
-                                <select name="inventory_type" class="form-control" required>
+                        
+                            <!-- Inventory Type (triggers quantity fields) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="label">Inventory Type<span class="text-danger">*</span></label>
+                                @php 
+                                    $inventory_type = $product->inventory_type ?? 'unlimited';
+                                @endphp
+                                <select name="inventory_type" id="inventory_type" class="form-control" required>
                                     <option value="">--select inventory type--</option>
-                                    <option value="limited">Limited</option>
-                                    <option value="unlimited">Unlimited</option>
+                                    <option value="limited" {{ $inventory_type == 'limited' ? 'selected' : '' }}>Limited</option>
+                                    <option value="unlimited" {{ $inventory_type == 'unlimited' ? 'selected' : '' }}>Unlimited</option>
                                 </select>
-
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Quantity Available<span
-                                        class="text-danger">*</span></label>
-
-                                <input type="number" step="1"
-                                value="{{ $product ? $product->quantity_available : '' }}" class="form-control"
-                                id="quantity_available" name="quantity_available">
-
+                        
+                            <!-- Quantity Available (conditionally shown) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 inventory-fields" style="display: {{ $inventory_type == 'limited' ? 'block' : 'none' }};">
+                                <label class="form-label" for="label">Quantity Available</label>
+                                <input type="number" step="1" value="{{ $product->quantity_available ?? '' }}" class="form-control" id="quantity_available" name="quantity_available">
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Low Inventory Threshold<span
-                                        class="text-danger">*</span></label>
-
-                                <input type="number" step="1"
-                                value="{{ $product ? $product->low_inventory_threshold : '' }}" class="form-control"
-                                id="low_inventory_threshold" name="low_inventory_threshold">
-
+                        
+                            <!-- Low Inventory Threshold (conditionally shown) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 inventory-fields" style="display: {{ $inventory_type == 'limited' ? 'block' : 'none' }};">
+                                <label class="form-label" for="label">Low Inventory Threshold</label>
+                                <input type="number" step="1" value="{{ $product->low_inventory_threshold ?? '' }}" class="form-control" id="low_inventory_threshold" name="low_inventory_threshold">
                             </div>
-
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Blanket Markup Percentage<span
-                                        class="text-danger">*</span></label>
-
-                                <input type="number" step="0.01"
-                                value="{{ $product ? $product->blanket_markup_percentage : '' }}" class="form-control"
-                                id="blanket_markup_percentage" name="blanket_markup_percentage">
-
+                        
+                            <!-- Blanket Markup Percentage -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="label">Blanket Markup Percentage<span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" value="{{ $product->blanket_markup_percentage ?? '' }}" class="form-control" id="blanket_markup_percentage" name="blanket_markup_percentage">
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
+                        
+                            <!-- Override Markup Toggle -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
                                 <div class="form-check form-switch mt-4">
-                                    <input class="form-check-input" type="checkbox" id="use_override_markup"  name="use_override_markup"
-                                        >
-                                    <label class="form-check-label" for="use_override_markup" >Override Markup </label>
+                                    <input class="form-check-input" type="checkbox" id="use_override_markup" name="use_override_markup" {{ isset($product->use_override_markup) && $product->use_override_markup ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="use_override_markup">Override Markup</label>
                                 </div>
                             </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12">
-                                <label class="form-label" for="label">Override Markup Percentage<span
-                                        class="text-danger">*</span></label>
-
-                                <input type="number" step="0.01"
-                                value="{{ $product ? $product->override_markup_percentage : '' }}" class="form-control"
-                                id="override_markup_percentage" name="override_markup_percentage">
-
+                        
+                            <!-- Override Markup Percentage (conditionally shown) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 override-markup-field" style="display: {{ (isset($product->use_override_markup) && $product->use_override_markup) ? 'block' : 'none' }};">
+                                <label class="form-label" for="label">Override Markup Percentage</label>
+                                <input type="number" step="0.01" value="{{ $product->override_markup_percentage ?? '' }}" class="form-control" id="override_markup_percentage" name="override_markup_percentage">
                             </div>
-                            <div class="col-lg-12 col-md-12 col-sm-12">
-                                <div class="form-check form-switch mt-4">
-                                    <input class="form-check-input" type="checkbox" id="is_active"  name="is_active"
-                                        >
-                                    <label class="form-check-label" for="is_active" >Active</label>
-                                </div>
-                            </div>
-
+                        
+                            <!-- Description -->
                             <div class="col-md-12 mt-2">
                                 <label class="form-label" for="label">Description</label>
-                                <textarea name="description" id="editor" class="form-control"></textarea>
+                                <textarea name="description" id="editor" rows="10" class="form-control">{{ $product->description ?? '' }}</textarea>
                             </div>
+                        
+                            <!-- Image Upload -->
                             <div class="col-md-12 mt-2">
                                 <label class="form-label" for="label">Image <span class="text-danger">*</span></label>
-                                
                                 <input type="file" class="filepond" name="images[]" multiple>
                                 <div id="dropzone" style="display:none; border: 2px dashed #ccc; padding: 20px; text-align: center;">
                                     Drop your files here
                                 </div> 
                             </div>
-
-                            
-
-
                         </div>
 
 
@@ -237,6 +226,8 @@
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             },
         },
+        // Set minimum height
+        minHeight: '300px',
         // Do not override the toolbar to retain all default options
     })
     .catch(error => {
@@ -256,6 +247,60 @@
         allowMultiple: true,
         allowReorder: true, // Enable reordering
     });
+    @if ($product && $product->images && count($product->images) > 0)
+        @foreach ($product->images->reverse() as $image)
+            pond.addFile("{{ asset('storage/' . $image->image_path) }}").then(file => {
+                file.setMetadata('existing', true);
+            });
+        @endforeach
+    @else
+        @if($product && $product->image_path)
+            pond.addFile("{{ asset('storage/' . $product->image_path) }}").then(file => {
+                file.setMetadata('existing', true);
+            });    
+        @endif
+    @endif
+
+    $(document).ready(function() {
+    // Pricing Type - Fixed Price toggle
+    $('#pricing_type').change(function() {
+        if ($(this).val() === 'fixed') {
+            $('.fixed-price-field').show();
+            $('#fixed_price').attr('required', true);
+        } else {
+            $('.fixed-price-field').hide();
+            $('#fixed_price').removeAttr('required');
+        }
+    });
+
+    // Inventory Type - Quantity fields toggle
+    $('#inventory_type').change(function() {
+        if ($(this).val() === 'limited') {
+            $('.inventory-fields').show();
+            $('#quantity_available, #low_inventory_threshold').attr('required', true);
+        } else {
+            $('.inventory-fields').hide();
+            $('#quantity_available, #low_inventory_threshold').removeAttr('required');
+        }
+    });
+
+    // Override Markup toggle
+    $('#use_override_markup').change(function() {
+        if ($(this).is(':checked')) {
+            $('.override-markup-field').show();
+            $('#override_markup_percentage').attr('required', true);
+        } else {
+            $('.override-markup-field').hide();
+            $('#override_markup_percentage').removeAttr('required');
+        }
+    });
+
+    // Trigger change events on page load to set initial state
+    $('#pricing_type, #inventory_type').trigger('change');
+    if ($('#use_override_markup').is(':checked')) {
+        $('.override-markup-field').show();
+    }
+});
 </script>
     
 @endpush
