@@ -97,7 +97,7 @@
                                 @php 
                                     $product_type = $product->product_type ?? 'gold';
                                 @endphp
-                                <select name="product_type" id="selectpickerBasic" class="selectpicker w-100" data-style="btn-default" required>
+                                <select name="product_type"  class="selectpicker w-100" data-style="btn-default" required>
                                     <option value="">--select type--</option>
                                     <option value="gold" {{ $product_type == 'gold' ? 'selected' : '' }}>Gold</option>
                                     <option value="silver" {{ $product_type == 'silver' ? 'selected' : '' }}>Silver</option>
@@ -111,7 +111,7 @@
                                 @php 
                                     $pricing_type = $product->pricing_type ?? 'spot';
                                 @endphp
-                                <select name="pricing_type" id="pricing_type" class="form-control" required>
+                                <select name="pricing_type"  class="selectpicker w-100" data-style="btn-default" required>
                                     <option value="">--select price type--</option>
                                     <option value="spot" {{ $pricing_type == 'spot' ? 'selected' : '' }}>Spot</option>
                                     <option value="fixed" {{ $pricing_type == 'fixed' ? 'selected' : '' }}>Fixed</option>
@@ -130,7 +130,7 @@
                                 @php 
                                     $inventory_type = $product->inventory_type ?? 'unlimited';
                                 @endphp
-                                <select name="inventory_type" id="inventory_type" class="form-control" required>
+                                <select name="inventory_type" id="inventory_type" class="selectpicker w-100" data-style="btn-default" required>
                                     <option value="">--select inventory type--</option>
                                     <option value="limited" {{ $inventory_type == 'limited' ? 'selected' : '' }}>Limited</option>
                                     <option value="unlimited" {{ $inventory_type == 'unlimited' ? 'selected' : '' }}>Unlimited</option>
