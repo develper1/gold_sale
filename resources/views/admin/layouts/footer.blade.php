@@ -24,6 +24,7 @@
   <script src="{{ asset('assets/vendor/libs/%40form-validation/auto-focus.js') }}"></script>
   <script src="{{ asset('assets/vendor/libs/cleavejs/cleave.js') }}"></script>
   <script src="{{ asset('assets/vendor/libs/cleavejs/cleave-phone.js') }}"></script>
+  <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
 
   <!-- Main JS -->
   <script src="{{ asset('assets/js/main.js') }}"></script>

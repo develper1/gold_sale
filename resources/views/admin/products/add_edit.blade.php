@@ -97,11 +97,12 @@
                                 @php 
                                     $product_type = $product->product_type ?? 'gold';
                                 @endphp
-                                <select name="product_type" class="form-control" required>
+                                <select name="product_type" id="selectpickerBasic" class="selectpicker w-100" data-style="btn-default" required>
                                     <option value="">--select type--</option>
                                     <option value="gold" {{ $product_type == 'gold' ? 'selected' : '' }}>Gold</option>
                                     <option value="silver" {{ $product_type == 'silver' ? 'selected' : '' }}>Silver</option>
                                 </select>
+                            
                             </div>
                         
                             <!-- Pricing Type (triggers fixed price visibility) -->
