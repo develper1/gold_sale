@@ -27,8 +27,9 @@ Route::get('/', function () {
     return view('index');
 });
 
-
-
+Route::get('/landingpage', function () {
+    return view('landingpage.index');
+});
 
 Route::prefix('admin')->name('admin.')->group(function(){
 
@@ -69,3 +70,6 @@ Route::group(['middleware' => ['auth:web', 'user']], function () {
     Route::post('/logout', [App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('logout');
 
 });
+
+Route::post('/subscriber', [App\Http\Controllers\SubscriberController::class, 'store'])->name('subscriber.store');
+Route::post('/subscriber/detail', [App\Http\Controllers\SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');

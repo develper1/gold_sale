@@ -72,7 +72,26 @@
         </ul>
       </li>
 
-
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'products' ? ' active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-tags"></i>
+          <div data-i18n="Subscribers">Subscribers</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'products' && !request()->segment(3) ? ' active open' : '' }}">
+            <a href="{{ route('admin.products.index') }}" class="menu-link">
+              <div data-i18n="List">Subscribe Email</div>
+            </a>
+          </li>
+          <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'products' && request()->segment(3) == 'create' ? ' active open' : '' }}">
+            <a href="{{ route('admin.products.create') }}" class="menu-link">
+              <div data-i18n="Details">Details</div>
+            </a>
+          </li>
+  
+          
+        </ul>
+      </li>
   
 
     </ul>

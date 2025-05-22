@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('email_subscribers', function (Blueprint $table) {
+        Schema::create('subscribers', function (Blueprint $table) {
             $table->id();
             $table->string('email')->nullable(); // email defaults to NULL
             $table->timestamps(); // optional, for created_at and updated_at
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('email_subscribers');
+        Schema::dropIfExists('subscribers');
     }
 };

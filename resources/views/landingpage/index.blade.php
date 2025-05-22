@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="{{ asset('landingPageAseets/css/styles.css') }}" />
         <style>
             .logo-img {
-                max-width: 350px;
+                max-width: 250px;
                 width: 100%;
                 margin-bottom: 32px;
             }
@@ -38,18 +38,21 @@
                         <hr class="divider" />
                     </div>
                     <div class="col-lg-8 align-self-baseline">
-                        <p class="text-white-75">Samson Armory is opening soon in Brooklyn, New York!</p>
-                        <p class="text-white-75">And we want you to be the first to know. </p>
                         <form id="email-form">
-                            <div class="row">
-                                <div class="col-md-8">
+                            <div class="row" id="email-form-row">
+                                <div class="col-md-8 mt-3">
                                     <div class="form-floating">
-                                        <input class="form-control" id="email" type="email" placeholder="Enter your email..." data-sb-validations="required" />
+                                        <input class="form-control" required id="email" type="email" placeholder="Enter your email..." data-sb-validations="required" />
                                         <label for="email">Enter your email</label>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4 mt-3">
                                     <button class="btn btn-primary btn-xl w-100" id="submitButton" type="submit">Next</button>
+                                </div>
+                            </div>
+                            <div class="row" id="show-thankyou-message" style="display: none">
+                                <div class="col-md-12">
+                                    <h5 class="text-white">Thank you for your submission. Do you have another 30 seconds to get special promotions and pricing? <a href="#detailed-form" class="show-detailed-form" style="cursor: pointer;">Click HERE</a></h5>
                                 </div>
                             </div>
                         </form>
@@ -59,90 +62,102 @@
         </header>
        
         <!-- Call to action-->
-        <section class="page-section bg-dark text-white">
-            <div class="container px-4 px-lg-5 text-center">
-                <h2 class="mb-4">Free Download at Start Bootstrap!</h2>
-                <a class="btn btn-light btn-xl" href="https://startbootstrap.com/theme/creative/">Download Now!</a>
-            </div>
-        </section>
-        <!-- Contact-->
-        <section class="page-section" id="contact">
+        <section class="page-section bg-dark text-white pt-5" id="detailed-form" style="display: none">
             <div class="container px-4 px-lg-5">
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-8 col-xl-6 text-center">
-                        <h2 class="mt-0">Let's Get In Touch!</h2>
-                        <hr class="divider" />
-                        <p class="text-muted mb-5">Ready to start your next project with us? Send us a messages and we will get back to you as soon as possible!</p>
-                    </div>
-                </div>
-                <div class="row gx-4 gx-lg-5 justify-content-center mb-5">
-                    <div class="col-lg-6">
-                        <!-- * * * * * * * * * * * * * * *-->
-                        <!-- * * SB Forms Contact Form * *-->
-                        <!-- * * * * * * * * * * * * * * *-->
-                        <!-- This form is pre-integrated with SB Forms.-->
-                        <!-- To make this form functional, sign up at-->
-                        <!-- https://startbootstrap.com/solution/contact-forms-->
-                        <!-- to get an API token!-->
-                        <form id="contactForm" data-sb-form-api-token="API_TOKEN">
-                            <!-- Name input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="name" type="text" placeholder="Enter your name..." data-sb-validations="required" />
-                                <label for="name">Full name</label>
-                                <div class="invalid-feedback" data-sb-feedback="name:required">A name is required.</div>
-                            </div>
-                            <!-- Email address input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="email" type="email" placeholder="name@example.com" data-sb-validations="required,email" />
-                                <label for="email">Email address</label>
-                                <div class="invalid-feedback" data-sb-feedback="email:required">An email is required.</div>
-                                <div class="invalid-feedback" data-sb-feedback="email:email">Email is not valid.</div>
-                            </div>
-                            <!-- Phone number input-->
-                            <div class="form-floating mb-3">
-                                <input class="form-control" id="phone" type="tel" placeholder="(123) 456-7890" data-sb-validations="required" />
-                                <label for="phone">Phone number</label>
-                                <div class="invalid-feedback" data-sb-feedback="phone:required">A phone number is required.</div>
-                            </div>
-                            <!-- Message input-->
-                            <div class="form-floating mb-3">
-                                <textarea class="form-control" id="message" type="text" placeholder="Enter your message here..." style="height: 10rem" data-sb-validations="required"></textarea>
-                                <label for="message">Message</label>
-                                <div class="invalid-feedback" data-sb-feedback="message:required">A message is required.</div>
-                            </div>
-                            <!-- Submit success message-->
-                            <!---->
-                            <!-- This is what your users will see when the form-->
-                            <!-- has successfully submitted-->
-                            <div class="d-none" id="submitSuccessMessage">
-                                <div class="text-center mb-3">
-                                    <div class="fw-bolder">Form submission successful!</div>
-                                    To activate this form, sign up at
-                                    <br />
-                                    <a href="https://startbootstrap.com/solution/contact-forms">https://startbootstrap.com/solution/contact-forms</a>
+                <h2 class="mb-4 text-center">Complete Your Profile</h2>
+                <form id="detail-form">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input class="form-control" id="first_name" name="first_name" type="text" placeholder="First Name" required />
+                                        <label class="text-dark" for="first_name">First Name</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input class="form-control" id="last_name" name="last_name" type="text" placeholder="Last Name" required />
+                                        <label class="text-dark" for="last_name">Last Name</label>
+                                    </div>
                                 </div>
                             </div>
-                            <!-- Submit error message-->
-                            <!---->
-                            <!-- This is what your users will see when there is-->
-                            <!-- an error submitting the form-->
-                            <div class="d-none" id="submitErrorMessage"><div class="text-center text-danger mb-3">Error sending message!</div></div>
-                            <!-- Submit Button-->
-                            <div class="d-grid"><button class="btn btn-primary btn-xl disabled" id="submitButton" type="submit">Submit</button></div>
-                        </form>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input class="form-control" id="city" name="city" type="text" placeholder="City of Residence" required />
+                                        <label class="text-dark" for="city">City of Residence</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input class="form-control" id="detail_email" name="email" type="email" placeholder="Email address" required />
+                                        <label class="text-dark" for="detail_email">Email address</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="text-white" class="form-label text-white">Investment:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="investment_type[]" value="gold" id="gold">
+                                    <label  class="form-check-label" style="float: left;" for="gold">Gold</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="investment_type[]" value="silver" id="silver">
+                                    <label  class="form-check-label" style="float: left;" for="silver">Silver</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="investment_type[]" value="platinum" id="platinum">
+                                    <label  class="form-check-label" style="float: left;" for="platinum">Platinum</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="investment_type[]" value="all" id="all">
+                                    <label  class="form-check-label" style="float: left;" for="all">All</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label  class="form-label text-white" style="float: left;">Investment Criteria:</label>
+                                <select class="form-control" id="investment_criteria" name="investment_criteria" required>
+                                    <option value="">Select investment range</option>
+                                    <option value="1000-10000">$1,000-$10,000</option>
+                                    <option value="10001-20000">$10,001-$20,000</option>
+                                    <option value="20000+">$20,000+</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label  class="text-white" >Want us to be in touch with you to start investing now?</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contact_preference" value="yes" id="contact_yes">
+                                    <label class="form-check-label" style="float: left;" for="contact_yes">Yes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="contact_preference" value="no" id="contact_no">
+                                    <label  class="form-check-label" style="float: left;" for="contact_no">No</label>
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-3" id="mobile_number_container" style="display: none;">
+                                <input class="form-control" id="mobile_number" name="mobile_number" type="tel" placeholder="Mobile Number" />
+                                <label class="text-dark" for="mobile_number">Mobile Number</label>
+                            </div>
+
+                            <div class="alert alert-success mb-3" id="detail-success-message" style="display: none;">
+                                Thank you for completing your profile! We will contact you soon.
+                            </div>
+
+                            <button class="btn btn-primary btn-xl" type="submit">Submit</button>
+                        </div>
                     </div>
-                </div>
-                <div class="row gx-4 gx-lg-5 justify-content-center">
-                    <div class="col-lg-4 text-center mb-5 mb-lg-0">
-                        <i class="bi-phone fs-2 mb-3 text-muted"></i>
-                        <div>+1 (555) 123-4567</div>
-                    </div>
-                </div>
+                </form>
             </div>
         </section>
+
         <!-- Footer-->
         <footer class="bg-light py-5">
-            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2023 - Company Name</div></div>
+            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2025 - <a href="https://www.oasismint.com" target="_blank">Oasismint</a>  </div></div>
         </footer>
         <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -160,6 +175,15 @@
 
         <script>
             $(document).ready(function() {
+                // Add click handler for the detailed form link
+                $('.show-detailed-form').on('click', function(e) {
+                    e.preventDefault();
+                    $('#detailed-form').show();
+                    $('html, body').animate({
+                        scrollTop: $('#detailed-form').offset().top
+                    }, 1000);
+                });
+
                 $('#email-form').on('submit', function(e) {
                     e.preventDefault();
                     
@@ -172,7 +196,10 @@
                         },
                         success: function(response) {
                             if(response.status === 'success') {
-                                alert(response.message);
+                                $('#email-form-row').hide();
+                                $('#show-thankyou-message').show();
+                                // Auto-fill the detail form email field
+                                $('#detail_email').val($('#email').val());
                                 $('#email').val('');
                             }
                         },
@@ -184,6 +211,73 @@
                             }
                         }
                     });
+                });
+                
+                $('#detail-form').on('submit', function(e) {
+                    e.preventDefault();
+                    
+                    $.ajax({
+                        url: '{{ route("subscriber.storeDetail") }}',
+                        method: 'POST',
+                        data: {
+                            first_name: $('#first_name').val(),
+                            last_name: $('#last_name').val(),
+                            city: $('#city').val(),
+                            email: $('#detail_email').val(),
+                            investment_type: $('input[name="investment_type[]"]:checked').map(function() {
+                                return this.value;
+                            }).get(),
+                            investment_criteria: $('#investment_criteria').val(),
+                            contact_preference: $('input[name="contact_preference"]:checked').val(),
+                            mobile_number: $('#mobile_number').val(),
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if(response.status === 'success') {
+                                $('#detail-success-message').show();
+                                $('#detail-form')[0].reset();
+                                $('#mobile_number_container').hide();
+                                $('html, body').animate({
+                                    scrollTop: $('#detail-success-message').offset().top - 100
+                                }, 1000);
+                            }
+                        },
+                        error: function(xhr) {
+                            if(xhr.status === 422) {
+                                alert(xhr.responseJSON.message);
+                            } else {
+                                alert('Something went wrong. Please try again.');
+                            }
+                        }
+                    });
+                });
+
+                $('input[name="contact_preference"]').change(function() {
+                    if ($(this).val() === 'yes') {
+                        $('#mobile_number_container').show();
+                        $('#mobile_number').prop('required', true);
+                    } else {
+                        $('#mobile_number_container').hide();
+                        $('#mobile_number').prop('required', false);
+                    }
+                });
+
+                // Handle "All" checkbox functionality
+                $('#all').change(function() {
+                    if ($(this).is(':checked')) {
+                        // Check all other checkboxes
+                        $('input[name="investment_type[]"]').prop('checked', true);
+                    } else {
+                        // Uncheck all other checkboxes
+                        $('input[name="investment_type[]"]').prop('checked', false);
+                    }
+                });
+
+                // Handle individual checkboxes
+                $('input[name="investment_type[]"]').not('#all').change(function() {
+                    var allChecked = $('input[name="investment_type[]"]').not('#all').length === 
+                                   $('input[name="investment_type[]"]').not('#all').filter(':checked').length;
+                    $('#all').prop('checked', allChecked);
                 });
             });
         </script>
