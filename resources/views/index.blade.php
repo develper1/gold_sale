@@ -101,21 +101,24 @@
 
                             <div class="mb-3">
                                 <label class="text-white" class="form-label text-white">Investment:</label>
+                                <div class="invalid-feedback">
+                                    Please select at least one investment type.
+                                </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="gold" id="gold">
-                                    <label  class="form-check-label" for="gold">Gold</label>
+                                    <label class="form-check-label" for="gold">Gold</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="silver" id="silver">
-                                    <label  class="form-check-label" for="silver">Silver</label>
+                                    <label class="form-check-label" for="silver">Silver</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="platinum" id="platinum">
-                                    <label  class="form-check-label" for="platinum">Platinum</label>
+                                    <label class="form-check-label" for="platinum">Platinum</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="all" id="all">
-                                    <label  class="form-check-label" for="all">All</label>
+                                    <label class="form-check-label" for="all">All</label>
                                 </div>
                             </div>
 
@@ -136,14 +139,14 @@
                             </div>
 
                             <div class="mb-3">
-                                <label  class="text-white" >Want us to be in touch with you to start investing now?</label>
+                                <label class="text-white">Want us to be in touch with you to start investing now?</label>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="contact_preference" value="yes" id="contact_yes">
+                                    <input class="form-check-input" type="radio" name="contact_preference" value="yes" id="contact_yes" required>
                                     <label class="form-check-label" for="contact_yes">Yes</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="contact_preference" value="no" id="contact_no">
-                                    <label  class="form-check-label" for="contact_no">No</label>
+                                    <input class="form-check-input" type="radio" name="contact_preference" value="no" id="contact_no" required>
+                                    <label class="form-check-label" for="contact_no">No</label>
                                 </div>
                             </div>
 
@@ -223,6 +226,15 @@
                 
                 $('#detail-form').on('submit', function(e) {
                     e.preventDefault();
+                    
+                    // Check if at least one investment type is selected
+                    var investmentTypes = $('input[name="investment_type[]"]:checked').length;
+                    if (investmentTypes === 0) {
+                        $('.invalid-feedback').addClass('d-block');
+                        return false;
+                    } else {
+                        $('.invalid-feedback').removeClass('d-block');
+                    }
                     
                     $.ajax({
                         url: '{{ route("subscriber.storeDetail") }}',
