@@ -6,7 +6,7 @@
      <!-- CSRF Token -->
      <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Dashboard - Analytics | Vuexy - Bootstrap Admin Template</title>
+    <title>Dashboard - Analytics</title>
 
     
     <meta name="description" content="Start your development with a Dashboard for Bootstrap 5" />

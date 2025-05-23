@@ -10,7 +10,7 @@ use App\Http\Middleware\UserMiddleware;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\GuestAdminMiddleware;
 use App\Http\Middleware\GuestUserMiddleware;
-
+use App\Http\Controllers\SubscriberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,8 +27,8 @@ Route::get('/', function () {
     return view('index');
 });
 
-
-
+Route::post('/subscriber', [App\Http\Controllers\SubscriberController::class, 'store'])->name('subscriber.store');
+Route::post('/subscriber/detail', [App\Http\Controllers\SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
 
 Route::prefix('admin')->name('admin.')->group(function(){
 
@@ -47,6 +47,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/users', [UserController::class, 'users'])->name('users');
 
+        Route::resource("/subscribers", SubscriberController::class);
         Route::resource("/users", UserController::class);
         Route::resource("/products", ProductController::class);
 

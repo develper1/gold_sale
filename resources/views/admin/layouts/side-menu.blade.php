@@ -72,8 +72,12 @@
         </ul>
       </li>
 
-
-  
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'subscribers' ? ' active open' : '' }}">
+        <a href="{{ route('admin.subscribers.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-smart-home"></i>
+          <div data-i18n="Subscribers">Subscribers</div>
+        </a>
+      </li>
 
     </ul>
     
