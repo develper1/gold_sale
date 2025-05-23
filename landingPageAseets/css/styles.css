@@ -10853,11 +10853,13 @@ body {
 }
 
 hr.divider {
-  height: 0.2rem;
-  max-width: 3.25rem;
+  height: 0.1rem;
+  max-width: 100%;
   margin: 1.5rem auto;
-  background-color: #f4623a;
+  background-color: #fff;
   opacity: 1;
+  margin-top: 0px;
+
 }
 
 hr.divider-light {
@@ -10927,14 +10929,12 @@ hr.divider-light {
 }
 
 header.masthead {
-  padding-top: 5rem;
   padding-bottom: calc(10rem - 4.5rem);
-  background: linear-gradient(to bottom, rgb(15 15 14 / 32%) 0%, rgb(7 7 7 / 41%) 100%), url(../assets/img/bg-masthead.jpeg);
+  background: linear-gradient(to bottom, rgb(15 15 14 / 53%) 0%, rgb(7 7 7 / 51%) 100%), url(../assets/img/bg-masthead.jpeg);
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-size: cover;
-  height: 100vh;
 }
 header.masthead h1, header.masthead .h1 {
   font-size: 2.25rem;

@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="{{ asset('landingPageAseets/css/styles.css') }}" />
         <style>
             .logo-img {
-                max-width: 250px;
+                max-width: 300px;
                 width: 100%;
                 margin-bottom: 32px;
             }
@@ -34,10 +34,12 @@
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-8 align-self-end">
                         <img src="landingPageAseets/assets/img/logo.png" alt="Samson Armory Logo" class="logo-img mb-4">
-                        <h1 class="text-white font-weight-bold">We're almost there!</h1>
+                        <h1 class="text-white font-weight-bold mt-5">We're almost there!</h1>
                         <hr class="divider" />
+                        <p class="text-white">Oasismint is opening soon in Brooklyn, New York!</p>
+                        <p class="text-white mt-4">And we want you to be the first to know.</p>
                     </div>
-                    <div class="col-lg-8 align-self-baseline">
+                    <div class="col-lg-8 align-self-baseline mt-4">
                         <form id="email-form">
                             <div class="row" id="email-form-row">
                                 <div class="col-md-8 mt-3">
@@ -50,7 +52,7 @@
                                     <button class="btn btn-primary btn-xl w-100" id="submitButton" type="submit">Next</button>
                                 </div>
                             </div>
-                            <div class="row" id="show-thankyou-message" style="display: none">
+                            <div class="row mt-4" id="show-thankyou-message" style="display: none">
                                 <div class="col-md-12">
                                     <h5 class="text-white">Thank you for your submission. Do you have another 30 seconds to get special promotions and pricing? <a href="#detailed-form" class="show-detailed-form" style="cursor: pointer;">Click HERE</a></h5>
                                 </div>
@@ -101,41 +103,47 @@
                                 <label class="text-white" class="form-label text-white">Investment:</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="gold" id="gold">
-                                    <label  class="form-check-label" style="float: left;" for="gold">Gold</label>
+                                    <label  class="form-check-label" for="gold">Gold</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="silver" id="silver">
-                                    <label  class="form-check-label" style="float: left;" for="silver">Silver</label>
+                                    <label  class="form-check-label" for="silver">Silver</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="platinum" id="platinum">
-                                    <label  class="form-check-label" style="float: left;" for="platinum">Platinum</label>
+                                    <label  class="form-check-label" for="platinum">Platinum</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="investment_type[]" value="all" id="all">
-                                    <label  class="form-check-label" style="float: left;" for="all">All</label>
+                                    <label  class="form-check-label" for="all">All</label>
                                 </div>
                             </div>
 
                             <div class="mb-3">
-                                <label  class="form-label text-white" style="float: left;">Investment Criteria:</label>
-                                <select class="form-control" id="investment_criteria" name="investment_criteria" required>
-                                    <option value="">Select investment range</option>
-                                    <option value="1000-10000">$1,000-$10,000</option>
-                                    <option value="10001-20000">$10,001-$20,000</option>
-                                    <option value="20000+">$20,000+</option>
-                                </select>
+                                <label  class="form-label text-white">Investment Criteria:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="investment_criteria" value="1000-10000" id="criteria_1" required>
+                                    <label class="form-check-label" for="criteria_1">$1,000-$10,000</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="investment_criteria" value="10001-20000" id="criteria_2" required>
+                                    <label class="form-check-label" for="criteria_2">$10,001-$20,000</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="investment_criteria" value="20000+" id="criteria_3" required>
+                                    <label class="form-check-label" for="criteria_3">$20,000+</label>
+                                </div>
                             </div>
 
                             <div class="mb-3">
                                 <label  class="text-white" >Want us to be in touch with you to start investing now?</label>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="contact_preference" value="yes" id="contact_yes">
-                                    <label class="form-check-label" style="float: left;" for="contact_yes">Yes</label>
+                                    <label class="form-check-label" for="contact_yes">Yes</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="contact_preference" value="no" id="contact_no">
-                                    <label  class="form-check-label" style="float: left;" for="contact_no">No</label>
+                                    <label  class="form-check-label" for="contact_no">No</label>
                                 </div>
                             </div>
 
@@ -227,7 +235,7 @@
                             investment_type: $('input[name="investment_type[]"]:checked').map(function() {
                                 return this.value;
                             }).get(),
-                            investment_criteria: $('#investment_criteria').val(),
+                            investment_criteria: $('input[name="investment_criteria"]:checked').val(),
                             contact_preference: $('input[name="contact_preference"]:checked').val(),
                             mobile_number: $('#mobile_number').val(),
                             _token: '{{ csrf_token() }}'
