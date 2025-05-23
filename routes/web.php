@@ -27,8 +27,12 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::post('/subscriber', [App\Http\Controllers\SubscriberController::class, 'store'])->name('subscriber.store');
-Route::post('/subscriber/detail', [App\Http\Controllers\SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
+Route::get('/landing', function () {
+    return view('index');
+});
+
+Route::post('/subscriber', [SubscriberController::class, 'store'])->name('subscriber.store');
+Route::post('/subscriber/detail', [SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
 
 Route::prefix('admin')->name('admin.')->group(function(){
 

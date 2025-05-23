@@ -47,7 +47,7 @@
                             </td>
                             <td>
                                 @if($subscriber->details)
-                                    {{ implode(', ', $subscriber->details->investment_type) }}
+                                    {{ implode(', ', array_filter($subscriber->details->investment_type, function($type) { return strtolower($type) !== 'all'; })) }}
                                 @else
                                     -
                                 @endif

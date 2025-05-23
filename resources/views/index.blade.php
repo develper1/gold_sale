@@ -33,7 +33,7 @@
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-8 align-self-end">
-                        <img src="/user/assets/img/logo1.webp" alt="Samson Armory Logo" class="logo-img mb-4">
+                        <img src="landingPageAseets/assets/img/logo.png" alt="Samson Armory Logo" class="logo-img mb-4">
                         <h1 class="text-white font-weight-bold">We're almost there!</h1>
                         <hr class="divider" />
                     </div>
