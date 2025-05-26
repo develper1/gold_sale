@@ -105,7 +105,7 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
             <li>
-              <a class="dropdown-item" href="pages-account-settings-account.html">
+              <a class="dropdown-item" href="{{route('admin.home')}}">
                 <div class="d-flex">
                   <div class="flex-shrink-0 me-3">
                     <div class="avatar avatar-online">
@@ -122,7 +122,7 @@
             <li>
               <div class="dropdown-divider"></div>
             </li>
-            <li>
+            {{-- <li>
               <a class="dropdown-item" href="pages-profile-user.html">
                 <i class="ti ti-user-check me-2 ti-sm"></i>
                 <span class="align-middle">My Profile</span>
@@ -160,7 +160,7 @@
             </li>
             <li>
               <div class="dropdown-divider"></div>
-            </li>
+            </li> --}}
             <li>
               <a class="dropdown-item"  href="{{ route('admin.logout') }}"
               onclick="event.preventDefault();
@@ -170,7 +170,7 @@
               </a>
               <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" class="d-none">
                 @csrf
-            </form>
+              </form>
             </li>
           </ul>
         </li>

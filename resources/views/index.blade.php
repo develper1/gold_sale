@@ -7,7 +7,7 @@
         <meta name="author" content="" />
         <title>Oasismint</title>
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="{{ asset('landingPageAseets/assets/img/favicon.png') }}" />
         <!-- Bootstrap Icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Google fonts-->
@@ -55,7 +55,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-9 email-form-row">
                                     <div class="form-floating">
-                                        <input class="form-control bg-dark form-email" required id="email" type="email" placeholder="Enter your email..." data-sb-validations="required" />
+                                        <input class="form-control bg-dark form-email text-white" required id="email" type="email" placeholder="Enter your email..." data-sb-validations="required" />
                                         <label for="email" class="text-white form-email-label">Enter your email</label>
                                     </div>
                                 </div>

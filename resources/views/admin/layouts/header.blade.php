@@ -6,15 +6,15 @@
      <!-- CSRF Token -->
      <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Dashboard - Analytics</title>
+    <title>Dashboard</title>
 
     
-    <meta name="description" content="Start your development with a Dashboard for Bootstrap 5" />
-    <meta name="keywords" content="dashboard, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
+    <meta name="description" content="" />
+    <meta name="keywords" content="">
 
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('landingPageAseets/assets/img/favicon.png') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/">

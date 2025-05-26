@@ -4,11 +4,11 @@
 ******************************************************************************/
 
 .light-style .menu .app-brand.demo {
-  height: 64px;
+  height: 100px;
 }
 
 .dark-style .menu .app-brand.demo {
-  height: 64px;
+  height: 100px;
 }
 
 .app-brand-logo.demo {
@@ -126,4 +126,9 @@
 .layout-demo-info {
   text-align: center;
   margin-top: 1rem;
+}
+
+.app-brand-logo{
+  width: 50%;
+  margin: auto;
 }
