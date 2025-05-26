@@ -1,6 +1,3 @@
-
-https://support.upwork.com/hc/en-us/requests
-
 @extends('admin.layouts.guest')
 
 @section('content')
