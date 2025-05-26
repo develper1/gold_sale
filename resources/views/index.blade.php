@@ -40,34 +40,43 @@
                         <p class="text-white mt-4">And we want you to be the first to know.</p>
                     </div>
                     <div class="col-lg-8 align-self-baseline mt-4">
-                        <form id="email-form">
-                            <div class="row" id="email-form-row">
-                                <div class="col-md-8 mt-3">
-                                    <div class="form-floating">
-                                        <input class="form-control" required id="email" type="email" placeholder="Enter your email..." data-sb-validations="required" />
-                                        <label for="email">Enter your email</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mt-3">
-                                    <button class="btn btn-primary btn-xl w-100" id="submitButton" type="submit">Next</button>
-                                </div>
-                            </div>
-                            <div class="row mt-4" id="show-thankyou-message" style="display: none">
-                                <div class="col-md-12">
-                                    <h5 class="text-white">Thank you for your submission. Do you have another 30 seconds to get special promotions and pricing? <a href="#detailed-form" class="show-detailed-form" style="cursor: pointer;">Click HERE</a></h5>
-                                </div>
-                            </div>
-                        </form>
+                        
                     </div>
                 </div>
             </div>
         </header>
        
         <!-- Call to action-->
-        <section class="page-section bg-dark text-white pt-5" id="detailed-form" style="display: none">
+        <section class="page-section bg-dark text-white pt-5">
             <div class="container px-4 px-lg-5">
-                <h2 class="mb-4 text-center">Complete Your Profile</h2>
-                <form id="detail-form">
+                <form id="email-form">
+                    <div class="row justify-content-center mt-4">
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-md-9 email-form-row">
+                                    <div class="form-floating">
+                                        <input class="form-control bg-dark form-email" required id="email" type="email" placeholder="Enter your email..." data-sb-validations="required" />
+                                        <label for="email" class="text-white form-email-label">Enter your email</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 email-form-row">
+                                    <button class="btn btn-primary btn-xl w-100 text-dark" id="submitButton" type="submit">Notify Me!</button>
+                                </div>
+                                <div class="col-md-12" id="show-thankyou-message" style="display: none">
+                                    <div class="col-md-12">
+                                        <h6 class="text-white">Thank you for your submission. Do you have another 30 seconds to get special promotions and pricing? <a href=".detailed-form" class="show-detailed-form" style="cursor: pointer;">Click HERE</a></h6>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+    
+                    </div>
+                </form>
+
+                <form id="detail-form" class="detailed-form" style="display: none">
+                    <h2 class="mb-4 text-center">Complete Your Profile</h2>
                     <div class="row justify-content-center">
                         <div class="col-md-8">
                             <div class="row mb-3">
@@ -159,7 +168,7 @@
                                 Thank you for completing your profile! We will contact you soon.
                             </div>
 
-                            <button class="btn btn-primary btn-xl" type="submit">Submit</button>
+                            <button class="btn btn-primary btn-xl text-dark" type="submit">Submit</button>
                         </div>
                     </div>
                 </form>
@@ -189,9 +198,9 @@
                 // Add click handler for the detailed form link
                 $('.show-detailed-form').on('click', function(e) {
                     e.preventDefault();
-                    $('#detailed-form').show();
+                    $('.detailed-form').show();
                     $('html, body').animate({
-                        scrollTop: $('#detailed-form').offset().top
+                        scrollTop: $('.detailed-form').offset().top
                     }, 1000);
                 });
 
@@ -207,7 +216,7 @@
                         },
                         success: function(response) {
                             if(response.status === 'success') {
-                                $('#email-form-row').hide();
+                                $('.email-form-row').hide();
                                 $('#show-thankyou-message').show();
                                 // Auto-fill the detail form email field
                                 $('#detail_email').val($('#email').val());
