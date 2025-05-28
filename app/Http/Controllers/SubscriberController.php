@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Subscriber;
 use App\Models\SubscriberDetail;
+use App\Mail\SubscriberWelcome;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class SubscriberController extends Controller
 {
@@ -27,14 +31,34 @@ class SubscriberController extends Controller
                 'email' => $request->email
             ]);
 
+            // Send welcome email
+            try {
+                Mail::to($request->email)->send(new SubscriberWelcome($request->email));
+            } catch (Exception $mailException) {
+                Log::error('Mail Error: ' . $mailException->getMessage());
+                Log::error('Mail Error Trace: ' . $mailException->getTraceAsString());
+                
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Email could not be sent. Please try again.',
+                    'error' => $mailException->getMessage(),
+                    'trace' => $mailException->getTraceAsString()
+                ], 500);
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Thank you for subscribing!'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
+            Log::error('Subscriber Error: ' . $e->getMessage());
+            Log::error('Subscriber Error Trace: ' . $e->getTraceAsString());
+            
             return response()->json([
                 'status' => 'error',
-                'message' => 'Something went wrong. Please try again.'
+                'message' => 'Something went wrong. Please try again.',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ], 500);
         }
     }
