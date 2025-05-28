@@ -71,6 +71,13 @@
         </a>
       </li>
 
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'coupons' ? ' active open' : '' }}">
+        <a href="{{ route('admin.coupons.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-smart-home"></i>
+          <div data-i18n="Coupons">Coupons</div>
+        </a>
+      </li>
+
     </ul>
     
     

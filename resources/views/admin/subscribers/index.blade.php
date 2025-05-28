@@ -24,6 +24,7 @@
                         <th>Contact Preference</th>
                         <th>Mobile Number</th>
                         <th>Created At</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
@@ -74,6 +75,20 @@
                                 @endif
                             </td>
                             <td>{{ $subscriber->created_at->format('Y-m-d H:i:s') }}</td>
+                            <td>
+                                <div class="dropdown">
+                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ti ti-dots-vertical"></i></button>
+                                    <div class="dropdown-menu">
+                                        <form id="form-{{ $subscriber->id }}" action="{{ route('admin.subscribers.destroy', $subscriber->id) }}" method="POST">
+                                            @method('DELETE')
+                                            @csrf
+                                            <a class="dropdown-item delete-btn" onclick="confirmDelete({{ $subscriber->id }})" href="javascript:void(0)">
+                                                <i class="fa-solid fa-trash me-1"></i> Delete
+                                            </a>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -88,5 +103,11 @@
     $(document).ready(function() {
         $('.table').DataTable();
     });
+
+    function confirmDelete(id) {
+        if (confirm('Are you sure you want to delete this subscriber?')) {
+            document.getElementById('form-' + id).submit();
+        }
+    }
 </script>
 @endpush

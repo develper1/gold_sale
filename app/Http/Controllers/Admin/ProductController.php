@@ -189,12 +189,20 @@ class ProductController extends Controller
     }
     public function destroy($id)
     {
-
         $product=Product::findOrFail($id);
-
         $product->delete();
-
         return back()->with('success', 'Product deleted successfully!');
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->q;
+        $products = Product::where('name', 'like', "%$search%")
+            ->select('id', 'name')
+            ->limit(20)
+            ->get();
+
+        return response()->json($products);
     }
 
 }

@@ -53,7 +53,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
 
         Route::resource("/subscribers", SubscriberController::class);
         Route::resource("/users", UserController::class);
+        Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
         Route::resource("/products", ProductController::class);
+        Route::resource('/coupons', \App\Http\Controllers\Admin\CouponController::class);
 
     });
 });

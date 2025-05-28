@@ -106,4 +106,23 @@ class SubscriberController extends Controller
         $subscribers = Subscriber::with('details')->get();
         return view('admin.subscribers.index', compact('subscribers'));
     }
+
+    public function destroy(Subscriber $subscriber)
+    {
+        try {
+            // Delete associated details first
+            if ($subscriber->details) {
+                $subscriber->details->delete();
+            }
+            
+            // Delete the subscriber
+            $subscriber->delete();
+            
+            return redirect()->route('admin.subscribers.index')
+                ->with('success', 'Subscriber deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.subscribers.index')
+                ->with('error', 'Failed to delete subscriber. Please try again.');
+        }
+    }
 } 
