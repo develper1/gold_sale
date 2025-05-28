@@ -35,13 +35,7 @@ class SubscriberController extends Controller
             // Send welcome email to subscriber
             try {
                 Mail::to($request->email)->send(new SubscriberWelcome($request->email));
-                
-                // Send notification to admin
-                Mail::to( env('MAIL_ADMIN'))->send(new AdminSubscriberNotification($request->email));
             } catch (Exception $mailException) {
-                Log::error('Mail Error: ' . $mailException->getMessage());
-                Log::error('Mail Error Trace: ' . $mailException->getTraceAsString());
-                
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Email could not be sent. Please try again.',
@@ -50,14 +44,19 @@ class SubscriberController extends Controller
                 ], 500);
             }
 
+            // Send notification to admin (ignore errors)
+            try {
+                Mail::to(env('MAIL_ADMIN'))->send(new AdminSubscriberNotification($request->email));
+            } catch (Exception $adminMailException) {
+                Log::error('Admin Notification Mail Error: ' . $adminMailException->getMessage());
+                // Don't return error response, just log it
+            }
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Thank you for subscribing!'
             ]);
         } catch (Exception $e) {
-            Log::error('Subscriber Error: ' . $e->getMessage());
-            Log::error('Subscriber Error Trace: ' . $e->getTraceAsString());
-            
             return response()->json([
                 'status' => 'error',
                 'message' => 'Something went wrong. Please try again.',
