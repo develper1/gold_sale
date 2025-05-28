@@ -20,24 +20,24 @@
         <link rel="stylesheet" href="{{ asset('landingPageAseets/css/styles.css') }}" />
         <style>
             .logo-img {
-                max-width: 300px;
+                max-width: 250px;
                 width: 100%;
-                margin-bottom: 32px;
+                margin-bottom: 5px;
             }
         </style>
     </head>
     <body id="page-top">
         
         <!-- Masthead-->
-        <header class="masthead">
+        <header class="masthead" style="padding-bottom:0px">
             <div class="container px-4 px-lg-5 h-100">
                 <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
                     <div class="col-lg-8 align-self-end">
-                        <img src="landingPageAseets/assets/img/logo.png" alt="Samson Armory Logo" class="logo-img mb-4">
-                        <h1 class="text-white font-weight-bold mt-5">We're almost there!</h1>
-                        <hr class="divider" />
-                        <p class="text-white">Oasismint is opening soon in Brooklyn, New York!</p>
-                        <p class="text-white mt-4">And we want you to be the first to know.</p>
+                        <img src="landingPageAseets/assets/img/logo.png" alt="Samson Armory Logo" class="logo-img mb-4 mt-2">
+                        <h2 class="text-white font-weight-bold mt-2">WE'RE ALMOST THERE!</h2>
+                        <!-- <hr class="divider" /> -->
+                        <p class="text-white">OasisMint.com - Going Live Soon<br>And we want you to be the first to know.<br><br>
+Your secure source for Gold, Silver, Platinum and other precious metals, coins and bullion at the best prices guaranteed.</p>
                     </div>
                     <div class="col-lg-8 align-self-baseline mt-4">
                         
