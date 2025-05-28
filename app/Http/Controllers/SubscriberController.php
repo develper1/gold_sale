@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Subscriber;
 use App\Models\SubscriberDetail;
 use App\Mail\SubscriberWelcome;
+use App\Mail\AdminSubscriberNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
@@ -31,9 +32,12 @@ class SubscriberController extends Controller
                 'email' => $request->email
             ]);
 
-            // Send welcome email
+            // Send welcome email to subscriber
             try {
                 Mail::to($request->email)->send(new SubscriberWelcome($request->email));
+                
+                // Send notification to admin
+                Mail::to( env('MAIL_ADMIN'))->send(new AdminSubscriberNotification($request->email));
             } catch (Exception $mailException) {
                 Log::error('Mail Error: ' . $mailException->getMessage());
                 Log::error('Mail Error Trace: ' . $mailException->getTraceAsString());
