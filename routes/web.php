@@ -12,6 +12,9 @@ use App\Http\Middleware\GuestAdminMiddleware;
 use App\Http\Middleware\GuestUserMiddleware;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\EmailTestController;
+use App\Http\Controllers\Admin\ShippingController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\StateFeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,12 +54,16 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/users', [UserController::class, 'users'])->name('users');
-
         Route::resource("/subscribers", SubscriberController::class);
         Route::resource("/users", UserController::class);
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
         Route::resource("/products", ProductController::class);
         Route::resource('/coupons', \App\Http\Controllers\Admin\CouponController::class);
+        Route::resource('shipping', ShippingController::class);
+        Route::resource('services', ServiceController::class);
+        Route::resource('statefee', StateFeeController::class)->only(['index', 'edit', 'update'])->parameters([
+            'statefee' => 'stateFee'
+        ]);
 
     });
 });

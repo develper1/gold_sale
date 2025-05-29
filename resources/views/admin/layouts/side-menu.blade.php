@@ -78,6 +78,27 @@
         </a>
       </li>
 
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'shipping' ? ' active open' : '' }}">
+        <a href="{{ route('admin.shipping.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <div data-i18n="Shipping Fee">Shipping Fee</div>
+        </a>
+      </li>
+      
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'services' ? ' active open' : '' }}">
+        <a href="{{ route('admin.services.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <div data-i18n="Services Fee">Services Fee</div>
+        </a>
+      </li>
+
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'statefee' ? ' active open' : '' }}">
+        <a href="{{ route('admin.statefee.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <div data-i18n="State Fee">State Fee</div>
+        </a>
+      </li>
+
     </ul>
     
     
