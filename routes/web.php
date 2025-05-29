@@ -11,6 +11,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\GuestAdminMiddleware;
 use App\Http\Middleware\GuestUserMiddleware;
 use App\Http\Controllers\SubscriberController;
+use App\Http\Controllers\EmailTestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,3 +77,7 @@ Route::group(['middleware' => ['auth:web', 'user']], function () {
     Route::post('/logout', [App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('logout');
 
 });
+
+// Email Testing Routes
+Route::get('/email-test', [EmailTestController::class, 'showTestForm'])->name('email.test');
+Route::post('/send-test-email', [EmailTestController::class, 'sendTestEmail'])->name('send.test.email');
