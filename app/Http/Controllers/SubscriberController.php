@@ -125,4 +125,55 @@ class SubscriberController extends Controller
                 ->with('error', 'Failed to delete subscriber. Please try again.');
         }
     }
+
+    public function export()
+    {
+        $subscribers = Subscriber::with('details')->get();
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="subscribers.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0'
+        ];
+
+        $callback = function() use ($subscribers) {
+            $file = fopen('php://output', 'w');
+            
+            // Add headers
+            fputcsv($file, [
+                'ID',
+                'Email',
+                'First Name',
+                'Last Name',
+                'City',
+                'Investment Type',
+                'Investment Criteria',
+                'Contact Preference',
+                'Mobile Number',
+                'Created At'
+            ]);
+
+            // Add data
+            foreach ($subscribers as $subscriber) {
+                fputcsv($file, [
+                    $subscriber->id,
+                    $subscriber->email,
+                    $subscriber->details ? $subscriber->details->first_name : '-',
+                    $subscriber->details ? $subscriber->details->last_name : '-',
+                    $subscriber->details ? $subscriber->details->city : '-',
+                    $subscriber->details ? implode(', ', array_filter($subscriber->details->investment_type, function($type) { return strtolower($type) !== 'all'; })) : '-',
+                    $subscriber->details ? '$' . $subscriber->details->investment_criteria : '-',
+                    $subscriber->details ? ucfirst($subscriber->details->contact_preference) : '-',
+                    $subscriber->details ? ($subscriber->details->mobile_number ?? '-') : '-',
+                    $subscriber->created_at->format('Y-m-d H:i:s')
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 } 

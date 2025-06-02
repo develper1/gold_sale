@@ -54,6 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/home', [AdminHomeController::class, 'index'])->name('home');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/users', [UserController::class, 'users'])->name('users');
+        Route::get('/subscribers/export', [SubscriberController::class, 'export'])->name('subscribers.export');
         Route::resource("/subscribers", SubscriberController::class);
         Route::resource("/users", UserController::class);
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');

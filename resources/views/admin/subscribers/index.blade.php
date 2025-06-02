@@ -2,17 +2,27 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <!-- Subscribers List Table -->
     <div class="card">
         <div class="row">
             <div class="col-md-6">
-                <h5 class="card-header">Subscribers</h5>
+                <h5 class="card-header">Subscriber List</h5>
             </div>
-            
+            <div class="col-md-6 text-end">
+                <a href="{{ route('admin.subscribers.export') }}" class="btn btn-primary mt-3 me-3">
+                    <i class="ti ti-file-export me-1"></i> Export CSV
+                </a>
+            </div>
         </div>
-        
-        <div class="table-responsive text-nowrap">
-            <table class="table">
+        <hr class="my-0">
+        <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>  
+            @endif
+
+            <div class="table-responsive">
+                <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -92,7 +102,8 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+                </table>
+            </div>
         </div>
     </div>
 </div>
