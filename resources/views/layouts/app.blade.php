@@ -1,80 +1,160 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="en">
+	@include('layouts.header');
+	
+	<body class="home home-4 title-4">
+		<div id="page" class="hfeed page-wrapper">
+			@include('layouts.nav');
 
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+			<div id="site-main" class="site-main">
+				<div id="main-content" class="main-content">
+					<div id="primary" class="content-area">
+                        @yield('content')
+						<!-- #content -->
+					</div><!-- #primary -->
+				</div><!-- #main-content -->
+			</div>
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+			<footer id="site-footer" class="site-footer four-columns no-border-top">
+				<div class="footer">
+					<div class="section-padding">
+						<div class="section-container">
+							<div class="block-widget-wrap">
+								<div class="row">
+									<div class="col-lg-3 col-md-6 column-1">
+										<div class="block block-menu">
+											<h2 class="block-title">Customer Services</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="shop-grid-left.html">Contact Us</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Track Your Order</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Product Care & Repair</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Book an Appointment</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Frequently Asked Questions</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Shipping & Returns</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 column-2">
+										<div class="block block-menu">
+											<h2 class="block-title">About Us</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="#">About Us</a>
+													</li>
+													<li>
+														<a href="#">FAQ</a>
+													</li>
+													<li>
+														<a href="#">Our Producers</a>
+													</li>
+													<li>
+														<a href="#">Sitemap</a>
+													</li>
+													<li>
+														<a href="#">Terms & Conditions</a>
+													</li>
+													<li>
+														<a href="#">Privacy Policy</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 column-3">
+										<div class="block block-menu">
+											<h2 class="block-title">Catalog</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="shop-grid-left.html">Earrings</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Necklaces</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Bracelets</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Rings</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Jewelry Box</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Studs</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 column-4">
+										<div class="block block-newsletter">
+											<h2 class="block-title">Our Newsletter</h2>
+											<div class="block-content">
+												<div class="newsletter-text">Sign up for the latest Ice offers and exclusives.</div>
+												<form action="" method="post" class="newsletter-form">
+													<input type="email" name="your-email" value="" size="40" placeholder="Email address">
+													<span class="btn-submit">
+														<input type="submit" value="Subscribe">
+													</span>
+												</form>
+											</div>
+										</div>
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
+										<div class="block block-social">
+											<ul class="social-link">
+												<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+												<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+												<li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+												<li><a href="#"><i class="fa fa-behance"></i></a></li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<div class="section-padding">
+						<div class="section-container">
+							<div class="block-widget-wrap">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="footer-left">
+											<p class="copyright">Copyright © 2023. All Right Reserved</p>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="footer-right">
+											<div class="block block-image">
+												<img width="309" height="32" src="{{ asset('assets/media/payments.png') }}" alt="">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
 
-    <!-- Scripts -->
-    {{-- @vite(['resources/sass/app.scss', 'resources/js/app.js']) --}}
-</head>
-<body>
-    <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav me-auto">
-
-                    </ul>
-
-                    <!-- Right Side Of Navbar -->
-                    <ul class="navbar-nav ms-auto">
-                        <!-- Authentication Links -->
-                        @guest
-                            @if (Route::has('login'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </li>
-                            @endif
-
-                            @if (Route::has('register'))
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </li>
-                            @endif
-                        @else
-                            <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                       onclick="event.preventDefault();
-                                                     document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </li>
-                        @endguest
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <main class="py-4">
-            @yield('content')
-        </main>
-    </div>
-</body>
+        @include('layouts.footer');
+	</body>
 </html>
