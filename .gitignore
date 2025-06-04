@@ -10,6 +10,7 @@
 .env.production
 info.txt
 .phpunit.result.cache
+info.txt
 Homestead.json
 Homestead.yaml
 auth.json

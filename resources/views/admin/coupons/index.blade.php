@@ -25,10 +25,10 @@
                     <th>ID</th>
                     <th>Code</th>
                     <th>Description</th>
-                    <th>Discount</th>
-                    <th>Type</th>
-                    <th>Order Total</th>
-                    <th>Product</th>
+                    <th>Valid From</th>
+                    <th>Valid To</th>
+                    <th>Free Shipping</th>
+                    <th>Free Service</th>
                     <th>Active</th>
                     <th>Action</th>
                 </tr>
@@ -39,10 +39,14 @@
                         <td>{{ $coupon->id }}</td>
                         <td>{{ $coupon->code }}</td>
                         <td>{{ $coupon->description }}</td>
-                        <td>{{ $coupon->discount_type == 'percent' ? number_format($coupon->discount, 0).'%' : '$'. $coupon->discount }}</td>
+                        <td>{{ $coupon->valid_from }}</td>
+                        <td>{{ $coupon->valid_to }}</td>
+                        <td>{{ $coupon->free_shipping ? 'Yes' : 'No' }}</td>
+                        <td>{{ $coupon->free_service_fee ? 'Yes' : 'No' }}</td>
+                        {{-- <td>{{ $coupon->discount_type == 'percent' ? number_format($coupon->discount, 0).'%' : '$'. $coupon->discount }}</td>
                         <td>{{ ucfirst($coupon->discount_type) }}</td>
                         <td>{{ $coupon->order_total ? '$'.$coupon->order_total : 'N/A' }}</td>
-                        <td>{{ $coupon->product ? $coupon->product->name : 'N/A' }}</td>
+                        <td>{{ $coupon->product ? $coupon->product->name : 'N/A' }}</td> --}}
                         <td>{{ $coupon->is_active ? 'Yes' : 'No' }}</td>
                         <td>
                             <div class="dropdown">

@@ -34,8 +34,11 @@ class CouponController extends Controller
     {
         $request->validate([
             'code' => 'required|unique:coupons,code',
-            'discount' => 'required|numeric',
-            'discount_type' => 'required|in:percent,dollar',
+            'description' => 'required',
+            'valid_from' => 'required',
+            'valid_to' => 'required',
+            // 'discount' => 'required|numeric',
+            // 'discount_type' => 'required|in:percent,dollar',
         ]);
 
         Coupon::create($request->all());
@@ -68,8 +71,9 @@ class CouponController extends Controller
         $coupon = Coupon::findOrFail($id);
         $request->validate([
             'code' => 'required|unique:coupons,code,' . $coupon->id,
-            'discount' => 'required|numeric',
-            'discount_type' => 'required|in:percent,dollar',
+            'description' => 'required',
+            'valid_from' => 'required',
+            'valid_to' => 'required',
         ]);
 
         $coupon->update($request->all());
