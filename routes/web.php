@@ -35,6 +35,10 @@ Route::get('/landing', function () {
     return view('index');
 });
 
+Route::get('/home', function () {
+    return view('home');
+});
+
 Route::post('/subscriber', [SubscriberController::class, 'store'])->name('subscriber.store');
 Route::post('/subscriber/detail', [SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
 
@@ -81,7 +85,7 @@ Route::middleware([GuestUserMiddleware::class])->group(function(){
 
 Route::group(['middleware' => ['auth:web', 'user']], function () {
 
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::post('/logout', [App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('logout');
 
 });
