@@ -79,6 +79,33 @@
                     <div class="col-lg-12 ">
 
                         <div class="row mb-4">
+                            <!-- Category -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="category_id">Category<span class="text-danger">*</span></label>
+                                <select name="category_id" id="category_id" class="form-control" required>
+                                    <option value="">-- Select Category --</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ (isset($product) && $product->category_id == $category->id) ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Sub Category -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="sub_category_id">Sub Category<span class="text-danger">*</span></label>
+                                <select name="sub_category_id" id="sub_category_id" class="form-control" required>
+                                    <option value="">-- Select Sub Category --</option>
+                                    @if(isset($product) && $product->sub_category_id)
+                                        @foreach($subCategories as $subCategory)
+                                            <option value="{{ $subCategory->id }}" {{ $product->sub_category_id == $subCategory->id ? 'selected' : '' }}>
+                                                {{ $subCategory->name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
                             <!-- Name -->
                             <div class="col-lg-6 col-md-6 col-sm-12">
                                 <label class="form-label" for="label">Name<span class="text-danger">*</span></label>
@@ -169,9 +196,11 @@
                                 <input type="number" step="0.01" value="{{ $product->override_markup_percentage ?? '' }}" class="form-control" id="override_markup_percentage" name="override_markup_percentage">
                             </div>
                         
+                            
+                        
                             <!-- Description -->
                             <div class="col-md-12 mt-2">
-                                <label class="form-label" for="label">Description</label>
+                                <label class="form-label" for="description">Description</label>
                                 <textarea name="description" id="editor" rows="10" class="form-control">{{ $product->description ?? '' }}</textarea>
                             </div>
                         
@@ -301,6 +330,27 @@
     if ($('#use_override_markup').is(':checked')) {
         $('.override-markup-field').show();
     }
+
+    $('#category_id').change(function() {
+        var categoryId = $(this).val();
+        if (categoryId) {
+            $.ajax({
+                url: '{{ route('admin.sub-categories.getSubCategoriesByCategory', ['categoryId' => ':categoryId']) }}'.replace(':categoryId', categoryId),
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    $('#sub_category_id').empty();
+                    $('#sub_category_id').append('<option value="">-- Select Sub Category --</option>');
+                    $.each(data, function(key, value) {
+                        $('#sub_category_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                    });
+                }
+            });
+        } else {
+            $('#sub_category_id').empty();
+            $('#sub_category_id').append('<option value="">-- Select Sub Category --</option>');
+        }
+    });
 });
 </script>
     

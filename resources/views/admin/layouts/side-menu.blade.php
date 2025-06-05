@@ -92,6 +92,44 @@
         </a>
       </li>
 
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'categories' ? ' active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-tags"></i>
+          <div data-i18n="Categories">Categories</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'categories' && !request()->segment(3) ? ' active open' : '' }}">
+            <a href="{{ route('admin.categories.index') }}" class="menu-link">
+              <div data-i18n="List">List</div>
+            </a>
+          </li>
+          <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'categories' && request()->segment(3) == 'create' ? ' active open' : '' }}">
+            <a href="{{ route('admin.categories.create') }}" class="menu-link">
+              <div data-i18n="Create Category">Create Category</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'sub-categories' ? ' active open' : '' }}">
+        <a href="javascript:void(0);" class="menu-link menu-toggle">
+          <i class="menu-icon tf-icons ti ti-tags"></i>
+          <div data-i18n="Sub Categories">Sub Categories</div>
+        </a>
+        <ul class="menu-sub">
+          <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'sub-categories' && !request()->segment(3) ? ' active open' : '' }}">
+            <a href="{{ route('admin.sub-categories.index') }}" class="menu-link">
+              <div data-i18n="List">List</div>
+            </a>
+          </li>
+          <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'sub-categories' && request()->segment(3) == 'create' ? ' active open' : '' }}">
+            <a href="{{ route('admin.sub-categories.create') }}" class="menu-link">
+              <div data-i18n="Create Sub Category">Create Sub Category</div>
+            </a>
+          </li>
+        </ul>
+      </li>
+
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'statefee' ? ' active open' : '' }}">
         <a href="{{ route('admin.statefee.index') }}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-currency-dollar"></i>

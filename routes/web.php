@@ -15,6 +15,8 @@ use App\Http\Controllers\EmailTestController;
 use App\Http\Controllers\Admin\ShippingController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StateFeeController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\SubCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +71,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('statefee', StateFeeController::class)->only(['index', 'edit', 'update'])->parameters([
             'statefee' => 'stateFee'
         ]);
+        Route::resource('categories', CategoryController::class);
+        Route::get('/sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('sub-categories.getSubCategoriesByCategory');
+        Route::resource('sub-categories', SubCategoryController::class)->except(['show']);
 
     });
 });

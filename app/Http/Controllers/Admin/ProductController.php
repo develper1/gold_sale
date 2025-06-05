@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Category;
+use App\Models\SubCategory;
 
 
 class ProductController extends Controller
@@ -24,10 +26,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-       
         $product=null;
-
-        return view("admin.products.add_edit",compact("product"));
+        $categories = Category::all();
+        $subCategories = SubCategory::all();
+        return view('admin.products.add_edit', compact('categories', 'subCategories','product'));
     }
 
     /**
@@ -79,7 +81,8 @@ class ProductController extends Controller
             "low_inventory_threshold"=>$request->low_inventory_threshold,
             "is_active"=>1,
             "image_path"=>$firstImagePath,
-            
+            "category_id" => $request->category_id,
+            "sub_category_id" => $request->sub_category_id,
         ]);
 
         // Store the remaining images 
@@ -104,10 +107,10 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product=Product::with(["images"])->findOrFail($id);
-
-        return view("admin.products.add_edit",compact("product"));
-
+        $product = Product::with(['images'])->findOrFail($id);
+        $categories = Category::all();
+        $subCategories = SubCategory::where('category_id', $product->category_id)->get();
+        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories'));
     }
 
     /**
@@ -172,6 +175,8 @@ class ProductController extends Controller
                 "quantity_available"=>$request->quantity_available,
                 "low_inventory_threshold"=>$request->low_inventory_threshold,
                 "is_active"=>1,
+                "category_id" => $request->category_id,
+                "sub_category_id" => $request->sub_category_id,
             ]);
 
             return redirect()->route("admin.products.index")->with("success","Product Updated successfully");
