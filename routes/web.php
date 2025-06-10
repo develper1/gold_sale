@@ -72,8 +72,8 @@ Route::prefix('admin')->name('admin.')->group(function(){
             'statefee' => 'stateFee'
         ]);
         Route::resource('categories', CategoryController::class);
-        Route::get('/sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('sub-categories.getSubCategoriesByCategory');
-        Route::resource('sub-categories', SubCategoryController::class)->except(['show']);
+        Route::get('/get-sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('sub-categories.getSubCategoriesByCategory');
+        Route::resource('sub-categories', SubCategoryController::class);
 
     });
 });
