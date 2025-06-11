@@ -45,7 +45,7 @@
                           <td>{{ $data->subCategory->name ?? 'N/A' }}</td>
                           <td>
                             @if($data->images->count() > 0)
-                                <img src="{{ asset('public/storage/' . $data->images->first()->image_path) }}" alt="{{ $data->name }}" width="100">
+                                <img src="{{ asset('storage/app/public/' . $data->images->first()->image_path) }}" alt="{{ $data->name }}" width="100">
                             @else
                                 No Image
                             @endif

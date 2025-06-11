@@ -109,10 +109,10 @@
                                                                 <div class="product-thumb-hover">
                                                                     <a href="{{ route('shop.product', $product->slug) }}">
                                                                         <img width="600" height="600" 
-                                                                             src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="post-image" alt="{{ $product->name }}">
                                                                         <img width="600" height="600" 
-                                                                             src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="hover-image back" alt="{{ $product->name }}">
                                                                     </a>
                                                                 </div>
@@ -157,10 +157,10 @@
                                                             <div class="product-thumb-hover">
                                                                 <a href="{{ route('shop.product', $product->slug) }}">
                                                                     <img width="600" height="600" 
-                                                                         src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="post-image" alt="{{ $product->name }}">
                                                                     <img width="600" height="600" 
-                                                                         src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="hover-image back" alt="{{ $product->name }}">
                                                                 </a>
                                                             </div>
@@ -218,10 +218,10 @@
                                                                 <div class="product-thumb-hover">
                                                                     <a href="{{ route('shop.product', $product->slug) }}">
                                                                         <img width="600" height="600" 
-                                                                             src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="post-image" alt="{{ $product->name }}">
                                                                         <img width="600" height="600" 
-                                                                             src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="hover-image back" alt="{{ $product->name }}">
                                                                     </a>
                                                                 </div>
@@ -264,10 +264,10 @@
                                                             <div class="product-thumb-hover">
                                                                 <a href="{{ route('shop.product', $product->slug) }}">
                                                                     <img width="600" height="600" 
-                                                                         src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="post-image" alt="{{ $product->name }}">
                                                                     <img width="600" height="600" 
-                                                                         src="{{ asset('public/storage/' . $product->images->first()->image_path) }}" 
+                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="hover-image back" alt="{{ $product->name }}">
                                                                 </a>
                                                             </div>

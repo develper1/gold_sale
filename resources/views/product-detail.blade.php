@@ -32,7 +32,7 @@
                                             @foreach($product->images as $image)
                                             <div class="img-item slick-slide">
                                                 <span class="img-thumbnail-scroll">
-                                                    <img width="600" height="600" src="{{ asset('public/storage/' . $image->image_path) }}" alt="{{ $product->name }}">
+                                                    <img width="600" height="600" src="{{ asset('storage/app/public/' . $image->image_path) }}" alt="{{ $product->name }}">
                                                 </span>
                                             </div>
                                             @endforeach
@@ -44,7 +44,7 @@
                                         <div class="image-additional slick-carousel" data-asnavfor=".image-thumbnail" data-fade="true" data-columns4="1" data-columns3="1" data-columns2="1" data-columns1="1" data-columns="1" data-nav="true">
                                             @foreach($product->images as $image)
                                             <div class="img-item slick-slide">
-                                                <img width="900" height="900" src="{{ asset('public/storage/' . $image->image_path) }}" alt="{{ $product->name }}" title="{{ $product->name }}">
+                                                <img width="900" height="900" src="{{ asset('storage/app/public/' . $image->image_path) }}" alt="{{ $product->name }}" title="{{ $product->name }}">
                                             </div>
                                             @endforeach
                                         </div>

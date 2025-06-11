@@ -279,13 +279,13 @@
     });
     @if ($product && $product->images && count($product->images) > 0)
         @foreach ($product->images->reverse() as $image)
-            pond.addFile("{{ asset('public/storage/' . $image->image_path) }}").then(file => {
+            pond.addFile("{{ asset('storage/app/public/' . $image->image_path) }}").then(file => {
                 file.setMetadata('existing', true);
             });
         @endforeach
     @else
         @if($product && $product->image_path)
-            pond.addFile("{{ asset('public/storage/' . $product->image_path) }}").then(file => {
+            pond.addFile("{{ asset('storage/app/public/' . $product->image_path) }}").then(file => {
                 file.setMetadata('existing', true);
             });    
         @endif
