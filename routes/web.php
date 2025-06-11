@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\StateFeeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\ShopController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ use App\Http\Controllers\Admin\SubCategoryController;
 
 Route::get('/', function () {
     return view('index');
-});
+})->name('index');
 
 Route::get('/landing', function () {
     return view('index');
@@ -39,7 +40,15 @@ Route::get('/landing', function () {
 
 Route::get('/home', function () {
     return view('home');
-});
+})->name('home');
+
+Route::get('/account', function () {
+    return view('my-account');
+})->name('account');
+
+// Route::get('/thumbs', function () {
+//     return view('thumbs');
+// });
 
 Route::post('/subscriber', [SubscriberController::class, 'store'])->name('subscriber.store');
 Route::post('/subscriber/detail', [SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
@@ -98,3 +107,10 @@ Route::group(['middleware' => ['auth:web', 'user']], function () {
 // Email Testing Routes
 Route::get('/email-test', [EmailTestController::class, 'showTestForm'])->name('email.test');
 Route::post('/send-test-email', [EmailTestController::class, 'sendTestEmail'])->name('send.test.email');
+
+// Shop Routes
+Route::get('/product/{slug}', [ShopController::class, 'product'])->name('shop.product');
+Route::get('/thumbs', [ShopController::class, 'index'])->name('shop.index');
+Route::get('/thumbs/category/{slug}', [ShopController::class, 'category'])->name('shop.category');
+Route::get('/thumbs/{slug}', [ShopController::class, 'subcategory'])->name('shop.subcategory');
+

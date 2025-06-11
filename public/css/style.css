@@ -1,0 +1,11 @@
+.subcategory-title {
+    margin: 30px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    font-size: 24px;
+    color: #333;
+}
+
+.subcategory-title:first-child {
+    margin-top: 0;
+} 

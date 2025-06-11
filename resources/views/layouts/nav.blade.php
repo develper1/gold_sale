@@ -83,14 +83,14 @@
             </div>
 
             <!-- Search -->
-            <div class="search-box">
+            {{-- <div class="search-box">
                 <div class="search-toggle"><i class="wpb-icon-magnifying-glass"></i></div>
-            </div>
+            </div> --}}
 
             <!-- Wishlist -->
-            <div class="wishlist-box">
+            {{-- <div class="wishlist-box">
                 <a href="shop-wishlist.html"><i class="wpb-icon-heart"></i></a>
-            </div>
+            </div> --}}
         </div>
     </div>
 
@@ -112,26 +112,25 @@
                                 <nav id="main-navigation">
                                     <ul id="menu-main-menu" class="menu">
                                         <li class="level-0 menu-item">
-                                            <a href="index.html"><span class="menu-item-text">Home</span></a>
+                                            <a href="{{ route('home') }}"><span class="menu-item-text">Home</span></a>
                                         </li>
                                         <li class="level-0 menu-item menu-item-has-children">
-                                            <a href="shop-grid-left.html"><span class="menu-item-text">Shop</span></a>
+                                            <a href="{{ route('shop.index') }}"><span class="menu-item-text">Shop</span></a>
                                             <ul class="sub-menu">
-                                                <li>
-                                                    <a href="thumbs.html"><span class="menu-item-text">Category 01</span></a>
-                                                </li>
-                                                <li>
-                                                    <a href="thumbs.html"><span class="menu-item-text">Category 02</span></a>
-                                                </li>
-                                                <li>
-                                                    <a href="thumbs.html"><span class="menu-item-text">Category 03</span></a>
-                                                </li>
-                                                <li>
-                                                    <a href="thumbs.html"><span class="menu-item-text">Category 04</span></a>
-                                                </li>
-                                                <li>
-                                                    <a href="thumbs.html"><span class="menu-item-text">Category 05</span></a>
-                                                </li>
+                                                @foreach($categories as $category)
+                                                    <li class="menu-item-has-children">
+                                                        <a href="{{ route('shop.category', $category->slug) }}"><span class="menu-item-text">{{ $category->name }}</span></a>
+                                                        <ul class="sub-menu">
+                                                            @foreach($category->subCategories as $subCategory)
+                                                                <li>
+                                                                    <a href="{{ route('shop.subcategory', $subCategory->slug) }}">
+                                                                        <span class="menu-item-text">{{ $subCategory->name }}</span>
+                                                                    </a>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </li>
+                                                @endforeach
                                             </ul>
                                         </li>
                                         <li class="level-0 menu-item">
@@ -144,14 +143,14 @@
                                             <a href="#"><span class="menu-item-text">Account</span></a>
                                             <ul class="sub-menu">
                                                 <li>
-                                                    <a href="page-my-account.html"><span class="menu-item-text">My Account</span></a>
+                                                    <a href="{{ route('account') }}"><span class="menu-item-text">My Account</span></a>
                                                 </li>
                                                 <li>
-                                                    <a href="page-login.html"><span class="menu-item-text">Login / Register</span></a>
+                                                    <a href="{{ route('login') }}"><span class="menu-item-text">Login / Register</span></a>
                                                 </li>
-                                                <li>
+                                                {{-- <li>
                                                     <a href="page-forgot-password.html"><span class="menu-item-text">Forgot Password</span></a>
-                                                </li>
+                                                </li> --}}
                                             </ul>
                                         </li>
                                         <li class="level-0 menu-item">
@@ -165,9 +164,9 @@
                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 header-right">
                             <div class="header-page-link">
                                 <!-- Search -->
-                                <div class="search-box">
+                                {{-- <div class="search-box">
                                     <div class="search-toggle"><i class="icon-search"></i></div>
-                                </div>
+                                </div> --}}
 
                                 <!-- Login -->
                                 <div class="login-header icon">
@@ -226,10 +225,10 @@
                                 </div>
 
                                 <!-- Wishlist -->
-                                <div class="wishlist-box">
+                                {{-- <div class="wishlist-box">
                                     <a href="shop-wishlist.html"><i class="icon-heart"></i></a>
                                     <span class="count-wishlist">1</span>
-                                </div>
+                                </div> --}}
                                 
                                 <!-- Cart -->
                                 <div class="mojuri-topcart dropdown light">

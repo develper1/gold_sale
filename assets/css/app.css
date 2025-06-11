@@ -3508,7 +3508,7 @@ body:not(.home) .site-navigation ul > li.level-0 > .sub-menu {
 4. Breadcrumbs
 =========================================================================*/
 .site-main .page-title {
-  background-image: url(../../media/site-header.jpg);
+  background-image: url('../media/site-header.jpg');
   margin: 0 0 60px;
   font-size: 20px;
   padding-top: 85px;

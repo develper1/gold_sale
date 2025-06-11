@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/slick/css/slick.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/slick/css/slick-theme.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/mmenu/css/mmenu.min.css') }}" type="text/css">
-
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/slider/css/jslider.css') }}">
     <!-- Site Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}" type="text/css">

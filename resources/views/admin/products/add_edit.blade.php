@@ -138,7 +138,7 @@
                                 @php 
                                     $pricing_type = $product->pricing_type ?? 'spot';
                                 @endphp
-                                <select name="pricing_type"  class="selectpicker w-100" data-style="btn-default" required>
+                                <select name="pricing_type" id="pricing_type"  class="selectpicker w-100" data-style="btn-default" required>
                                     <option value="">--select price type--</option>
                                     <option value="spot" {{ $pricing_type == 'spot' ? 'selected' : '' }}>Spot</option>
                                     <option value="fixed" {{ $pricing_type == 'fixed' ? 'selected' : '' }}>Fixed</option>
@@ -279,13 +279,13 @@
     });
     @if ($product && $product->images && count($product->images) > 0)
         @foreach ($product->images->reverse() as $image)
-            pond.addFile("{{ asset('storage/' . $image->image_path) }}").then(file => {
+            pond.addFile("{{ asset('public/storage/' . $image->image_path) }}").then(file => {
                 file.setMetadata('existing', true);
             });
         @endforeach
     @else
         @if($product && $product->image_path)
-            pond.addFile("{{ asset('storage/' . $product->image_path) }}").then(file => {
+            pond.addFile("{{ asset('public/storage/' . $product->image_path) }}").then(file => {
                 file.setMetadata('existing', true);
             });    
         @endif

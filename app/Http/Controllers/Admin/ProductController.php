@@ -14,7 +14,9 @@ use App\Models\SubCategory;
 class ProductController extends Controller
 {
     public function index(){
-        $products=Product::latest()->with("images")->get();
+        $products = Product::latest()
+            ->with(['images', 'subCategory.category'])
+            ->get();
 
         return view('admin.products.index')->with('products', $products);
     }

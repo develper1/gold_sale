@@ -301,8 +301,8 @@
 		</div>
 
 		<!-- Newsletter Popup -->
-		<div class="popup-shadow"></div>
-		<div class="newsletter-popup">
+		{{-- <div class="popup-shadow"></div> --}}
+		{{-- <div class="newsletter-popup">
 			<a href="#" class="newsletter-close"></a>
 			<div class="newsletter-container"> 
 				<div class="newsletter-img">
@@ -322,7 +322,7 @@
 					</form>
 				</div> 
 			</div>
-		</div>
+		</div> --}}
 
 		<!-- Page Loader -->
 		<div class="page-preloader">
@@ -338,6 +338,12 @@
 		<script src="{{ asset('assets/vendor/libs/bootstrap/js/bootstrap.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/slick/js/slick.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/mmenu/js/jquery.mmenu.all.min.js') }}"></script>
+
+		<script src="{{ asset('assets/vendor/libs/slider/js/tmpl.js') }}"></script>
+		<script src="{{ asset('assets/vendor/libs/slider/js/jquery.dependClass-0.1.js') }}"></script>
+		<script src="{{ asset('assets/vendor/libs/slider/js/draggable-0.1.js') }}"></script>
+		<script src="{{ asset('assets/vendor/libs/slider/js/jquery.slider.js') }}"></script>
+		<script src="{{ asset('assets/vendor/libs/elevatezoom/js/jquery.elevatezoom.js') }}"></script>
 		
 		<!-- Site Scripts -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>

@@ -1,4 +1,3 @@
-
 @extends('admin.layouts.app')
 
 @section('content')
@@ -26,9 +25,10 @@
             <table class="table">
                 <thead>
                     <tr>
-                       
                         <th>ID</th>
                         <th>Name</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
                         <th>Image</th>
                         <th>Active</th>
                         <th>Action</th>
@@ -41,7 +41,14 @@
                       <tr >
                           <td>{{ $data->id }}</td>
                           <td>{{ $data->name }}</td>
-                          <td><img src="{{ asset('storage/' . $data->image_path) }}" alt="Example" width="100">
+                          <td>{{ $data->subCategory->category->name ?? 'N/A' }}</td>
+                          <td>{{ $data->subCategory->name ?? 'N/A' }}</td>
+                          <td>
+                            @if($data->images->count() > 0)
+                                <img src="{{ asset('public/storage/' . $data->images->first()->image_path) }}" alt="{{ $data->name }}" width="100">
+                            @else
+                                No Image
+                            @endif
                           </td>
                           <td>
                             @if($data->is_active)
