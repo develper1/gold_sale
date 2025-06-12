@@ -270,12 +270,12 @@
 												<span>$100.00</span>
 											</div>
 										</div>
-										<div class="product-rating"> 
+										{{-- <div class="product-rating"> 
 											<div class="star-rating" role="img" aria-label="Rated 4.00 out of 5">
 												<span style="width:80%">Rated <strong class="rating">4.00</strong> out of 5 based on <span class="rating">1</span> customer rating</span>
 											</div> 
 											<a href="#" class="review-link">(<span class="count">1</span> customer review)</a> 
-										</div>
+										</div> --}}
 										<div class="description"> 
 											<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis…</p> 
 										</div>
@@ -288,7 +288,7 @@
 												</div> 
 												<button type="submit" class="single-add-to-cart-button button alt">Add to cart</button> 
 											</div> 
-											<button class="button quick-buy">Buy It Now</button>
+											{{-- <button class="button quick-buy">Buy It Now</button> --}}
 										</form> 
 									</div> 
 								</div> 
@@ -334,7 +334,7 @@
 
 		<!-- Dependency Scripts -->
 		<script src="{{ asset('assets/vendor/libs/popper/js/popper.min.js') }}"></script>
-		<script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script>
+		{{-- <script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script> --}}
 		<script src="{{ asset('assets/vendor/libs/bootstrap/js/bootstrap.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/slick/js/slick.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/mmenu/js/jquery.mmenu.all.min.js') }}"></script>
@@ -379,5 +379,11 @@
       				player.playVideo();
     			}
   			}
+			$(document).ready(function() {
+				// Load initial cart count
+				$.get('{{ route("cart.count") }}', function(response) {
+					$('.cart-count').text(response.count);
+				});
+			});
 		</script>
           @stack('scripts')

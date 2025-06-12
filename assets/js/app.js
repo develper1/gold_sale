@@ -368,45 +368,45 @@
                 _body.removeClass('not-scroll')
             }
         })
-        $('.mini-cart-item a.remove').on('click', function(e) {
-            e.preventDefault();
+        // $('.mini-cart-item a.remove').on('click', function(e) {
+        //     e.preventDefault();
 
-            var mini_cart = $(this).closest('.mini-cart');
+        //     var mini_cart = $(this).closest('.mini-cart');
 
-            // Remove item
-            $(this).closest('li').remove();
+        //     // Remove item
+        //     $(this).closest('li').remove();
            
-            // Update cart count
-            mini_cart.find('.cart-count').text(mini_cart.find('.cart-list-wrap .cart-list li').length);
+        //     // Update cart count
+        //     mini_cart.find('.cart-count').text(mini_cart.find('.cart-list-wrap .cart-list li').length);
 
-            // Show empty cart if has not any item
-            if (!mini_cart.find('.cart-list-wrap .cart-list li').length) {
-                mini_cart.find('.cart-empty-wrap').show();
-                mini_cart.find('.cart-list-wrap').hide();
-            }
-        })
+        //     // Show empty cart if has not any item
+        //     if (!mini_cart.find('.cart-list-wrap .cart-list li').length) {
+        //         mini_cart.find('.cart-empty-wrap').show();
+        //         mini_cart.find('.cart-list-wrap').hide();
+        //     }
+        // })
         $('.dropdown-menu.cart-popup').on('click.bs.dropdown', function (e) {
             e.stopPropagation();       
         });
 
         // Add To Cart button
-        $('.btn-add-to-cart a').on('click', function(e) {
-            e.preventDefault();
+        // $('.btn-add-to-cart a').on('click', function(e) {
+        //     e.preventDefault();
 
-            var btn_atc = $(this);
-            btn_atc.addClass('loading');
-            setTimeout(function(){ 
-                btn_atc.removeClass('loading');
-                btn_atc.addClass('added');
-                btn_atc.closest('div').append('<a href="shop-cart.html" class="added-to-cart product-btn" title="View cart" tabindex="0">View cart</a>'); 
+        //     var btn_atc = $(this);
+        //     btn_atc.addClass('loading');
+        //     setTimeout(function(){ 
+        //         btn_atc.removeClass('loading');
+        //         btn_atc.addClass('added');
+        //         btn_atc.closest('div').append('<a href="shop-cart.html" class="added-to-cart product-btn" title="View cart" tabindex="0">View cart</a>'); 
                 
-                // Display message
-                $('body').append('<div class="cart-product-added"><div class="added-message">Product was added to cart successfully!</div>');
-                setTimeout(function() {
-                    $('.cart-product-added').remove();
-                }, 2000)
-            }, 1000);
-        })
+        //         // Display message
+        //         $('body').append('<div class="cart-product-added"><div class="added-message">Product was added to cart successfully!</div>');
+        //         setTimeout(function() {
+        //             $('.cart-product-added').remove();
+        //         }, 2000)
+        //     }, 1000);
+        // })
         
         // Wishlist button
         $('.btn-wishlist .product-btn').on('click', function(e) {
@@ -500,16 +500,16 @@
                 $('.quickview-popup').removeClass('active');
             }
         })
-        $('.quantity .plus').on('click', function(e) {
-            var qty = parseInt($(this).closest('.quantity').find('.qty').val());
-            $(this).closest('.quantity').find('.qty').val(qty + 1);
-        })
-        $('.quantity .minus').on('click', function(e) {
-            var qty = parseInt($(this).closest('.quantity').find('.qty').val());
-            if (qty > 1) {
-                $(this).closest('.quantity').find('.qty').val(qty - 1);
-            }
-        })
+        // $('.quantity .plus').on('click', function(e) {
+        //     var qty = parseInt($(this).closest('.quantity').find('.qty').val());
+        //     $(this).closest('.quantity').find('.qty').val(qty + 1);
+        // })
+        // $('.quantity .minus').on('click', function(e) {
+        //     var qty = parseInt($(this).closest('.quantity').find('.qty').val());
+        //     if (qty > 1) {
+        //         $(this).closest('.quantity').find('.qty').val(qty - 1);
+        //     }
+        // })
 
         // Newsletter popup
         $('.newsletter-popup').addClass('active');
@@ -594,23 +594,23 @@
         }
 
         // Shop cart remove item
-        $('.shop-cart-empty').hide();
-        $('.shop-cart .product-remove a').on('click', function(e) {
-            e.preventDefault();
+        // $('.shop-cart-empty').hide();
+        // $('.shop-cart .product-remove a').on('click', function(e) {
+        //     e.preventDefault();
 
-            // Remove item
-            $(this).closest('tr').remove();
+        //     // Remove item
+        //     $(this).closest('tr').remove();
            
-            // Update cart total
-            $('.shop-cart .cart-subtotal .price').text($('.shop-cart .product-subtotal .price').text());
-            $('.shop-cart .order-total .price').text($('.shop-cart .product-subtotal .price').text());
+        //     // Update cart total
+        //     $('.shop-cart .cart-subtotal .price').text($('.shop-cart .product-subtotal .price').text());
+        //     $('.shop-cart .order-total .price').text($('.shop-cart .product-subtotal .price').text());
 
-            // Show empty cart if has not any item
-            if ($('.shop-cart .cart-items tr').length == 2) {
-                $('.shop-cart').hide();
-                $('.shop-cart-empty').show();
-            }
-        });
+        //     // Show empty cart if has not any item
+        //     if ($('.shop-cart .cart-items tr').length == 2) {
+        //         $('.shop-cart').hide();
+        //         $('.shop-cart-empty').show();
+        //     }
+        // });
 
         // Custom radio
         $('.custom-radio li .payment-box').hide();

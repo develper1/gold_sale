@@ -12,6 +12,17 @@ class Product extends Model
 
     protected $guarded=[];
 
+    protected $fillable = [
+        'name',
+        'slug',
+        'description',
+        'price',
+        'image',
+        'category_id',
+        'subcategory_id',
+        'status'
+    ];
+
     public function images()
     {
         return $this->hasMany(ProductImage::class);
@@ -20,5 +31,10 @@ class Product extends Model
     public function subCategory()
     {
         return $this->belongsTo(SubCategory::class, 'sub_category_id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

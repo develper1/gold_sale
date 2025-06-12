@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+
 <div id="title" class="page-title">
     <div class="section-container">
         <div class="content-title-heading">
@@ -118,11 +120,13 @@
                                                                 </div>
                                                             @endif
                                                             <div class="product-button">
-                                                                <div class="btn-add-to-cart" data-title="Add to cart">
-                                                                    <a rel="nofollow" href="#" class="product-btn button">Add to cart</a>
+                                                                <div class="btn-add-to-cart" data-title="Add to cart" >
+                                                                    <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
                                                                 </div>
                                                                 <span class="product-quickview" data-title="Quick View">
-                                                                    <a href="#" class="quickview quickview-button">Quick View <i class="icon-search"></i></a>
+                                                                    <a href="#" class="quickview quickview-button" data-product-id="{{ $product->id }}">
+                                                                        Quick View <i class="icon-search"></i>
+                                                                    </a>
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -159,18 +163,27 @@
                                                                     <img width="600" height="600" 
                                                                          src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="post-image" alt="{{ $product->name }}">
-                                                                    <img width="600" height="600" 
-                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
-                                                                         class="hover-image back" alt="{{ $product->name }}">
+
+                                                                    @if(isset($product->images[1]))
+                                                                         <img width="600" height="600" 
+                                                                              src="{{ asset('storage/app/public/' . $product->images[1]->image_path) }}" 
+                                                                              class="hover-image back" alt="{{ $product->name }}">
+                                                                    @else 
+                                                                        <img width="600" height="600" 
+                                                                        src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
+                                                                        class="hover-image back" alt="{{ $product->name }}">
+                                                                     @endif
                                                                 </a>
                                                             </div>
                                                         @endif
                                                         <div class="product-button">
-                                                            <div class="btn-add-to-cart" data-title="Add to cart">
-                                                                <a rel="nofollow" href="#" class="product-btn button">Add to cart</a>
+                                                            <div class="btn-add-to-cart" data-title="Add to cart" >
+                                                                <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
                                                             </div>
                                                             <span class="product-quickview" data-title="Quick View">
-                                                                <a href="#" class="quickview quickview-button">Quick View <i class="icon-search"></i></a>
+                                                                <a href="#" class="quickview quickview-button" data-product-id="{{ $product->id }}">
+                                                                    Quick View <i class="icon-search"></i>
+                                                                </a>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -220,14 +233,22 @@
                                                                         <img width="600" height="600" 
                                                                              src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="post-image" alt="{{ $product->name }}">
-                                                                        <img width="600" height="600" 
-                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
-                                                                             class="hover-image back" alt="{{ $product->name }}">
+                                                                        @if(isset($product->images[1]))
+                                                                             <img width="600" height="600" 
+                                                                                  src="{{ asset('storage/app/public/' . $product->images[1]->image_path) }}" 
+                                                                                  class="hover-image back" alt="{{ $product->name }}">
+                                                                        @else 
+                                                                            <img width="600" height="600" 
+                                                                            src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
+                                                                            class="hover-image back" alt="{{ $product->name }}">
+                                                                         @endif
                                                                     </a>
                                                                 </div>
                                                             @endif
                                                             <span class="product-quickview" data-title="Quick View">
-                                                                <a href="#" class="quickview quickview-button">Quick View <i class="icon-search"></i></a>
+                                                                <a href="#" class="quickview quickview-button" data-product-id="{{ $product->id }}">
+                                                                    Quick View <i class="icon-search"></i>
+                                                                </a>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -243,8 +264,8 @@
                                                             </span>
                                                             
                                                             <div class="product-button">
-                                                                <div class="btn-add-to-cart" data-title="Add to cart">
-                                                                    <a rel="nofollow" href="#" class="product-btn button">Add to cart</a>
+                                                                <div class="btn-add-to-cart" data-title="Add to cart" >
+                                                                    <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
                                                                 </div>
                                                             </div>
                                                             <div class="product-description">{!! $product->description !!}</div>			
@@ -266,14 +287,22 @@
                                                                     <img width="600" height="600" 
                                                                          src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="post-image" alt="{{ $product->name }}">
-                                                                    <img width="600" height="600" 
-                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
-                                                                         class="hover-image back" alt="{{ $product->name }}">
+                                                                    @if(isset($product->images[1]))
+                                                                         <img width="600" height="600" 
+                                                                              src="{{ asset('storage/app/public/' . $product->images[1]->image_path) }}" 
+                                                                              class="hover-image back" alt="{{ $product->name }}">
+                                                                    @else 
+                                                                        <img width="600" height="600" 
+                                                                        src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
+                                                                        class="hover-image back" alt="{{ $product->name }}">
+                                                                     @endif
                                                                 </a>
                                                             </div>
                                                         @endif
                                                         <span class="product-quickview" data-title="Quick View">
-                                                            <a href="#" class="quickview quickview-button">Quick View <i class="icon-search"></i></a>
+                                                            <a href="#" class="quickview quickview-button" data-product-id="{{ $product->id }}">
+                                                                Quick View <i class="icon-search"></i>
+                                                            </a>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -289,8 +318,8 @@
                                                         </span>
                                                         
                                                         <div class="product-button">
-                                                            <div class="btn-add-to-cart" data-title="Add to cart">
-                                                                <a rel="nofollow" href="#" class="product-btn button">Add to cart</a>
+                                                            <div class="btn-add-to-cart" data-title="Add to cart" >
+                                                                <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
                                                             </div>
                                                         </div>
                                                         <div class="product-description">{!! $product->description !!}</div>			
@@ -312,4 +341,198 @@
         </div>
     </div>
 </div>
+
+
+<script>
+$(document).ready(function() {
+    // Add to cart from thumbs page
+    $('.btn-add-to-cart a').on('click', function(e) {
+        e.preventDefault();
+        var btn_atc = $(this);
+        var productId = btn_atc.data('product-id');
+        btn_atc.addClass('loading');
+        
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                quantity: 1,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    setTimeout(function(){ 
+                        // Update cart count in header
+                        $('.cart-count').text(response.cart_count);
+                        btn_atc.removeClass('loading');
+                        btn_atc.addClass('added');
+                        
+                        // Display message
+                        $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
+                        setTimeout(function() {
+                            $('.cart-product-added').remove();
+                        }, 2000)
+                    }, 1000);
+                }
+            },
+            error: function(xhr) {
+                alert('Error adding product to cart');
+                btn_atc.removeClass('loading');
+            }
+        });
+    });
+
+    // Quick view functionality
+    $('.quickview-button').on('click', function(e) {
+        e.preventDefault();
+        var productId = $(this).data('product-id');
+        
+        if (!productId) {
+            console.error('Product ID not found');
+            alert('Error: Product ID not found');
+            return;
+        }
+
+        console.log('Loading product:', productId);
+        
+        // Load product data
+        $.ajax({
+            url: "{{ route('shop.quick-view', ['id' => ':id']) }}".replace(':id', productId),
+            method: 'GET',
+            success: function(response) {
+                console.log('Quick view response:', response);
+                if (response.success) {
+                    var product = response.product;
+                    
+                    // Update quick view content
+                    var imageSlider = $('.quickview-popup .slick-sliders');
+                    
+                    // Destroy existing slider if it exists
+                    if (imageSlider.hasClass('slick-initialized')) {
+                        imageSlider.slick('unslick');
+                    }
+                    
+                    imageSlider.empty();
+                    
+                    // Add all product images to slider
+                    if (product.images && product.images.length > 0) {
+                        product.images.forEach(function(image) {
+                            imageSlider.append(`
+                                <div class="img-thumbnail slick-slide"> 
+                                    <a href="{{ asset('storage/app/public/') }}/${image.image_path}" class="image-scroll" title="${product.name}">
+                                        <img width="900" height="900" src="{{ asset('storage/app/public/') }}/${image.image_path}" alt="${product.name}">
+                                    </a> 
+                                </div>
+                            `);
+                        });
+                    }
+                    
+                    // Update product details
+                    $('.quickview-popup .product-title').text(product.name);
+                    const price = parseFloat(product.price);
+                    $('.quickview-popup .price').html(`<span>$${price.toFixed(2)}</span>`);
+                    $('.quickview-popup .description p').html(product.description);
+                    $('.quickview-popup .single-add-to-cart-button').data('product-id', product.id);
+                    
+                    // Initialize slick slider
+                    imageSlider.slick({
+                        dots: true,
+                        infinite: true,
+                        speed: 300,
+                        slidesToShow: 1,
+                        adaptiveHeight: true,
+                        arrows: true,
+                        autoplay: false,
+                        fade: true,
+                        cssEase: 'linear'
+                    });
+                    
+                    // Show quick view
+                    $('.quickview-popup').addClass('show');
+                } else {
+                    console.error('Invalid response format:', response);
+                    alert('Error: Invalid response from server');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Quick view error:', {
+                    status: status,
+                    error: error,
+                    response: xhr.responseText
+                });
+                alert('Error loading product details. Please try again.');
+            }
+        });
+    });
+
+    // Close quick view
+    $('.quickview-close').on('click', function(e) {
+        e.preventDefault();
+        // Destroy slider before closing
+        var imageSlider = $('.quickview-popup .slick-sliders');
+        if (imageSlider.hasClass('slick-initialized')) {
+            imageSlider.slick('unslick');
+        }
+        $('.quickview-popup').removeClass('show');
+    });
+
+    // Quick view quantity buttons
+    $('.quickview-popup .plus').click(function() {
+        var input = $(this).siblings('.qty');
+        var value = parseInt(input.val());
+        input.val(value + 1);
+    });
+
+    $('.quickview-popup .minus').click(function() {
+        var input = $(this).siblings('.qty');
+        var value = parseInt(input.val());
+        if (value > 1) {
+            input.val(value - 1);
+        }
+    });
+
+    // Add to cart from quick view
+    $('.quickview-popup .single-add-to-cart-button').on('click', function(e) {
+        e.preventDefault();
+        var btn_atc = $(this);
+        var productId = btn_atc.data('product-id');
+        var quantity = $('.quickview-popup .qty').val();
+        btn_atc.addClass('loading');
+        
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                quantity: quantity,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    setTimeout(function(){ 
+                        // Update cart count in header
+                        $('.cart-count').text(response.cart_count);
+                        btn_atc.removeClass('loading');
+                        btn_atc.addClass('added');
+                        
+                        // Display message
+                        $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
+                        setTimeout(function() {
+                            $('.cart-product-added').remove();
+                        }, 2000)
+                        
+                        // Close quick view
+                        $('.quickview-popup').removeClass('show');
+                    }, 1000);
+                }
+            },
+            error: function(xhr) {
+                alert('Error adding product to cart');
+                btn_atc.removeClass('loading');
+            }
+        });
+    });
+});
+</script>
 @endsection

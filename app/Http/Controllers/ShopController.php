@@ -118,4 +118,141 @@ class ShopController extends Controller
         
         return view('product-detail', compact('categories', 'product'));
     }
+
+    public function addToCart(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity', 1);
+        
+        $product = Product::with('images')->findOrFail($productId);
+        
+        $cart = session()->get('cart', []);
+        
+        if(isset($cart[$productId])) {
+            $cart[$productId]['quantity'] += $quantity;
+        } else {
+            $cart[$productId] = [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->fixed_price,
+                'quantity' => $quantity,
+                'image' => $product->images->first() ? $product->images->first()->image_path : null,
+                'slug' => $product->slug
+            ];
+        }
+        
+        session()->put('cart', $cart);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Product added to cart successfully',
+            'cart_count' => count($cart)
+        ]);
+    }
+
+    public function viewCart()
+    {
+        $cart = session()->get('cart', []);
+        $total = 0;
+        
+        foreach($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+        
+        return view('cart', compact('cart', 'total'));
+    }
+
+    public function updateCart(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity');
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$productId])) {
+            $cart[$productId]['quantity'] = $quantity;
+            session()->put('cart', $cart);
+            
+            // Calculate new totals
+            $total = 0;
+            foreach($cart as $item) {
+                $total += $item['price'] * $item['quantity'];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cart updated successfully',
+                'cart_count' => count($cart),
+                'subtotal' => $total,
+                'total' => $total
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Product not found in cart'
+        ], 404);
+    }
+
+    public function removeFromCart(Request $request)
+    {
+        $productId = $request->input('product_id');
+        $cart = session()->get('cart', []);
+
+        if(isset($cart[$productId])) {
+            unset($cart[$productId]);
+            session()->put('cart', $cart);
+            
+            // Calculate new totals
+            $total = 0;
+            foreach($cart as $item) {
+                $total += $item['price'] * $item['quantity'];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Product removed from cart',
+                'cart_count' => count($cart),
+                'subtotal' => $total,
+                'total' => $total
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Product not found in cart'
+        ], 404);
+    }
+
+    public function getCartCount()
+    {
+        $cart = session()->get('cart', []);
+        return response()->json(['count' => count($cart)]);
+    }
+
+    public function quickView($id)
+    {
+        try {
+            $product = Product::with(['category', 'subCategory'])->findOrFail($id);
+            
+            return response()->json([
+                'success' => true,
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'price' => $product->fixed_price,
+                    'images' => $product->images ? $product->images : null,
+                    'description' => $product->description,
+                    'category' => $product->category ? $product->category->name : '',
+                    'subcategory' => $product->subCategory ? $product->subCategory->name : ''
+                ]
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Quick view error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading product details'
+            ], 500);
+        }
+    }
 } 

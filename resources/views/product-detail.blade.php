@@ -69,16 +69,16 @@
                                 <div class="add-to-cart-wrap">
                                     <div class="quantity">
                                         <button type="button" class="plus">+</button>
-                                        <input type="number" class="qty" step="1" min="0" max="" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off">
+                                        <input type="number" class="qty" step="1" min="1" max="" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off">
                                         <button type="button" class="minus">-</button>	
                                     </div>
                                     <div class="btn-add-to-cart">
-                                        <a href="#" tabindex="0">Add to cart</a>
+                                        <a href="#" class="add-to-cart-btn" data-product-id="{{ $product->id }}" tabindex="0">Add to cart</a>
                                     </div>
                                 </div>
-                                <div class="btn-quick-buy" data-title="Wishlist">
+                                {{-- <div class="btn-quick-buy" data-title="Wishlist">
                                     <button class="product-btn">Buy It Now</button>
-                                </div>
+                                </div> --}}
                                 {{-- <div class="btn-wishlist" data-title="Wishlist">
                                     <button class="product-btn">Add to wishlist</button>
                                 </div>
@@ -90,11 +90,11 @@
                                 <span class="posted-in">Category: <a href="{{ route('shop.category', $product->subCategory->category->slug) }}" rel="tag">{{ $product->subCategory->category->name }}</a></span>
                                 <span class="tagged-as">Subcategory: <a href="{{ route('shop.subcategory', $product->subCategory->slug) }}" rel="tag">{{ $product->subCategory->name }}</a></span>
                             </div>
-                            <div class="social-share">
+                            {{-- <div class="social-share">
                                 <a href="#" title="Facebook" class="share-facebook" target="_blank"><i class="fa fa-facebook"></i>Facebook</a>
                                 <a href="#" title="Twitter" class="share-twitter"><i class="fa fa-twitter"></i>Twitter</a>
                                 <a href="#" title="Pinterest" class="share-pinterest"><i class="fa fa-pinterest"></i>Pinterest</a>
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                 </div>
@@ -182,3 +182,64 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Quantity buttons
+    $('.plus').click(function() {
+        var input = $(this).siblings('.qty');
+        var value = parseInt(input.val());
+        input.val(value + 1);
+    });
+
+    $('.minus').click(function() {
+        var input = $(this).siblings('.qty');
+        var value = parseInt(input.val());
+        if (value > 1) {
+            input.val(value - 1);
+        }
+    });
+
+    // Add to cart
+    $('.btn-add-to-cart a').on('click', function(e) {
+        e.preventDefault();
+        var btn_atc = $(this);
+        var productId = btn_atc.data('product-id');
+        var quantity = $('.qty').val();
+        btn_atc.addClass('loading');
+        
+        $.ajax({
+            url: '{{ route("cart.add") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                quantity: quantity,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    setTimeout(function(){ 
+                        // Update cart count in header
+                        $('.cart-count').text(response.cart_count);
+                        btn_atc.removeClass('loading');
+                        btn_atc.addClass('added');
+                        btn_atc.closest('div').append('<a href="{{ route("cart.view") }}" class="added-to-cart product-btn" title="View cart" tabindex="0">View cart</a>'); 
+                        
+                        // Display message
+                        $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
+                        setTimeout(function() {
+                            $('.cart-product-added').remove();
+                        }, 2000)
+                    }, 1000);
+                }
+            },
+            error: function(xhr) {
+                alert('Error adding product to cart');
+                btn_atc.removeClass('loading');
+            }
+        });
+    });
+});
+</script>
+@endpush

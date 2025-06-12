@@ -20,46 +20,60 @@
                             <div class="dropdown mini-cart top-cart">
                                 <div class="remove-cart-shadow"></div>
                                 <a class="dropdown-toggle cart-icon" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <div class="icons-cart"><i class="icon-large-paper-bag"></i><span class="cart-count">2</span></div>
+                                    <div class="icons-cart"><i class="icon-large-paper-bag"></i><span class="cart-count">0</span></div>
                                 </a>
                                 <div class="dropdown-menu cart-popup">
                                     <div class="cart-empty-wrap" style="display: none;">
                                         <ul class="cart-list">
                                             <li class="empty">
                                                 <span>No products in the cart.</span>
-                                                <a class="go-shop" href="shop-grid-left.html">GO TO SHOP<i aria-hidden="true" class="arrow_right"></i></a>
+                                                <a class="go-shop" href="{{ route('shop.index') }}">GO TO SHOP<i aria-hidden="true" class="arrow_right"></i></a>
                                             </li>
                                         </ul>
                                     </div>
                                     <div class="cart-list-wrap">
-                                        <ul class="cart-list ">
-                                            <li class="mini-cart-item">
-                                                <a href="#" class="remove" title="Remove this item"><i class="icon_close"></i></a>
-                                                <a href="shop-details.html" class="product-image"><img width="600" height="600" src="{{ asset('assets/media/product/3.jpg') }}" alt=""></a>
-                                                <a href="shop-details.html" class="product-name">Twin Hoops</a>		
-                                                <div class="quantity">Qty: 1</div>
-                                                <div class="price">$150.00</div>
-                                            </li>
-                                            <li class="mini-cart-item">
-                                                <a href="#" class="remove" title="Remove this item"><i class="icon_close"></i></a>													
-                                                <a href="shop-details.html" class="product-image"><img width="600" height="600" src="{{ asset('assets/media/product/1.jpg') }}" alt=""></a>
-                                                <a href="shop-details.html" class="product-name">Medium Flat Hoops</a>
-                                                <div class="quantity">Qty: 1</div>
-                                                <div class="price">$100.00</div>						
-                                            </li>
+                                        <ul class="cart-list">
+                                            @php
+                                                $cart = session()->get('cart', []);
+                                                $total = 0;
+                                                $hasItems = !empty($cart);
+                                            @endphp
+                                            @if($hasItems)
+                                                @foreach($cart as $item)
+                                                    <li class="mini-cart-item">
+                                                        <a href="#" class="remove" title="Remove this item" data-product-id="{{ $item['id'] }}"><i class="icon_close"></i></a>
+                                                        <a href="{{ route('shop.product', $item['slug']) }}" class="product-image">
+                                                            <img width="600" height="600" src="{{ asset('storage/app/public/' . $item['image']) }}" alt="{{ $item['name'] }}">
+                                                        </a>
+                                                        <a href="{{ route('shop.product', $item['slug']) }}" class="product-name">{{ $item['name'] }}</a>		
+                                                        <div class="quantity">Qty: {{ $item['quantity'] }}</div>
+                                                        <div class="price">${{ number_format($item['price'], 2) }}</div>
+                                                        @php
+                                                            $total += $item['price'] * $item['quantity'];
+                                                        @endphp
+                                                    </li>
+                                                @endforeach
+                                            @else
+                                                <li class="empty">
+                                                    <span>No products in the cart.</span>
+                                                    <a class="go-shop" href="{{ route('shop.index') }}">GO TO SHOP<i aria-hidden="true" class="arrow_right"></i></a>
+                                                </li>
+                                            @endif
                                         </ul>
-                                        <div class="total-cart">
-                                            <div class="title-total">Total: </div>
-                                            <div class="total-price"><span>$250.00</span></div>
-                                        </div>
-                                        <div class="free-ship">
-                                            <div class="title-ship">Buy <strong>$400</strong> more to enjoy <strong>FREE Shipping</strong></div>
-                                            <div class="total-percent"><div class="percent" style="width:20%"></div></div>
-                                        </div>
-                                        <div class="buttons">
-                                            <a href="shop-cart.html" class="button btn view-cart btn-primary">View cart</a>
-                                            <a href="shop-checkout.html" class="button btn checkout btn-default">Check out</a>
-                                        </div>
+                                        @if($hasItems)
+                                            <div class="total-cart">
+                                                <div class="title-total">Total: </div>
+                                                <div class="total-price"><span>${{ number_format($total, 2) }}</span></div>
+                                            </div>
+                                            {{-- <div class="free-ship">
+                                                <div class="title-ship">Buy <strong>$400</strong> more to enjoy <strong>FREE Shipping</strong></div>
+                                                <div class="total-percent"><div class="percent" style="width:{{ min(($total/400) * 100, 100) }}%"></div></div>
+                                            </div> --}}
+                                            <div class="buttons">
+                                                <a href="{{ route('cart.view') }}" class="button btn view-cart btn-primary">View cart</a>
+                                                <a href="#" class="button btn checkout btn-default">Check out</a>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -235,46 +249,60 @@
                                     <div class="dropdown mini-cart top-cart">
                                         <div class="remove-cart-shadow"></div>
                                         <a class="dropdown-toggle cart-icon" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <div class="icons-cart"><i class="icon-large-paper-bag"></i><span class="cart-count">2</span></div>
+                                            <div class="icons-cart"><i class="icon-large-paper-bag"></i><span class="cart-count">0</span></div>
                                         </a>
                                         <div class="dropdown-menu cart-popup">
                                             <div class="cart-empty-wrap" style="display: none;">
                                                 <ul class="cart-list">
                                                     <li class="empty">
                                                         <span>No products in the cart.</span>
-                                                        <a class="go-shop" href="shop-grid-left.html">GO TO SHOP<i aria-hidden="true" class="arrow_right"></i></a>
+                                                        <a class="go-shop" href="{{ route('shop.index') }}">GO TO SHOP<i aria-hidden="true" class="arrow_right"></i></a>
                                                     </li>
                                                 </ul>
                                             </div>
                                             <div class="cart-list-wrap">
-                                                <ul class="cart-list ">
-                                                    <li class="mini-cart-item">
-                                                        <a href="#" class="remove" title="Remove this item"><i class="icon_close"></i></a>
-                                                        <a href="shop-details.html" class="product-image"><img width="600" height="600" src="{{ asset('assets/media/product/3.jpg') }}" alt=""></a>
-                                                        <a href="shop-details.html" class="product-name">Twin Hoops</a>		
-                                                        <div class="quantity">Qty: 1</div>
-                                                        <div class="price">$150.00</div>
-                                                    </li>
-                                                    <li class="mini-cart-item">
-                                                        <a href="#" class="remove" title="Remove this item"><i class="icon_close"></i></a>													
-                                                        <a href="shop-details.html" class="product-image"><img width="600" height="600" src="{{ asset('assets/media/product/1.jpg') }}" alt=""></a>
-                                                        <a href="shop-details.html" class="product-name">Medium Flat Hoops</a>
-                                                        <div class="quantity">Qty: 1</div>
-                                                        <div class="price">$100.00</div>						
-                                                    </li>
+                                                <ul class="cart-list">
+                                                    @php
+                                                        $cart = session()->get('cart', []);
+                                                        $total = 0;
+                                                        $hasItems = !empty($cart);
+                                                    @endphp
+                                                    @if($hasItems)
+                                                        @foreach($cart as $item)
+                                                            <li class="mini-cart-item">
+                                                                <a href="#" class="remove" title="Remove this item" data-product-id="{{ $item['id'] }}"><i class="icon_close"></i></a>
+                                                                <a href="{{ route('shop.product', $item['slug']) }}" class="product-image">
+                                                                    <img width="600" height="600" src="{{ asset('storage/app/public/' . $item['image']) }}" alt="{{ $item['name'] }}">
+                                                                </a>
+                                                                <a href="{{ route('shop.product', $item['slug']) }}" class="product-name">{{ $item['name'] }}</a>		
+                                                                <div class="quantity">Qty: {{ $item['quantity'] }}</div>
+                                                                <div class="price">${{ number_format($item['price'], 2) }}</div>
+                                                                @php
+                                                                    $total += $item['price'] * $item['quantity'];
+                                                                @endphp
+                                                            </li>
+                                                        @endforeach
+                                                    @else
+                                                        <li class="empty">
+                                                            <span>No products in the cart.</span>
+                                                            <a class="go-shop" href="{{ route('shop.index') }}">GO TO SHOP<i aria-hidden="true" class="arrow_right"></i></a>
+                                                        </li>
+                                                    @endif
                                                 </ul>
-                                                <div class="total-cart">
-                                                    <div class="title-total">Total: </div>
-                                                    <div class="total-price"><span>$250.00</span></div>
-                                                </div>
-                                                <div class="free-ship">
-                                                    <div class="title-ship">Buy <strong>$400</strong> more to enjoy <strong>FREE Shipping</strong></div>
-                                                    <div class="total-percent"><div class="percent" style="width:20%"></div></div>
-                                                </div>
-                                                <div class="buttons">
-                                                    <a href="shop-cart.html" class="button btn view-cart btn-primary">View cart</a>
-                                                    <a href="shop-checkout.html" class="button btn checkout btn-default">Check out</a>
-                                                </div>
+                                                @if($hasItems)
+                                                    <div class="total-cart">
+                                                        <div class="title-total">Total: </div>
+                                                        <div class="total-price"><span>${{ number_format($total, 2) }}</span></div>
+                                                    </div>
+                                                    {{-- <div class="free-ship">
+                                                        <div class="title-ship">Buy <strong>$400</strong> more to enjoy <strong>FREE Shipping</strong></div>
+                                                        <div class="total-percent"><div class="percent" style="width:{{ min(($total/400) * 100, 100) }}%"></div></div>
+                                                    </div> --}}
+                                                    <div class="buttons">
+                                                        <a href="{{ route('cart.view') }}" class="button btn view-cart btn-primary">View cart</a>
+                                                        <a href="#" class="button btn checkout btn-default">Check out</a>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -287,3 +315,66 @@
         </div>
     </div>
 </header>
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Load initial cart count
+    $.get('{{ route("cart.count") }}', function(response) {
+        $('.cart-count').text(response.count);
+    });
+
+    // Handle cart popup
+    $('.dropdown-toggle.cart-icon').on('click', function(e) {
+        e.preventDefault();
+        var cartPopup = $(this).next('.cart-popup');
+        cartPopup.toggleClass('show');
+    });
+
+    // Close cart popup when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.dropdown.mini-cart').length) {
+            $('.cart-popup').removeClass('show');
+        }
+    });
+
+    // Remove item from cart popup
+    $('.mini-cart-item .remove').on('click', function(e) {
+        e.preventDefault();
+        var btn = $(this);
+        var productId = btn.data('product-id');
+        
+        $.ajax({
+            url: '{{ route("cart.remove") }}',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    btn.closest('li').remove();
+                    $('.cart-count').text(response.cart_count);
+                    
+                    // Update total
+                    $('.total-price span').text('$' + response.total.toFixed(2));
+                    
+                    // Update free shipping progress
+                    var percent = Math.min((response.total/400) * 100, 100);
+                    $('.percent').css('width', percent + '%');
+                    
+                    // Show empty cart if no items left
+                    if (response.cart_count === 0) {
+                        $('.cart-empty-wrap').show();
+                        $('.cart-list-wrap').hide();
+                    }
+                }
+            },
+            error: function(xhr) {
+                alert('Error removing item from cart');
+            }
+        });
+    });
+});
+</script>
+@endpush

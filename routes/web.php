@@ -113,4 +113,12 @@ Route::get('/product/{slug}', [ShopController::class, 'product'])->name('shop.pr
 Route::get('/thumbs', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/thumbs/category/{slug}', [ShopController::class, 'category'])->name('shop.category');
 Route::get('/thumbs/{slug}', [ShopController::class, 'subcategory'])->name('shop.subcategory');
+Route::get('/shop/product/{id}/quick-view', [ShopController::class, 'quickView'])->name('shop.quick-view');
+
+// Cart Routes
+Route::post('/cart/add', [ShopController::class, 'addToCart'])->name('cart.add');
+Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
+Route::post('/cart/update', [ShopController::class, 'updateCart'])->name('cart.update');
+Route::post('/cart/remove', [ShopController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('/cart/count', [ShopController::class, 'getCartCount'])->name('cart.count');
 

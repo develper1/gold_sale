@@ -26,5 +26,12 @@
     <!-- Google Web Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    
+    <!-- jQuery and other scripts -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{--<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script> --}}
+    {{-- <script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script> --}}
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+    
     @stack('styles')
 </head>
