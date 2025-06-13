@@ -29,7 +29,7 @@ class ShopController extends Controller
         }
         
         $products = Product::where('is_active', true)
-                         ->with('images')
+                         ->with(['images', 'subCategory'])
                          ->get();
         return view('thumbs', compact('categories', 'products'));
     }
@@ -134,7 +134,8 @@ class ShopController extends Controller
             $cart[$productId] = [
                 'id' => $product->id,
                 'name' => $product->name,
-                'price' => $product->fixed_price,
+                'price' => $product->current_price,
+                'pricing_type' => $product->pricing_type,
                 'quantity' => $quantity,
                 'image' => $product->images->first() ? $product->images->first()->image_path : null,
                 'slug' => $product->slug
@@ -226,33 +227,28 @@ class ShopController extends Controller
     public function getCartCount()
     {
         $cart = session()->get('cart', []);
-        return response()->json(['count' => count($cart)]);
+        return response()->json([
+            'count' => count($cart)
+        ]);
     }
 
     public function quickView($id)
     {
-        try {
-            $product = Product::with(['category', 'subCategory'])->findOrFail($id);
-            
-            return response()->json([
-                'success' => true,
-                'product' => [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'slug' => $product->slug,
-                    'price' => $product->fixed_price,
-                    'images' => $product->images ? $product->images : null,
-                    'description' => $product->description,
-                    'category' => $product->category ? $product->category->name : '',
-                    'subcategory' => $product->subCategory ? $product->subCategory->name : ''
-                ]
-            ]);
-        } catch (\Exception $e) {
-            \Log::error('Quick view error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error loading product details'
-            ], 500);
-        }
+        $product = Product::with(['images', 'subCategory'])
+                         ->findOrFail($id);
+        
+        return response()->json([
+            'success' => true,
+            'product' => $product
+        ]);
+    }
+
+    public function clearCart()
+    {
+        session()->forget('cart');
+        return response()->json([
+            'success' => true,
+            'message' => 'Cart cleared successfully'
+        ]);
     }
 } 

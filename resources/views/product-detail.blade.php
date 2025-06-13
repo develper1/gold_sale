@@ -57,9 +57,9 @@
                             <h1 class="title">{{ $product->name }}</h1>
                             <span class="price">
                                 @if($product->pricing_type === 'fixed')
-                                    ${{ number_format($product->fixed_price, 2) }}
+                                    {{ $product->formatted_price }}
                                 @else
-                                    Starting from ${{ number_format($product->fixed_price, 2) }}
+                                    Starting from {{ $product->formatted_price }}
                                 @endif
                             </span>
                             <div class="description">

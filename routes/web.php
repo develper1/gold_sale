@@ -128,8 +128,9 @@ Route::get('/shop/product/{id}/quick-view', [ShopController::class, 'quickView']
 
 // Cart Routes
 Route::post('/cart/add', [ShopController::class, 'addToCart'])->name('cart.add');
-Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
 Route::post('/cart/update', [ShopController::class, 'updateCart'])->name('cart.update');
 Route::post('/cart/remove', [ShopController::class, 'removeFromCart'])->name('cart.remove');
+Route::get('/cart/clear', [ShopController::class, 'clearCart'])->name('cart.clear');
 Route::get('/cart/count', [ShopController::class, 'getCartCount'])->name('cart.count');
+Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
 

@@ -5584,11 +5584,6 @@ body.home.title-6 .block-newsletter .newsletter-title {
   -webkit-transition: transform .3s ease;
   transition: transform .3s ease;
 }
-.block-instagram a.instagram img {
-  -webkit-transition: transform .3s ease;
-  transition: transform .3s ease;
-}
-
 .block-instagram a.instagram:hover img {
   -webkit-transform: scale(1.2);
   transform: scale(1.2);

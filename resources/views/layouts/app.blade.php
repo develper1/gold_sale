@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-	@include('layouts.header');
+	@include('layouts.header')
 	
 	<body class="home home-4 title-4">
 		<div id="page" class="hfeed page-wrapper">
-			@include('layouts.nav');
+			@include('layouts.nav')
 
 			<div id="site-main" class="site-main">
 				<div id="main-content" class="main-content">
@@ -155,6 +155,6 @@
 			</footer>
 		</div>
 
-        @include('layouts.footer');
+        @include('layouts.footer')
 	</body>
 </html>

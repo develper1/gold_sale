@@ -134,7 +134,7 @@ class ProductController extends Controller
             'images.*' => 'required|json',
         ]);
         $product=Product::findOrFail($id);
-
+    
         $imagePath = "product-images";
 
             if ($request->has('images')) {
@@ -163,7 +163,8 @@ class ProductController extends Controller
                     ]);
                 }
             }
-            $product = $product->update([
+            
+            $product->update([
                 "name"=>$request->name,
                 "slug"=>$request->slug,
                 "description"=>$request->description,
@@ -180,6 +181,7 @@ class ProductController extends Controller
                 "category_id" => $request->category_id,
                 "sub_category_id" => $request->sub_category_id,
             ]);
+
 
             return redirect()->route("admin.products.index")->with("success","Product Updated successfully");
     }

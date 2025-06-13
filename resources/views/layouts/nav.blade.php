@@ -10,7 +10,7 @@
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-6 header-center">
                         <div class="site-logo">
-                            <a href="index.html">
+                            <a href="{{ route('home') }}">
                                 <img width="400" height="79" src="{{ asset('assets/media/logo.png') }}" alt="Oasis Mint">
                             </a>
                         </div>
@@ -47,7 +47,13 @@
                                                         </a>
                                                         <a href="{{ route('shop.product', $item['slug']) }}" class="product-name">{{ $item['name'] }}</a>		
                                                         <div class="quantity">Qty: {{ $item['quantity'] }}</div>
-                                                        <div class="price">${{ number_format($item['price'], 2) }}</div>
+                                                        <div class="price">
+                                                            @if($item['pricing_type'] === 'fixed')
+                                                                ${{ number_format($item['price'], 2) }}
+                                                            @else
+                                                                Starting from ${{ number_format($item['price'], 2) }}
+                                                            @endif
+                                                        </div>
                                                         @php
                                                             $total += $item['price'] * $item['quantity'];
                                                         @endphp
@@ -115,7 +121,7 @@
                     <div class="row">
                         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12 header-left">
                             <div class="site-logo">
-                                <a href="index4.html">
+                                <a href="{{ route('home') }}">
                                     <img width="400" height="140" src="{{ asset('assets/media/logo.png') }}" alt="Oasis Mint">
                                 </a>
                             </div>
@@ -276,7 +282,13 @@
                                                                 </a>
                                                                 <a href="{{ route('shop.product', $item['slug']) }}" class="product-name">{{ $item['name'] }}</a>		
                                                                 <div class="quantity">Qty: {{ $item['quantity'] }}</div>
-                                                                <div class="price">${{ number_format($item['price'], 2) }}</div>
+                                                                <div class="price">
+                                                                    @if($item['pricing_type'] === 'fixed')
+                                                                        ${{ number_format($item['price'], 2) }}
+                                                                    @else
+                                                                        Starting from ${{ number_format($item['price'], 2) }}
+                                                                    @endif
+                                                                </div>
                                                                 @php
                                                                     $total += $item['price'] * $item['quantity'];
                                                                 @endphp

@@ -139,9 +139,9 @@
                                                                 </h3>
                                                                 <span class="price">
                                                                     @if($product->pricing_type === 'fixed')
-                                                                        ${{ number_format($product->fixed_price, 2) }}
+                                                                        {{ $product->formatted_price }}
                                                                     @else
-                                                                        Starting from ${{ number_format($product->fixed_price, 2) }}
+                                                                        Starting from {{ $product->formatted_price }}
                                                                     @endif
                                                                 </span>
                                                             </div>
@@ -196,9 +196,9 @@
                                                             </h3>
                                                             <span class="price">
                                                                 @if($product->pricing_type === 'fixed')
-                                                                    ${{ number_format($product->fixed_price, 2) }}
+                                                                    {{ $product->formatted_price }}
                                                                 @else
-                                                                    Starting from ${{ number_format($product->fixed_price, 2) }}
+                                                                    Starting from {{ $product->formatted_price }}
                                                                 @endif
                                                             </span>
                                                         </div>
@@ -257,9 +257,9 @@
                                                             <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
                                                             <span class="price">
                                                                 @if($product->pricing_type === 'fixed')
-                                                                    ${{ number_format($product->fixed_price, 2) }}
+                                                                    {{ $product->formatted_price }}
                                                                 @else
-                                                                    Starting from ${{ number_format($product->fixed_price, 2) }}
+                                                                    Starting from {{ $product->formatted_price }}
                                                                 @endif
                                                             </span>
                                                             
@@ -311,9 +311,9 @@
                                                         <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
                                                         <span class="price">
                                                             @if($product->pricing_type === 'fixed')
-                                                                ${{ number_format($product->fixed_price, 2) }}
+                                                                {{ $product->formatted_price }}
                                                             @else
-                                                                Starting from ${{ number_format($product->fixed_price, 2) }}
+                                                                Starting from {{ $product->formatted_price }}
                                                             @endif
                                                         </span>
                                                         
@@ -430,8 +430,10 @@ $(document).ready(function() {
                     
                     // Update product details
                     $('.quickview-popup .product-title').text(product.name);
-                    const price = parseFloat(product.price);
-                    $('.quickview-popup .price').html(`<span>$${price.toFixed(2)}</span>`);
+                    const price = product.pricing_type === 'fixed' ? 
+                        product.formatted_price : 
+                        'Starting from ' + product.formatted_price;
+                    $('.quickview-popup .price').html(`<span>${price}</span>`);
                     $('.quickview-popup .description p').html(product.description);
                     $('.quickview-popup .single-add-to-cart-button').data('product-id', product.id);
                     

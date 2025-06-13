@@ -51,7 +51,13 @@
                                                 
                                             </td> --}}
                                             <td class="product-price">
-                                                <span class="price">${{ number_format($item['price'], 2) }}</span>
+                                                <span class="price">
+                                                    @if($item['pricing_type'] === 'fixed')
+                                                        ${{ number_format($item['price'], 2) }}
+                                                    @else
+                                                        Starting from ${{ number_format($item['price'], 2) }}
+                                                    @endif
+                                                </span>
                                             </td>
                                             <td class="product-quantity">
                                                 <div class="quantity">
