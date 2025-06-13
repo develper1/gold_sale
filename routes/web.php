@@ -45,6 +45,17 @@ Route::get('/home', function () {
 Route::get('/account', function () {
     return view('my-account');
 })->name('account');
+Route::get('/about', function () {
+    return view('about');
+})->name('about');
+
+Route::get('/faq', function () {
+    return view('faq');
+})->name('faq');
+
+Route::get('/contact', function () {
+    return view('contact');
+})->name('contact');
 
 // Route::get('/thumbs', function () {
 //     return view('thumbs');

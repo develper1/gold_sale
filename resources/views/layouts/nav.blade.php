@@ -86,13 +86,13 @@
         <div class="header-mobile-fixed">
             <!-- Shop -->
             <div class="shop-page">
-                <a href="shop-grid-left.html"><i class="wpb-icon-shop"></i></a>
+                <a href="{{ route('shop.index') }}"><i class="wpb-icon-shop"></i></a>
             </div>
 
             <!-- Login -->
             <div class="my-account">
                 <div class="login-header">
-                    <a href="page-my-account.html"><i class="wpb-icon-user"></i></a>
+                    <a href="{{ route('account') }}"><i class="wpb-icon-user"></i></a>
                 </div>
             </div>
 
@@ -148,10 +148,10 @@
                                             </ul>
                                         </li>
                                         <li class="level-0 menu-item">
-                                            <a href="about.html"><span class="menu-item-text">About</span></a>
+                                            <a href="{{ route('about') }}"><span class="menu-item-text">About</span></a>
                                         </li>
                                         <li class="level-0 menu-item">
-                                            <a href="faqs.html"><span class="menu-item-text">FAQs</span></a>
+                                            <a href="{{ route('faq') }}"><span class="menu-item-text">FAQs</span></a>
                                         </li>
                                         <li class="level-0 menu-item menu-item-has-children">
                                             <a href="#"><span class="menu-item-text">Account</span></a>
@@ -168,7 +168,7 @@
                                             </ul>
                                         </li>
                                         <li class="level-0 menu-item">
-                                            <a href="page-contact.html"><span class="menu-item-text">Contact</span></a>
+                                            <a href="{{ route('contact') }}"><span class="menu-item-text">Contact</span></a>
                                         </li>
                                     </ul>
                                 </nav>

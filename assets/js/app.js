@@ -478,28 +478,28 @@
         })
         
         // Quickview button
-        $('.product-quickview .quickview-button').on('click', function(e) {
-            e.preventDefault();
+        // $('.product-quickview .quickview-button').on('click', function(e) {
+        //     e.preventDefault();
 
-            var btn_quickview = $(this);
+        //     var btn_quickview = $(this);
 
-            btn_quickview.addClass('loading');
-            setTimeout(function(){ 
-                btn_quickview.removeClass('loading');
-                $('.quickview-popup').addClass('active');
-            }, 1000);
-        })
-        $('.quickview-popup .quickview-close').on('click', function(e) {
-            e.preventDefault();
+        //     btn_quickview.addClass('loading');
+        //     setTimeout(function(){ 
+        //         btn_quickview.removeClass('loading');
+        //         $('.quickview-popup').addClass('active');
+        //     }, 1000);
+        // })
+        // $('.quickview-popup .quickview-close').on('click', function(e) {
+        //     e.preventDefault();
 
-            $('.quickview-popup').removeClass('active');
-        })
-        $(document).on('click touch', '.quickview-popup', function(e) {
-            var quickview_content = $('.quickview-container');
-            if ($(e.target).closest(quickview_content).length == 0) {
-                $('.quickview-popup').removeClass('active');
-            }
-        })
+        //     $('.quickview-popup').removeClass('active');
+        // })
+        // $(document).on('click touch', '.quickview-popup', function(e) {
+        //     var quickview_content = $('.quickview-container');
+        //     if ($(e.target).closest(quickview_content).length == 0) {
+        //         $('.quickview-popup').removeClass('active');
+        //     }
+        // })
         // $('.quantity .plus').on('click', function(e) {
         //     var qty = parseInt($(this).closest('.quantity').find('.qty').val());
         //     $(this).closest('.quantity').find('.qty').val(qty + 1);

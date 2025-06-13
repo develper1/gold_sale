@@ -1506,10 +1506,10 @@ ul.slick-dots li.slick-active button {
   -o-border-radius: 8px;
   overflow: hidden;
   display: none;
-  -webkit-transition: all .8s ease-in-out;
-  transition: all .8s ease-in-out;
+  -webkit-transition: all .3s ease-in-out;
+  transition: all .3s ease-in-out;
 }
-.newsletter-popup.active {
+.newsletter-popup.show {
   display: block;
 }
 .newsletter-popup .newsletter-close {
@@ -5584,6 +5584,11 @@ body.home.title-6 .block-newsletter .newsletter-title {
   -webkit-transition: transform .3s ease;
   transition: transform .3s ease;
 }
+.block-instagram a.instagram img {
+  -webkit-transition: transform .3s ease;
+  transition: transform .3s ease;
+}
+
 .block-instagram a.instagram:hover img {
   -webkit-transform: scale(1.2);
   transform: scale(1.2);
@@ -6912,10 +6917,10 @@ body.home.title-6 .block-newsletter .newsletter-title {
   background: rgba(0,0,0,.5);
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: all .8s ease-in-out;
-  transition: all .8s ease-in-out;
+  -webkit-transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
 }
-.quickview-popup.active {
+.quickview-popup.show {
   opacity: 1;
   visibility: visible;
 }

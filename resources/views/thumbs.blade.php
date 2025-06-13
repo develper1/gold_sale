@@ -41,7 +41,7 @@
                                 <ul>
                                     @foreach($categories as $cat)
                                         <li class="{{ isset($category) && $category->id == $cat->id ? 'current' : '' }}">
-                                            <a href="{{ route('shop.category', $cat->slug) }}">{{ $cat->name }}</a>
+                                            <h4><strong><a style="color:#cb8161;" href="{{ route('shop.category', $cat->slug) }}">{{ $cat->name }}</a></strong></h4>
                                             @if($cat->subCategories->count() > 0)
                                                 <ul class="children">
                                                     @foreach($cat->subCategories as $subCat)
@@ -469,12 +469,8 @@ $(document).ready(function() {
     // Close quick view
     $('.quickview-close').on('click', function(e) {
         e.preventDefault();
-        // Destroy slider before closing
-        var imageSlider = $('.quickview-popup .slick-sliders');
-        if (imageSlider.hasClass('slick-initialized')) {
-            imageSlider.slick('unslick');
-        }
-        $('.quickview-popup').removeClass('show');
+
+             $('.quickview-popup').removeClass('active');
     });
 
     // Quick view quantity buttons
@@ -498,7 +494,7 @@ $(document).ready(function() {
         var btn_atc = $(this);
         var productId = btn_atc.data('product-id');
         var quantity = $('.quickview-popup .qty').val();
-        btn_atc.addClass('loading');
+        // btn_atc.addClass('loading');
         
         $.ajax({
             url: '{{ route("cart.add") }}',
@@ -510,21 +506,21 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
-                    setTimeout(function(){ 
-                        // Update cart count in header
-                        $('.cart-count').text(response.cart_count);
-                        btn_atc.removeClass('loading');
-                        btn_atc.addClass('added');
-                        
-                        // Display message
-                        $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
-                        setTimeout(function() {
-                            $('.cart-product-added').remove();
-                        }, 2000)
-                        
-                        // Close quick view
-                        $('.quickview-popup').removeClass('show');
-                    }, 1000);
+                    // Update cart count in header
+                    $('.cart-count').text(response.cart_count);
+                    // btn_atc.removeClass('loading');
+                    btn_atc.addClass('added');
+                    
+                    // Display message
+                    $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
+                    
+                    // Close quick view immediately
+                    $('.quickview-popup').removeClass('show');
+                    
+                    // Remove message after delay
+                    setTimeout(function() {
+                        $('.cart-product-added').remove();
+                    }, 2000);
                 }
             },
             error: function(xhr) {
