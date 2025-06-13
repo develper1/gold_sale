@@ -472,7 +472,7 @@ $(document).ready(function() {
     $('.quickview-close').on('click', function(e) {
         e.preventDefault();
 
-             $('.quickview-popup').removeClass('active');
+        $('.quickview-popup').removeClass('show');
     });
 
     // Quick view quantity buttons
