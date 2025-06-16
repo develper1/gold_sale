@@ -150,6 +150,7 @@
                                 <label class="form-label" for="label">Fixed Price</label>
                                 <input type="number" step="0.01" value="{{ $product->fixed_price ?? '' }}" class="form-control" id="fixed_price" name="fixed_price">
                             </div>
+                            
                         
                             <!-- Inventory Type (triggers quantity fields) -->
                             <div class="col-lg-6 col-md-6 col-sm-12">
@@ -195,7 +196,42 @@
                                 <label class="form-label" for="label">Override Markup Percentage</label>
                                 <input type="number" step="0.01" value="{{ $product->override_markup_percentage ?? '' }}" class="form-control" id="override_markup_percentage" name="override_markup_percentage">
                             </div>
-                        
+                            <div class="form-group mt-2">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="use_tier_pricing" name="use_tier_pricing" value="1" {{ old('use_tier_pricing', $product->use_tier_pricing ?? false) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="use_tier_pricing">Use Tier Pricing</label>
+                                </div>
+                            </div>
+    
+                            <div id="tier_pricing_section" style="display: none;">
+                                <h4>Tier Pricing</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Quantity Range</th>
+                                                <th>Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($priceTierRanges as $tierRange)
+                                            <tr>
+                                                <td>{{ $tierRange->tier_start }} - {{ $tierRange->tier_end }}</td>
+                                                <td>
+                                                    <input type="number" 
+                                                           name="tier_prices[{{ $tierRange->id }}][price]" 
+                                                           class="form-control" 
+                                                           step="0.01" 
+                                                           min="0"
+                                                           value="{{ old('tier_prices.'.$tierRange->id.'.price', isset($product) ? $product->tierPrices->where('price_tier_range_id', $tierRange->id)->first()->price ?? $tierRange->tier_price : $tierRange->tier_price) }}"
+                                                           required>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                             
                         
                             <!-- Description -->
@@ -214,14 +250,14 @@
                             </div>
                         </div>
 
-
+                        
 
                     </div>
 
 
                 </div>
 
-                <div class="d-flex justify-content-end mb-4">
+                <div class="d-flex justify-content-end mb-4 mt-2">
 
                     <button type="submit" id="submitBtn" class="btn btn-primary  border">{{ $addUpdate }}</button>
 
@@ -351,6 +387,24 @@
             $('#sub_category_id').append('<option value="">-- Select Sub Category --</option>');
         }
     });
+
+    // Tier Pricing Toggle
+    function toggleTierPricing() {
+        if ($('#use_tier_pricing').is(':checked')) {
+            $('#tier_pricing_section').show();
+            // $('#pricing_type').val('fixed').prop('disabled', true);
+        } else {
+            $('#tier_pricing_section').hide();
+            // $('#pricing_type').prop('disabled', false);
+        }
+    }
+
+    $('#use_tier_pricing').on('change', function() {
+        toggleTierPricing();
+    });
+
+    // Initial state
+    toggleTierPricing();
 });
 </script>
     

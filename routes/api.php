@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +17,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::get('/products/{product}/tier-price', function (Product $product, Request $request) {
+    $quantity = $request->input('quantity', 1);
+    return response()->json([
+        'price' => $product->getTierPriceForQuantity($quantity)
+    ]);
 });

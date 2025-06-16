@@ -144,6 +144,11 @@
                                                                         Starting from {{ $product->formatted_price }}
                                                                     @endif
                                                                 </span>
+                                                                @if($product->use_tier_pricing)
+                                                                    <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
+                                                                        View Tier Prices
+                                                                    </a>
+                                                                @endif
                                                             </div>
                                                         </div>
                                                     </div>
@@ -201,6 +206,11 @@
                                                                     Starting from {{ $product->formatted_price }}
                                                                 @endif
                                                             </span>
+                                                            @if($product->use_tier_pricing)
+                                                                <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
+                                                                    View Tier Prices
+                                                                </a>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
@@ -254,21 +264,41 @@
                                                     </div>
                                                     <div class="col-md-8">
                                                         <div class="products-content">
-                                                            <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
-                                                            <span class="price">
-                                                                @if($product->pricing_type === 'fixed')
-                                                                    {{ $product->formatted_price }}
-                                                                @else
-                                                                    Starting from {{ $product->formatted_price }}
+                                                            <div class="contents">
+                                                                <h3 class="product-title">
+                                                                    <a href="{{ route('shop.product', $product->slug) }}">
+                                                                        {{ $product->name }}
+                                                                    </a>
+                                                                </h3>
+                                                                <span class="price">
+                                                                    @if($product->pricing_type === 'fixed')
+                                                                        {{ $product->formatted_price }}
+                                                                    @else
+                                                                        Starting from {{ $product->formatted_price }}
+                                                                    @endif
+                                                                </span>
+                                                                @if($product->use_tier_pricing)
+                                                                    <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
+                                                                        View Tier Prices
+                                                                    </a>
                                                                 @endif
-                                                            </span>
-                                                            
-                                                            <div class="product-button">
-                                                                <div class="btn-add-to-cart" data-title="Add to cart" >
-                                                                    <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
+                                                                <div class="description">{{ Str::limit($product->description, 100) }}</div>
+                                                                <div class="rating">
+                                                                    <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5">
+                                                                        <span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="product-button">
+                                                                    <div class="btn-add-to-cart" data-title="Add to cart" >
+                                                                        <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
+                                                                    </div>
+                                                                    <span class="product-quickview" data-title="Quick View">
+                                                                        <a href="#" class="quickview quickview-button" data-product-id="{{ $product->id }}">
+                                                                            Quick View <i class="icon-search"></i>
+                                                                        </a>
+                                                                    </span>
                                                                 </div>
                                                             </div>
-                                                            <div class="product-description">{!! $product->description !!}</div>			
                                                         </div>
                                                     </div>
                                                 </div>
@@ -308,27 +338,47 @@
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="products-content">
-                                                        <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
-                                                        <span class="price">
-                                                            @if($product->pricing_type === 'fixed')
-                                                                {{ $product->formatted_price }}
-                                                            @else
-                                                                Starting from {{ $product->formatted_price }}
+                                                        <div class="contents">
+                                                            <h3 class="product-title">
+                                                                <a href="{{ route('shop.product', $product->slug) }}">
+                                                                    {{ $product->name }}
+                                                                </a>
+                                                            </h3>
+                                                            <span class="price">
+                                                                @if($product->pricing_type === 'fixed')
+                                                                    {{ $product->formatted_price }}
+                                                                @else
+                                                                    Starting from {{ $product->formatted_price }}
+                                                                @endif
+                                                            </span>
+                                                            @if($product->use_tier_pricing)
+                                                                <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
+                                                                    View Tier Prices
+                                                                </a>
                                                             @endif
-                                                        </span>
-                                                        
-                                                        <div class="product-button">
-                                                            <div class="btn-add-to-cart" data-title="Add to cart" >
-                                                                <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
+                                                            <div class="description">{{ Str::limit($product->description, 100) }}</div>
+                                                            <div class="rating">
+                                                                <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5">
+                                                                    <span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="product-button">
+                                                                <div class="btn-add-to-cart" data-title="Add to cart" >
+                                                                    <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
+                                                                </div>
+                                                                <span class="product-quickview" data-title="Quick View">
+                                                                    <a href="#" class="quickview quickview-button" data-product-id="{{ $product->id }}">
+                                                                        Quick View <i class="icon-search"></i>
+                                                                    </a>
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                        <div class="product-description">{!! $product->description !!}</div>			
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     @empty
-                                        <div class="products-entry clearfix product-wapper">
+                                        <div class="col-12">
                                             <p class="text-center">No products found.</p>
                                         </div>
                                     @endforelse
@@ -430,9 +480,18 @@ $(document).ready(function() {
                     
                     // Update product details
                     $('.quickview-popup .product-title').text(product.name);
-                    const price = product.pricing_type === 'fixed' ? 
-                        product.formatted_price : 
-                        'Starting from ' + product.formatted_price;
+                    var price = '';
+                     if (product.use_tier_pricing) {
+                        // For quick view, display the first tier price if tier pricing is enabled
+                        // The logic for fetching the *actual* first tier price should be in the backend
+                        // Here, we just display the current_price which is already configured to give the first tier price.
+                        price = '$' + parseFloat(product.current_price).toFixed(2);
+                        price += ' <a href="#" class="view-tier-prices-link" data-product-id="' + product.id + '">View Tier Prices</a>';
+                    }else if (product.pricing_type === 'fixed') {
+                        price = '$' + parseFloat(product.fixed_price).toFixed(2);
+                    } else {
+                        price = 'Starting from $' + parseFloat(product.current_price).toFixed(2);
+                    }
                     $('.quickview-popup .price').html(`<span>${price}</span>`);
                     $('.quickview-popup .description p').html(product.description);
                     $('.quickview-popup .single-add-to-cart-button').data('product-id', product.id);

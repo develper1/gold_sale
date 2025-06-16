@@ -18,6 +18,9 @@ use App\Http\Controllers\Admin\StateFeeController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\Admin\PriceTierRangeController;
+use App\Models\Product;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -94,6 +97,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('categories', CategoryController::class);
         Route::get('/get-sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('sub-categories.getSubCategoriesByCategory');
         Route::resource('sub-categories', SubCategoryController::class);
+        Route::resource('price-tier-ranges', PriceTierRangeController::class);
 
     });
 });
@@ -133,4 +137,6 @@ Route::post('/cart/remove', [ShopController::class, 'removeFromCart'])->name('ca
 Route::get('/cart/clear', [ShopController::class, 'clearCart'])->name('cart.clear');
 Route::get('/cart/count', [ShopController::class, 'getCartCount'])->name('cart.count');
 Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
+
+Route::get('/products/{product}/tier-prices-modal', [ShopController::class, 'getTierPricesModal'])->name('product.tier_prices_modal');
 

@@ -137,6 +137,13 @@
         </a>
       </li>
 
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'price-tier-ranges' ? ' active open' : '' }}">
+        <a href="{{ route('admin.price-tier-ranges.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <div data-i18n="Price Tier Ranges">Price Tier Ranges</div>
+        </a>
+      </li>
+
     </ul>
     
     

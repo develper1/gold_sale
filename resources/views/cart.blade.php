@@ -51,13 +51,20 @@
                                                 
                                             </td> --}}
                                             <td class="product-price">
-                                                <span class="price">
+                                                <span class="price item-price">
                                                     @if($item['pricing_type'] === 'fixed')
                                                         ${{ number_format($item['price'], 2) }}
                                                     @else
-                                                        Starting from ${{ number_format($item['price'], 2) }}
+                                                        ${{ number_format($item['price'], 2) }}
                                                     @endif
                                                 </span>
+                                                @if(isset($item['use_tier_pricing']) && $item['use_tier_pricing'])
+                                                    <p>
+                                                        <a href="#" class="view-tier-prices-link" data-product-id="{{ $item['id'] }}">
+                                                            View Tier Prices
+                                                        </a>
+                                                    </p>
+                                                @endif
                                             </td>
                                             <td class="product-quantity">
                                                 <div class="quantity">
@@ -67,7 +74,7 @@
                                                 </div>
                                             </td>
                                             <td class="product-subtotal">
-                                                <span class="price">${{ number_format($item['price'] * $item['quantity'], 2) }}</span>
+                                                <span class="price item-total">${{ number_format($item['price'] * $item['quantity'], 2) }}</span>
                                             </td>
                                             <td class="product-remove">
                                                 <a href="#" class="remove-item" data-product-id="{{ $item['id'] }}"><i class="icon_close"></i></a>
@@ -108,14 +115,14 @@
                                 <div class="shipping-totals">
                                     <div class="title">Shipping</div>
                                     <div>
-                                        <ul class="shipping-methods custom-radio">
+                                        {{-- <ul class="shipping-methods custom-radio">
                                             <li>
                                                 <input type="radio" name="shipping_method" data-index="0" value="free_shipping" class="shipping_method" checked="checked"><label>Free shipping</label>
                                             </li>
                                             <li>
                                                 <input type="radio" name="shipping_method" data-index="0" value="flat_rate" class="shipping_method"><label>Flat rate</label>					
                                             </li>
-                                        </ul>
+                                        </ul> --}}
                                         <p class="shipping-desc">
                                             Shipping options will be updated during checkout.				
                                         </p>
@@ -190,24 +197,29 @@ $(document).ready(function() {
             url: '{{ route("cart.update") }}',
             method: 'POST',
             data: {
+                _token: '{{ csrf_token() }}',
                 product_id: productId,
-                quantity: quantity,
-                _token: '{{ csrf_token() }}'
+                quantity: quantity
             },
             success: function(response) {
                 if (response.success) {
-                    // Update cart totals
-                    $('.sub-total-price').text('$' + response.subtotal.toFixed(2));
-                    $('.cart-total').text('$' + response.total.toFixed(2));
+                    // Update cart count
                     $('.cart-count').text(response.cart_count);
+                    
+                    // Update item price and total
+                    var itemElement = $('tr[data-product-id="' + productId + '"]');
+                    var itemPrice = parseFloat(response.item_price);
+                    itemElement.find('.item-price').text('$' + itemPrice.toFixed(2));
+                    var itemTotal = itemPrice * quantity;
+                    itemElement.find('.item-total').text('$' + itemTotal.toFixed(2));
+                    
+                    // Update cart totals
+                    $('.sub-total-price').text('$' + parseFloat(response.subtotal).toFixed(2));
+                    $('.cart-total').text('$' + parseFloat(response.total).toFixed(2));
                 }
             },
             error: function(xhr) {
-                if (xhr.status === 404) {
-                    alert('Product not found in cart. Please refresh the page.');
-                } else {
-                    alert('Error updating cart');
-                }
+                console.error('Error updating cart:', xhr);
             }
         });
     }
@@ -245,6 +257,20 @@ $(document).ready(function() {
             }
         });
     });
+
+
+
+
+    // Function to update cart total
+    function updateCartTotal() {
+        var total = 0;
+        $('.item-total').each(function() {
+            total += parseFloat($(this).text().replace('$', ''));
+        });
+        $('.cart-total').text('$' + total.toFixed(2));
+    }
+
+
 });
 </script>
 @endpush

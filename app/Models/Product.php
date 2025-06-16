@@ -29,7 +29,8 @@ class Product extends Model
         'image_path',
         'category_id',
         'subcategory_id',
-        'status'
+        'status',
+        'use_tier_pricing'
     ];
 
     protected $appends = ['current_price', 'formatted_price'];
@@ -49,8 +50,33 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function tierPrices()
+    {
+        return $this->hasMany(ProductTierPrice::class);
+    }
+
     public function getCurrentPriceAttribute()
     {
+  
+        if ($this->use_tier_pricing) {
+            // Debugging: Check if use_tier_pricing is true
+            // dd('use_tier_pricing is true', $this->id, $this->use_tier_pricing, $this->tierPrices()->get()->toArray(), $this->fixed_price);
+
+            $firstTierPrice = $this->tierPrices()
+                                   ->join('price_tier_range', 'product_tier_prices.price_tier_range_id', '=', 'price_tier_range.id')
+                                   ->orderBy('price_tier_range.tier_start')
+                                   ->select('product_tier_prices.price')
+                                   ->first();
+
+            // Debugging: Check the result of the tier price query
+            // dd('firstTierPrice query result', $firstTierPrice ? $firstTierPrice->toArray() : null);
+
+            return $firstTierPrice ? $firstTierPrice->price : $this->fixed_price;
+        }
+
+        // Debugging: Check if use_tier_pricing is false
+        // dd('use_tier_pricing is false', $this->id, $this->use_tier_pricing, $this->fixed_price);
+
         if ($this->pricing_type === 'fixed') {
             return $this->fixed_price;
         }
@@ -78,10 +104,39 @@ class Product extends Model
 
     public function getFormattedPriceAttribute()
     {
-        if ($this->pricing_type === 'fixed') {
-            return '$' . number_format($this->fixed_price, 2);
-        }
+        // if ($this->pricing_type === 'fixed') {
+        //     return '$' . number_format($this->fixed_price, 2);
+        // }
 
         return '$' . number_format($this->current_price, 2);
+    }
+
+    // Add a new method to get tier price based on quantity
+    public function getTierPriceForQuantity($quantity)
+    {
+        if (!$this->use_tier_pricing) {
+            return $this->current_price;
+        }
+
+        // 1. Try to find a specific tier range (with tier_end defined)
+        $tierPrice = $this->tierPrices()
+            ->join('price_tier_range', 'product_tier_prices.price_tier_range_id', '=', 'price_tier_range.id')
+            ->where('price_tier_range.tier_start', '<=', $quantity)
+            ->whereNotNull('price_tier_range.tier_end')
+            ->where('price_tier_range.tier_end', '>=', $quantity)
+            ->select('product_tier_prices.price')
+            ->first();
+
+        // 2. If no specific tier found, try to find an open-ended tier (tier_end is null)
+        if (!$tierPrice) {
+            $tierPrice = $this->tierPrices()
+                ->join('price_tier_range', 'product_tier_prices.price_tier_range_id', '=', 'price_tier_range.id')
+                ->where('price_tier_range.tier_start', '<=', $quantity)
+                ->whereNull('price_tier_range.tier_end')
+                ->select('product_tier_prices.price')
+                ->first();
+        }
+
+        return $tierPrice ? $tierPrice->price : $this->current_price;
     }
 }

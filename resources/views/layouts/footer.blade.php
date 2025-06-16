@@ -235,7 +235,7 @@
 					<a href="#" class="quickview-close"></a> 
 					<div class="quickview-notices-wrapper"></div> 
 					<div class="product single-product product-type-simple">
-						<div class="product-detail">
+						<div class="product-detail" style="min-width: 800px;">
 							<div class="row"> 
 								<div class="img-quickview"> 
 									<div class="product-images-slider">
@@ -331,6 +331,14 @@
 	    		<div></div>
 	    	</div>
 	    </div>
+		<!-- Global Tier Price Modal -->
+		<div class="modal fade" id="tierPriceModal" tabindex="-1" role="dialog" aria-labelledby="tierPriceModalLabel" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<!-- Content will be loaded here via AJAX -->
+				</div>
+			</div>
+		</div>
 
 		<!-- Dependency Scripts -->
 		<script src="{{ asset('assets/vendor/libs/popper/js/popper.min.js') }}"></script>

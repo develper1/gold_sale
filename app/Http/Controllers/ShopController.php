@@ -138,7 +138,8 @@ class ShopController extends Controller
                 'pricing_type' => $product->pricing_type,
                 'quantity' => $quantity,
                 'image' => $product->images->first() ? $product->images->first()->image_path : null,
-                'slug' => $product->slug
+                'slug' => $product->slug,
+                'use_tier_pricing' => $product->use_tier_pricing
             ];
         }
         
@@ -170,7 +171,18 @@ class ShopController extends Controller
         $cart = session()->get('cart', []);
 
         if(isset($cart[$productId])) {
+            $product = Product::findOrFail($productId);
+            
+            // Get the correct price based on quantity
+            if ($product->use_tier_pricing) {
+                $price = $product->getTierPriceForQuantity($quantity);
+            } else {
+                $price = $product->current_price;
+            }
+            
             $cart[$productId]['quantity'] = $quantity;
+            $cart[$productId]['price'] = $price;
+            $cart[$productId]['use_tier_pricing'] = $product->use_tier_pricing;
             session()->put('cart', $cart);
             
             // Calculate new totals
@@ -184,7 +196,8 @@ class ShopController extends Controller
                 'message' => 'Cart updated successfully',
                 'cart_count' => count($cart),
                 'subtotal' => $total,
-                'total' => $total
+                'total' => $total,
+                'item_price' => $price
             ]);
         }
 
@@ -250,5 +263,11 @@ class ShopController extends Controller
             'success' => true,
             'message' => 'Cart cleared successfully'
         ]);
+    }
+
+    public function getTierPricesModal(Product $product)
+    {
+        $product->load('tierPrices.priceTierRange');
+        return view('_tier_price_table', compact('product'));
     }
 } 

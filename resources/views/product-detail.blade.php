@@ -62,6 +62,14 @@
                                     Starting from {{ $product->formatted_price }}
                                 @endif
                             </span>
+                            @if($product->use_tier_pricing)
+                                <p>
+                                    <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
+                                        View All Tier Prices
+                                    </a>
+                                </p>
+                            @endif
+                            <p class="stock out-of-stock">Availability: <span>In stock</span></p>
                             <div class="description">
                                 {!! $product->description !!}
                             </div>
@@ -69,7 +77,7 @@
                                 <div class="add-to-cart-wrap">
                                     <div class="quantity">
                                         <button type="button" class="plus">+</button>
-                                        <input type="number" class="qty" step="1" min="1" max="" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off">
+                                        <input type="number" class="qty quantity-input" step="1" min="1" max="" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off">
                                         <button type="button" class="minus">-</button>	
                                     </div>
                                     <div class="btn-add-to-cart">
@@ -240,6 +248,44 @@ $(document).ready(function() {
             }
         });
     });
+
+    // // Function to update price based on quantity
+    // function updatePrice(quantity) {
+    //     var productId = '{{ $product->id }}';
+        
+    //     $.ajax({
+    //         url: `/api/products/${productId}/tier-price`,
+    //         method: 'GET',
+    //         data: { quantity: quantity },
+    //         success: function(response) {
+    //             // Update the price display
+    //             $('.product-price').text('$' + response.price.toFixed(2));
+                
+    //             // If you have a total price element, update it too
+    //             if($('.product-total-price').length) {
+    //                 var total = response.price * quantity;
+    //                 $('.product-total-price').text('$' + total.toFixed(2));
+    //             }
+    //         },
+    //         error: function(xhr) {
+    //             console.error('Error fetching tier price:', xhr);
+    //         }
+    //     });
+    // }
+
+    // // Listen for quantity changes
+    // $('.quantity-input').on('change', function() {
+    //     var quantity = parseInt($(this).val());
+    //     if(quantity > 0) {
+    //         updatePrice(quantity);
+    //     }
+    // });
+
+    // // Initial price update
+    // var initialQuantity = parseInt($('.quantity-input').val());
+    // if(initialQuantity > 0) {
+    //     updatePrice(initialQuantity);
+    // }
 });
 </script>
 @endpush

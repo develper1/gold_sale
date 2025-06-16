@@ -9,6 +9,8 @@ use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Category;
 use App\Models\SubCategory;
+use App\Models\PriceTierRange;
+use App\Models\ProductTierPrice;
 
 
 class ProductController extends Controller
@@ -28,10 +30,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $product=null;
+        $product = null;
         $categories = Category::all();
         $subCategories = SubCategory::all();
-        return view('admin.products.add_edit', compact('categories', 'subCategories','product'));
+        $priceTierRanges = PriceTierRange::all();
+        return view('admin.products.add_edit', compact('categories', 'subCategories', 'product', 'priceTierRanges'));
     }
 
     /**
@@ -42,16 +45,17 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        // print_r($request->all());
-        // die();
         $request->validate([
-            "name"=>"required|string",
-            "slug"=>"required|string",
-            "product_type"=>"required|string",
-            "pricing_type"=>"required|string",
-            "inventory_type"=>"required|string",
+            "name" => "required|string",
+            "slug" => "required|string",
+            "product_type" => "required|string",
+            "pricing_type" => "required|string",
+            "inventory_type" => "required|string",
             'images' => 'required|array',
             'images.*' => 'required|json',
+            'use_tier_pricing' => 'boolean',
+            'tier_prices' => 'array',
+            'tier_prices.*.price' => 'required|numeric|min:0',
         ]);
         
         if ($request->has('images')) {
@@ -68,7 +72,7 @@ class ProductController extends Controller
 
         }
       
-        $product=  Product::create([
+        $product = Product::create([
             "name"=>$request->name,
             "slug"=>$request->slug,
             "description"=>$request->description,
@@ -85,6 +89,7 @@ class ProductController extends Controller
             "image_path"=>$firstImagePath,
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
+            "use_tier_pricing" => $request->use_tier_pricing ?? false,
         ]);
 
         // Store the remaining images 
@@ -96,9 +101,19 @@ class ProductController extends Controller
                 'image_path' => $storedImagePath,
             ]);
         }
+
+        // Handle tier prices if enabled
+        if ($request->use_tier_pricing && $request->has('tier_prices')) {
+            foreach ($request->tier_prices as $tierRangeId => $data) {
+                ProductTierPrice::create([
+                    'product_id' => $product->id,
+                    'price_tier_range_id' => $tierRangeId,
+                    'price' => $data['price']
+                ]);
+            }
+        }
         
         return redirect()->route("admin.products.index")->with("success","Product Created successfully");
-
     }
 
      /**
@@ -109,10 +124,11 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::with(['images'])->findOrFail($id);
+        $product = Product::with(['images', 'tierPrices'])->findOrFail($id);
         $categories = Category::all();
         $subCategories = SubCategory::where('category_id', $product->category_id)->get();
-        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories'));
+        $priceTierRanges = PriceTierRange::all();
+        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories', 'priceTierRanges'));
     }
 
     /**
@@ -125,15 +141,18 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            "name"=>"required|string",
-            "slug"=>"required|string",
-            "product_type"=>"required|string",
-            "pricing_type"=>"required|string",
-            "inventory_type"=>"required|string",
+            "name" => "required|string",
+            "slug" => "required|string",
+            "product_type" => "required|string",
+            "pricing_type" => "required|string",
+            "inventory_type" => "required|string",
             'images' => 'required|array',
             'images.*' => 'required|json',
+            'use_tier_pricing' => 'boolean',
+            'tier_prices' => 'array',
+            'tier_prices.*.price' => 'required|numeric|min:0',
         ]);
-        $product=Product::findOrFail($id);
+        $product = Product::findOrFail($id);
     
         $imagePath = "product-images";
 
@@ -180,8 +199,26 @@ class ProductController extends Controller
                 "is_active"=>1,
                 "category_id" => $request->category_id,
                 "sub_category_id" => $request->sub_category_id,
+                "use_tier_pricing" => $request->use_tier_pricing ?? false,
             ]);
 
+            // Handle tier prices
+            if ($request->use_tier_pricing && $request->has('tier_prices')) {
+                // Delete existing tier prices
+                $product->tierPrices()->delete();
+                
+                // Create new tier prices
+                foreach ($request->tier_prices as $tierRangeId => $data) {
+                    ProductTierPrice::create([
+                        'product_id' => $product->id,
+                        'price_tier_range_id' => $tierRangeId,
+                        'price' => $data['price']
+                    ]);
+                }
+            } else {
+                // If tier pricing is disabled, remove all tier prices
+                $product->tierPrices()->delete();
+            }
 
             return redirect()->route("admin.products.index")->with("success","Product Updated successfully");
     }

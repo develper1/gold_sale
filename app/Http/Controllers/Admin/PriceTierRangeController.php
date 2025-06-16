@@ -2,61 +2,61 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\PriceTierRange;
+use Illuminate\Http\Request;
 
 class PriceTierRangeController extends Controller
 {
     public function index()
     {
-        $categories = Category::latest()->get();
-        return view('admin.categories.index')->with('categories', $categories);
+        $priceTierRanges = PriceTierRange::latest()->get();
+        return view('admin.price-tier-ranges.index', compact('priceTierRanges'));
     }
 
     public function create()
     {
-        $category = null;
-        return view('admin.categories.add_edit', compact('category'));
+        return view('admin.price-tier-ranges.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string',
-            'slug' => 'required|string|unique:categories',
-            'description' => 'nullable|string',
+            'tier_start' => 'required|integer|min:0',
+            'tier_end' => 'nullable|integer|min:0|gt:tier_start',
+            'tier_price' => 'required|numeric|min:0',
         ]);
 
-        Category::create($request->all());
+        PriceTierRange::create($request->all());
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category created successfully');
+        return redirect()->route('admin.price-tier-ranges.index')
+            ->with('success', 'Price tier range created successfully.');
     }
 
-    public function edit($id)
+    public function edit(PriceTierRange $priceTierRange)
     {
-        $category = Category::findOrFail($id);
-        return view('admin.categories.add_edit', compact('category'));
+        return view('admin.price-tier-ranges.edit', compact('priceTierRange'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, PriceTierRange $priceTierRange)
     {
         $request->validate([
-            'name' => 'required|string',
-            'slug' => 'required|string|unique:categories,slug,' . $id,
-            'description' => 'nullable|string',
+            'tier_start' => 'required|integer|min:0',
+            'tier_end' => 'nullable|integer|min:0|gt:tier_start',
+            'tier_price' => 'required|numeric|min:0',
         ]);
 
-        $category = Category::findOrFail($id);
-        $category->update($request->all());
+        $priceTierRange->update($request->all());
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully');
+        return redirect()->route('admin.price-tier-ranges.index')
+            ->with('success', 'Price tier range updated successfully.');
     }
 
-    public function destroy($id)
+    public function destroy(PriceTierRange $priceTierRange)
     {
-        $category = Category::findOrFail($id);
-        $category->delete();
-        return back()->with('success', 'Category deleted successfully!');
+        $priceTierRange->delete();
+
+        return redirect()->route('admin.price-tier-ranges.index')
+            ->with('success', 'Price tier range deleted successfully.');
     }
 } 
