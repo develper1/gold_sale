@@ -6,7 +6,7 @@
     <title>Home | Oasis Mint</title>
     
     <!-- Favicon -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/media/favicon.png') }}">
+    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('landingPageAseets/assets/img/favicon.png') }}">
     
     <!-- Dependency Styles -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap/css/bootstrap.min.css') }}" type="text/css">

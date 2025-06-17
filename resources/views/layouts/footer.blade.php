@@ -394,4 +394,30 @@
 				});
 			});
 		</script>
+		<script>
+			$(document).ready(function() {
+				// JavaScript for global tier price modal
+				$(document).on('click', '.view-tier-prices-link', function(e) {
+					e.preventDefault();
+					var productId = $(this).data('product-id');
+					var url = '{{ route("product.tier_prices_modal", ":id") }}';
+					url = url.replace(':id', productId);
+			
+					$.ajax({
+						url: url,
+						method: 'GET',
+						success: function(response) {
+							$('.compare-popup').addClass('active');
+			
+							$('.compare-table-items').html(response);
+							// $('#tierPriceModal').modal('show');
+						},
+						error: function(xhr) {
+							console.error('Error fetching tier prices:', xhr);
+							alert('Could not load tier prices. Please try again.');
+						}
+					});
+				});
+			});
+			</script>
           @stack('scripts')
