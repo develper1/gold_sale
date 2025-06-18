@@ -74,14 +74,15 @@
                             </div>
                         </div>
                         <div class="products-topbar-right">
-                            {{-- <div class="products-sort dropdown">
+                            <div class="products-sort dropdown">
                                 <span class="sort-toggle dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Default sorting</span>
                                 <ul class="sort-list dropdown-menu" x-placement="bottom-start">
                                     <li class="active"><a href="#">Default sorting</a></li>
+                                    <li><a href="#">By Latest</a></li>
                                     <li><a href="#">Sort by price: low to high</a></li>
                                     <li><a href="#">Sort by price: high to low</a></li>
                                 </ul>
-                            </div> --}}
+                            </div>
                             <ul class="layout-toggle nav nav-tabs">
                                 <li class="nav-item">
                                     <a class="layout-grid nav-link active" data-toggle="tab" href="#layout-grid" role="tab"><span class="icon-column"><span class="layer first"><span></span><span></span><span></span></span><span class="layer middle"><span></span><span></span><span></span></span><span class="layer last"><span></span><span></span><span></span></span></span></a>
@@ -288,7 +289,7 @@
                                                                         </a>
                                                                     </p>
                                                                 @endif
-                                                                <div class="description">{{ Str::limit($product->description, 100) }}</div>
+                                                                <div class="description">{!! $product->description !!}</div>
                                                                 {{-- <div class="rating">
                                                                     <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5">
                                                                         <span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5</span>
@@ -364,7 +365,7 @@
                                                                     </a>
                                                                 </p>
                                                             @endif
-                                                            <div class="description">{{ Str::limit($product->description, 100) }}</div>
+                                                            <div class="description">{!! $product->description !!}</div>
                                                             {{-- <div class="rating">
                                                                 <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5">
                                                                     <span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5</span>

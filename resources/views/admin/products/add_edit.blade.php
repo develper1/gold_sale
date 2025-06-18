@@ -183,20 +183,8 @@
                                 <input type="number" step="0.01" value="{{ $product->blanket_markup_percentage ?? '' }}" class="form-control" id="blanket_markup_percentage" name="blanket_markup_percentage">
                             </div>
                         
-                            <!-- Override Markup Toggle -->
-                            <div class="col-lg-6 col-md-6 col-sm-12">
-                                <div class="form-check form-switch mt-4">
-                                    <input class="form-check-input" type="checkbox" id="use_override_markup" name="use_override_markup" {{ isset($product->use_override_markup) && $product->use_override_markup ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="use_override_markup">Override Markup</label>
-                                </div>
-                            </div>
-                        
-                            <!-- Override Markup Percentage (conditionally shown) -->
-                            <div class="col-lg-6 col-md-6 col-sm-12 override-markup-field" style="display: {{ (isset($product->use_override_markup) && $product->use_override_markup) ? 'block' : 'none' }};">
-                                <label class="form-label" for="label">Override Markup Percentage</label>
-                                <input type="number" step="0.01" value="{{ $product->override_markup_percentage ?? '' }}" class="form-control" id="override_markup_percentage" name="override_markup_percentage">
-                            </div>
-                            <div class="form-group mt-2">
+                            
+                            <div class="form-group mt-2 tier-pricing-section" style="display: none;">
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input" id="use_tier_pricing" name="use_tier_pricing" value="1" {{ old('use_tier_pricing', $product->use_tier_pricing ?? false) ? 'checked' : '' }}>
                                     <label class="custom-control-label" for="use_tier_pricing">Use Tier Pricing</label>
@@ -225,6 +213,49 @@
                                                            min="0"
                                                            value="{{ old('tier_prices.'.$tierRange->id.'.price', isset($product) ? $product->tierPrices->where('price_tier_range_id', $tierRange->id)->first()->price ?? $tierRange->tier_price : $tierRange->tier_price) }}"
                                                            required>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Spot Tier Pricing (conditionally shown) -->
+                            <div class="form-group mt-2 spot-tier-pricing-section" style="display: none;">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="use_spot_tier_pricing" name="use_spot_tier_pricing" value="1" {{ old('use_spot_tier_pricing', $product->use_spot_tier_pricing ?? false) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="use_spot_tier_pricing">Use Spot Tier Pricing</label>
+                                </div>
+                            </div>
+                            <div id="spot_tier_pricing_section" style="display: none;">
+                                <h4>Spot Tier Pricing</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Quantity Range</th>
+                                                <th>Type</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($spotTierPrices as $spotTier)
+                                            @php
+                                                $override = $productSpotTierPrices->where('spot_tier_price_id', $spotTier->id)->first();
+                                                $type = old('spot_tier_prices.'.$spotTier->id.'.type', $override->type ?? $spotTier->type);
+                                                $value = old('spot_tier_prices.'.$spotTier->id.'.value', $override->value ?? $spotTier->value);
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $spotTier->tier_start }} - {{ $spotTier->tier_end }}</td>
+                                                <td>
+                                                    <select name="spot_tier_prices[{{ $spotTier->id }}][type]" class="form-control">
+                                                        <option value="percentage" {{ $type == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                                                        <option value="fixed" {{ $type == 'fixed' ? 'selected' : '' }}>Fixed Amount</option>
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="number" step="0.01" name="spot_tier_prices[{{ $spotTier->id }}][value]" class="form-control" value="{{ $value }}">
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -332,9 +363,13 @@
     $('#pricing_type').change(function() {
         if ($(this).val() === 'fixed') {
             $('.fixed-price-field').show();
+            $('.tier-pricing-section').show();
             $('#fixed_price').attr('required', true);
         } else {
             $('.fixed-price-field').hide();
+            $('.tier-pricing-section').hide();
+            $('#tier_pricing_section').hide();
+            $('#use_tier_pricing').prop('checked', false);
             $('#fixed_price').removeAttr('required');
         }
     });
@@ -350,22 +385,11 @@
         }
     });
 
-    // Override Markup toggle
-    $('#use_override_markup').change(function() {
-        if ($(this).is(':checked')) {
-            $('.override-markup-field').show();
-            $('#override_markup_percentage').attr('required', true);
-        } else {
-            $('.override-markup-field').hide();
-            $('#override_markup_percentage').removeAttr('required');
-        }
-    });
+
 
     // Trigger change events on page load to set initial state
     $('#pricing_type, #inventory_type').trigger('change');
-    if ($('#use_override_markup').is(':checked')) {
-        $('.override-markup-field').show();
-    }
+
 
     $('#category_id').change(function() {
         var categoryId = $(this).val();
@@ -392,10 +416,8 @@
     function toggleTierPricing() {
         if ($('#use_tier_pricing').is(':checked')) {
             $('#tier_pricing_section').show();
-            // $('#pricing_type').val('fixed').prop('disabled', true);
         } else {
             $('#tier_pricing_section').hide();
-            // $('#pricing_type').prop('disabled', false);
         }
     }
 
@@ -404,7 +426,38 @@
     });
 
     // Initial state
-    toggleTierPricing();
+    if ($('#pricing_type').val() === 'fixed') {
+        $('.tier-pricing-section').show();
+        toggleTierPricing();
+    }
+
+    // Spot Tier Pricing Toggle
+    function toggleSpotTierPricing() {
+        if ($('#use_spot_tier_pricing').is(':checked')) {
+            $('#spot_tier_pricing_section').show();
+        } else {
+            $('#spot_tier_pricing_section').hide();
+        }
+    }
+    $('#use_spot_tier_pricing').on('change', function() {
+        toggleSpotTierPricing();
+    });
+    // Pricing Type - Spot Tier Pricing toggle
+    $('#pricing_type').change(function() {
+        if ($(this).val() === 'spot') {
+            $('.spot-tier-pricing-section').show();
+            toggleSpotTierPricing();
+        } else {
+            $('.spot-tier-pricing-section').hide();
+            $('#spot_tier_pricing_section').hide();
+            $('#use_spot_tier_pricing').prop('checked', false);
+        }
+    });
+    // Initial state for spot tier pricing
+    if ($('#pricing_type').val() === 'spot') {
+        $('.spot-tier-pricing-section').show();
+        toggleSpotTierPricing();
+    }
 });
 </script>
     

@@ -98,6 +98,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/get-sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('sub-categories.getSubCategoriesByCategory');
         Route::resource('sub-categories', SubCategoryController::class);
         Route::resource('price-tier-ranges', PriceTierRangeController::class);
+        Route::resource('spot-tier-prices', App\Http\Controllers\Admin\SpotTierPriceController::class);
 
     });
 });

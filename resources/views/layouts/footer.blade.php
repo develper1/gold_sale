@@ -299,6 +299,27 @@
 				</div> 
 			</div>
 		</div>
+		<div class="modal fade" id="tierPriceModal" tabindex="-1" role="dialog" aria-labelledby="tierPriceModalLabel" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title" id="tierPriceModalLabel">Price Tier Range</h5>
+				  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				  </button>
+				</div>
+				<div class="modal-body">
+				  <div class="tierContent">
+
+				  </div>
+				</div>
+				<div class="modal-footer">
+				  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				  {{-- <button type="button" class="btn btn-primary">Save changes</button> --}}
+				</div>
+			  </div>
+			</div>
+		  </div>
 
 		<!-- Newsletter Popup -->
 		{{-- <div class="popup-shadow"></div> --}}
@@ -331,19 +352,11 @@
 	    		<div></div>
 	    	</div>
 	    </div>
-		<!-- Global Tier Price Modal -->
-		<div class="modal fade" id="tierPriceModal" tabindex="-1" role="dialog" aria-labelledby="tierPriceModalLabel" aria-hidden="true">
-			<div class="modal-dialog modal-dialog-centered" role="document">
-				<div class="modal-content">
-					<!-- Content will be loaded here via AJAX -->
-				</div>
-			</div>
-		</div>
 
 		<!-- Dependency Scripts -->
 		<script src="{{ asset('assets/vendor/libs/popper/js/popper.min.js') }}"></script>
 		{{-- <script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script> --}}
-		<script src="{{ asset('assets/vendor/libs/bootstrap/js/bootstrap.min.js') }}"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 		<script src="{{ asset('assets/vendor/libs/slick/js/slick.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/mmenu/js/jquery.mmenu.all.min.js') }}"></script>
 
@@ -407,10 +420,9 @@
 						url: url,
 						method: 'GET',
 						success: function(response) {
-							$('.compare-popup').addClass('active');
 			
-							$('.compare-table-items').html(response);
-							// $('#tierPriceModal').modal('show');
+							$('.tierContent').html(response);
+							$('#tierPriceModal').modal('show');
 						},
 						error: function(xhr) {
 							console.error('Error fetching tier prices:', xhr);

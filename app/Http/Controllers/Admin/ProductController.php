@@ -11,6 +11,8 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\PriceTierRange;
 use App\Models\ProductTierPrice;
+use App\Models\SpotTierPrice;
+use App\Models\ProductSpotTierPrice;
 
 
 class ProductController extends Controller
@@ -34,7 +36,9 @@ class ProductController extends Controller
         $categories = Category::all();
         $subCategories = SubCategory::all();
         $priceTierRanges = PriceTierRange::all();
-        return view('admin.products.add_edit', compact('categories', 'subCategories', 'product', 'priceTierRanges'));
+        $spotTierPrices = SpotTierPrice::all();
+        $productSpotTierPrices = collect();
+        return view('admin.products.add_edit', compact('categories', 'subCategories', 'product', 'priceTierRanges', 'spotTierPrices', 'productSpotTierPrices'));
     }
 
     /**
@@ -54,8 +58,8 @@ class ProductController extends Controller
             'images' => 'required|array',
             'images.*' => 'required|json',
             'use_tier_pricing' => 'boolean',
-            'tier_prices' => 'array',
-            'tier_prices.*.price' => 'required|numeric|min:0',
+            // 'tier_prices' => 'array',
+            // 'tier_prices.*.price' => 'required|numeric|min:0',
         ]);
         
         if ($request->has('images')) {
@@ -90,6 +94,7 @@ class ProductController extends Controller
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
             "use_tier_pricing" => $request->use_tier_pricing ?? false,
+            "use_spot_tier_pricing" => $request->use_spot_tier_pricing ?? false,
         ]);
 
         // Store the remaining images 
@@ -113,6 +118,18 @@ class ProductController extends Controller
             }
         }
         
+        // Handle spot tier prices if enabled
+        if ($request->use_spot_tier_pricing && $request->has('spot_tier_prices')) {
+            foreach ($request->spot_tier_prices as $spotTierId => $data) {
+                ProductSpotTierPrice::create([
+                    'product_id' => $product->id,
+                    'spot_tier_price_id' => $spotTierId,
+                    'type' => $data['type'],
+                    'value' => $data['value'],
+                ]);
+            }
+        }
+        
         return redirect()->route("admin.products.index")->with("success","Product Created successfully");
     }
 
@@ -128,7 +145,9 @@ class ProductController extends Controller
         $categories = Category::all();
         $subCategories = SubCategory::where('category_id', $product->category_id)->get();
         $priceTierRanges = PriceTierRange::all();
-        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories', 'priceTierRanges'));
+        $spotTierPrices = SpotTierPrice::all();
+        $productSpotTierPrices = ProductSpotTierPrice::where('product_id', $product->id)->get();
+        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories', 'priceTierRanges', 'spotTierPrices', 'productSpotTierPrices'));
     }
 
     /**
@@ -149,8 +168,8 @@ class ProductController extends Controller
             'images' => 'required|array',
             'images.*' => 'required|json',
             'use_tier_pricing' => 'boolean',
-            'tier_prices' => 'array',
-            'tier_prices.*.price' => 'required|numeric|min:0',
+            // 'tier_prices' => 'array',
+            // 'tier_prices.*.price' => 'required|numeric|min:0',
         ]);
         $product = Product::findOrFail($id);
     
@@ -200,6 +219,7 @@ class ProductController extends Controller
                 "category_id" => $request->category_id,
                 "sub_category_id" => $request->sub_category_id,
                 "use_tier_pricing" => $request->use_tier_pricing ?? false,
+                "use_spot_tier_pricing" => $request->use_spot_tier_pricing ?? false,
             ]);
 
             // Handle tier prices
@@ -218,6 +238,19 @@ class ProductController extends Controller
             } else {
                 // If tier pricing is disabled, remove all tier prices
                 $product->tierPrices()->delete();
+            }
+
+            // Handle spot tier prices
+            ProductSpotTierPrice::where('product_id', $product->id)->delete();
+            if ($request->use_spot_tier_pricing && $request->has('spot_tier_prices')) {
+                foreach ($request->spot_tier_prices as $spotTierId => $data) {
+                    ProductSpotTierPrice::create([
+                        'product_id' => $product->id,
+                        'spot_tier_price_id' => $spotTierId,
+                        'type' => $data['type'],
+                        'value' => $data['value'],
+                    ]);
+                }
             }
 
             return redirect()->route("admin.products.index")->with("success","Product Updated successfully");

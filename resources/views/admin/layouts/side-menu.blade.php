@@ -143,6 +143,12 @@
           <div data-i18n="Price Tier Ranges">Price Tier Ranges</div>
         </a>
       </li>
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'spot-tier-prices' ? ' active open' : '' }}">
+        <a href="{{ route('admin.spot-tier-prices.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <div data-i18n="Spot Tier Pricing">Spot Tier Pricing</div>
+        </a>
+      </li>
 
     </ul>
     

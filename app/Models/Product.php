@@ -30,7 +30,8 @@ class Product extends Model
         'category_id',
         'subcategory_id',
         'status',
-        'use_tier_pricing'
+        'use_tier_pricing',
+        'use_spot_tier_pricing'
     ];
 
     protected $appends = ['current_price', 'formatted_price'];
@@ -91,9 +92,7 @@ class Product extends Model
         }
 
         // Apply markup if available
-        $markupPercentage = $this->use_override_markup ? 
-            $this->override_markup_percentage : 
-            $this->blanket_markup_percentage;
+        $markupPercentage = $this->blanket_markup_percentage;
             
         if ($markupPercentage) {
             $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));

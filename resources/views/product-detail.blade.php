@@ -55,15 +55,34 @@
 
                         <div class="product-info col-lg-5 col-md-12 col-12">
                             <h1 class="title">{{ $product->name }}</h1>
-                            <span class="price">
+                            @php
+                                $basePrice = (float) $product->current_price; // or whatever your price variable is
+                                $creditCardPrice = round($basePrice * 1.02, 2);
+                            @endphp
+
+                            <div style="display: flex; gap: 10px;">
+                                <div style="background: #cb8161; color: #fff; padding: 4px 10px; text-align: center;">
+                                    <div style="font-weight: bold; letter-spacing: 1px;">CHECK / WIRE</div>
+                                    <div style="background: #f3f3f3; color: #222; font-size: 1.5rem;">
+                                        ${{ number_format($basePrice, 2) }}
+                                    </div>
+                                </div>
+                                <div style="background: #cb8161; color: #fff; padding: 4px 10px; text-align: center;">
+                                    <div style="font-weight: bold; letter-spacing: 1px;">CREDIT CARD / PAYPAL</div>
+                                    <div style="background: #f3f3f3; color: #222; font-size: 1.5rem;">
+                                        ${{ number_format($creditCardPrice, 2) }}
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- <span class="price">
                                 @if($product->pricing_type === 'fixed')
                                     {{ $product->formatted_price }}
                                 @else
                                     Starting from {{ $product->formatted_price }}
                                 @endif
-                            </span>
+                            </span> --}}
                             @if($product->use_tier_pricing)
-                                <p>
+                                <p class="mt-2">
                                     <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
                                         View All Tier Prices
                                     </a>
