@@ -57,7 +57,8 @@
                             <h1 class="title">{{ $product->name }}</h1>
                             @php
                                 $basePrice = (float) $product->current_price; // or whatever your price variable is
-                                $creditCardPrice = round($basePrice * 1.02, 2);
+                                $percentageToAdd = 3.5; // 3.5%
+                                $creditCardPrice = round($basePrice * (1 + ($percentageToAdd / 100)), 2);
                             @endphp
 
                             <div style="display: flex; gap: 10px;">
