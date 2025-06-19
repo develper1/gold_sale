@@ -225,7 +225,15 @@
                             <div class="form-group mt-2 spot-tier-pricing-section" style="display: none;">
                                 <div class="custom-control custom-switch">
                                     <input type="checkbox" class="custom-control-input" id="use_spot_tier_pricing" name="use_spot_tier_pricing" value="1" {{ old('use_spot_tier_pricing', $product->use_spot_tier_pricing ?? false) ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="use_spot_tier_pricing">Use Spot Tier Pricing</label>
+                                    <label class="custom-control-label" for="use_spot_tier_pricing">Use Spot Tier Pricing
+                                        <strong>
+                                            <span id="spot-price-display">
+                                                @if(isset($spotPrice) && $spotPrice && $product->pricing_type === 'spot')
+                                                    <span style="color: #888;">(Spot Price: ${{ number_format($spotPrice, 2) }})</span>
+                                                @endif
+                                            </span>
+                                        </strong>
+                                    </label>
                                 </div>
                             </div>
                             <div id="spot_tier_pricing_section" style="display: none;">
@@ -458,6 +466,35 @@
         $('.spot-tier-pricing-section').show();
         toggleSpotTierPricing();
     }
+
+    function updateSpotPriceDisplay() {
+        var productType = $('select[name="product_type"]').val();
+        var pricingType = $('#pricing_type').val();
+        if (pricingType === 'spot' && productType) {
+            $.ajax({
+                url: '{{ route('admin.products.spot_price') }}',
+                method: 'GET',
+                data: { type: productType },
+                success: function(response) {
+                    if (response.success && response.spot_price) {
+                        $('#spot-price-display').html('<span style="color: #888;">(Spot Price: $' + parseFloat(response.spot_price).toFixed(2) + ')</span>');
+                    } else {
+                        $('#spot-price-display').html('');
+                    }
+                },
+                error: function() {
+                    $('#spot-price-display').html('');
+                }
+            });
+        } else {
+            $('#spot-price-display').html('');
+        }
+    }
+    $('select[name="product_type"], #pricing_type').on('change', function() {
+        updateSpotPriceDisplay();
+    });
+    // Initial call
+    updateSpotPriceDisplay();
 });
 </script>
     

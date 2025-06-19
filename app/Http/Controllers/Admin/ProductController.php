@@ -147,7 +147,12 @@ class ProductController extends Controller
         $priceTierRanges = PriceTierRange::all();
         $spotTierPrices = SpotTierPrice::all();
         $productSpotTierPrices = ProductSpotTierPrice::where('product_id', $product->id)->get();
-        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories', 'priceTierRanges', 'spotTierPrices', 'productSpotTierPrices'));
+        $spotPrice = null;
+        if ($product->pricing_type === 'spot') {
+            $metalPriceService = app(\App\Services\MetalPriceService::class);
+            $spotPrice = $metalPriceService->getSpotPrice($product->product_type);
+        }
+        return view('admin.products.add_edit', compact('product', 'categories', 'subCategories', 'priceTierRanges', 'spotTierPrices', 'productSpotTierPrices', 'spotPrice'));
     }
 
     /**

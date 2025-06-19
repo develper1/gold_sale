@@ -87,7 +87,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource("/subscribers", SubscriberController::class);
         Route::resource("/users", UserController::class);
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
-        Route::resource("/products", ProductController::class);
+        Route::resource("/products", ProductController::class)->except(['show']);
         Route::resource('/coupons', \App\Http\Controllers\Admin\CouponController::class);
         Route::resource('shipping', ShippingController::class);
         Route::resource('services', ServiceController::class);
@@ -140,4 +140,12 @@ Route::get('/cart/count', [ShopController::class, 'getCartCount'])->name('cart.c
 Route::get('/cart', [ShopController::class, 'viewCart'])->name('cart.view');
 
 Route::get('/products/{product}/tier-prices-modal', [ShopController::class, 'getTierPricesModal'])->name('product.tier_prices_modal');
+
+Route::get('/admin/products/spot-price', function (\Illuminate\Http\Request $request) {
+    $type = $request->input('type');
+    if (!$type) return response()->json(['success' => false, 'message' => 'Type required'], 400);
+    $metalPriceService = app(\App\Services\MetalPriceService::class);
+    $spotPrice = $metalPriceService->getSpotPrice($type);
+    return response()->json(['success' => true, 'spot_price' => $spotPrice]);
+})->name('admin.products.spot_price');
 
