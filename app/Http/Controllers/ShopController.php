@@ -176,6 +176,24 @@ class ShopController extends Controller
             // Get the correct price based on quantity
             if ($product->use_tier_pricing) {
                 $price = $product->getTierPriceForQuantity($quantity);
+            } else if ($product->use_spot_tier_pricing && $product->pricing_type === 'spot') {
+                $tier = $product->getSpotTierPriceForQuantity($quantity);
+                $metalPriceService = app(\App\Services\MetalPriceService::class);
+                $spotPrice = $metalPriceService->getSpotPrice($product->product_type);
+                if ($tier) {
+                    if ($tier->type === 'percentage') {
+                        $price = $spotPrice + ($spotPrice * ($tier->value / 100));
+                    } else { // fixed
+                        $price = $spotPrice + $tier->value;
+                    }
+                } else {
+                    // fallback to blanket markup if no tier found
+                    $markupPercentage = $product->blanket_markup_percentage;
+                    $price = $spotPrice;
+                    if ($markupPercentage) {
+                        $price = $spotPrice * (1 + ($markupPercentage / 100));
+                    }
+                }
             } else {
                 $price = $product->current_price;
             }

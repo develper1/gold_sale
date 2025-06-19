@@ -28,7 +28,7 @@ class Product extends Model
         'low_inventory_threshold',
         'image_path',
         'category_id',
-        'subcategory_id',
+        'sub_category_id',
         'status',
         'use_tier_pricing',
         'use_spot_tier_pricing'
@@ -56,48 +56,46 @@ class Product extends Model
         return $this->hasMany(ProductTierPrice::class);
     }
 
+    public function spotTierPrices()
+    {
+        return $this->hasMany(ProductSpotTierPrice::class);
+    }
+
     public function getCurrentPriceAttribute()
     {
-  
         if ($this->use_tier_pricing) {
-            // Debugging: Check if use_tier_pricing is true
-            // dd('use_tier_pricing is true', $this->id, $this->use_tier_pricing, $this->tierPrices()->get()->toArray(), $this->fixed_price);
-
             $firstTierPrice = $this->tierPrices()
                                    ->join('price_tier_range', 'product_tier_prices.price_tier_range_id', '=', 'price_tier_range.id')
                                    ->orderBy('price_tier_range.tier_start')
                                    ->select('product_tier_prices.price')
                                    ->first();
-
-            // Debugging: Check the result of the tier price query
-            // dd('firstTierPrice query result', $firstTierPrice ? $firstTierPrice->toArray() : null);
-
             return $firstTierPrice ? $firstTierPrice->price : $this->fixed_price;
         }
-
-        // Debugging: Check if use_tier_pricing is false
-        // dd('use_tier_pricing is false', $this->id, $this->use_tier_pricing, $this->fixed_price);
-
         if ($this->pricing_type === 'fixed') {
             return $this->fixed_price;
         }
-
-        // For spot pricing, we need to get the current metal price
+        // For spot pricing, get the current metal price
         $metalPriceService = app(MetalPriceService::class);
         $spotPrice = $metalPriceService->getSpotPrice($this->product_type);
-
         if ($spotPrice === null) {
-            // If we can't get the spot price, fallback to fixed price
             return $this->fixed_price;
         }
-
-        // Apply markup if available
+        // If use_spot_tier_pricing is enabled, override blanket markup with tier
+        if ($this->use_spot_tier_pricing) {
+            $tier = $this->getSpotTierPriceForQuantity(1); // Default to 1, should be replaced with actual quantity in context
+            if ($tier) {
+                if ($tier->type === 'percentage') {
+                    return $spotPrice + ($spotPrice * ($tier->value / 100));
+                } else { // fixed
+                    return $spotPrice + $tier->value;
+                }
+            }
+        }
+        // Default: use blanket markup
         $markupPercentage = $this->blanket_markup_percentage;
-            
         if ($markupPercentage) {
             $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));
         }
-
         return $spotPrice;
     }
 
@@ -137,5 +135,27 @@ class Product extends Model
         }
 
         return $tierPrice ? $tierPrice->price : $this->current_price;
+    }
+
+    /**
+     * Get the spot tier price for a given quantity (if use_spot_tier_pricing is enabled)
+     */
+    public function getSpotTierPriceForQuantity($quantity)
+    {
+        if (!$this->use_spot_tier_pricing) {
+            return null;
+        }
+        // Join with spot_tier_prices to get the correct tier for the quantity
+        $tier = $this->spotTierPrices()
+            ->join('spot_tier_prices', 'product_spot_tier_prices.spot_tier_price_id', '=', 'spot_tier_prices.id')
+            ->where('spot_tier_prices.tier_start', '<=', $quantity)
+            ->where(function($query) use ($quantity) {
+                $query->where('spot_tier_prices.tier_end', '>=', $quantity)
+                      ->orWhereNull('spot_tier_prices.tier_end');
+            })
+            ->orderBy('spot_tier_prices.tier_start', 'desc')
+            ->select('product_spot_tier_prices.type', 'product_spot_tier_prices.value')
+            ->first();
+        return $tier;
     }
 }
