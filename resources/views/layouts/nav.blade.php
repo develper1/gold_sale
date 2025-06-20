@@ -19,7 +19,7 @@
                         <div class="mojuri-topcart dropdown">
                             <div class="dropdown mini-cart top-cart">
                                 <div class="remove-cart-shadow"></div>
-                                <a class="dropdown-toggle cart-icon" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <a class="cart-icon" href="{{ route('cart.view') }}" >
                                     <div class="icons-cart"><i class="icon-large-paper-bag"></i><span class="cart-count">0</span></div>
                                 </a>
                                 <div class="dropdown-menu cart-popup">
@@ -254,7 +254,7 @@
                                 <div class="mojuri-topcart dropdown light">
                                     <div class="dropdown mini-cart top-cart">
                                         <div class="remove-cart-shadow"></div>
-                                        <a class="dropdown-toggle cart-icon" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <a class="cart-icon" href="{{ route('cart.view') }}" >
                                             <div class="icons-cart"><i class="icon-large-paper-bag"></i><span class="cart-count">0</span></div>
                                         </a>
                                         <div class="dropdown-menu cart-popup">

@@ -74,15 +74,27 @@
                             </div>
                         </div>
                         <div class="products-topbar-right">
-                            {{-- <div class="products-sort dropdown">
-                                <span class="sort-toggle dropdown-toggle" data-toggle="dropdown" aria-expanded="true">Default sorting</span>
+                            <div class="products-sort dropdown">
+                                @php
+                                    $sort = request('sort', 'default');
+                                    $sortLabel = [
+                                        'default' => 'Default sorting',
+                                        'latest' => 'By Latest',
+                                        'price_asc' => 'Sort by price: low to high',
+                                        'price_desc' => 'Sort by price: high to low',
+                                    ][$sort] ?? 'Default sorting';
+                                @endphp
+                                <span class="sort-toggle dropdown-toggle" data-toggle="dropdown" aria-expanded="true">{{ $sortLabel }}</span>
                                 <ul class="sort-list dropdown-menu" x-placement="bottom-start">
-                                    <li class="active"><a href="#">Default sorting</a></li>
-                                    <li><a href="#">By Latest</a></li>
-                                    <li><a href="#">Sort by price: low to high</a></li>
-                                    <li><a href="#">Sort by price: high to low</a></li>
+                                    <li class="{{ $sort == 'default' ? 'active' : '' }}"><a href="#" data-sort="default">Default sorting</a></li>
+                                    <li class="{{ $sort == 'latest' ? 'active' : '' }}"><a href="#" data-sort="latest">By Latest</a></li>
+                                    <li class="{{ $sort == 'price_asc' ? 'active' : '' }}"><a href="#" data-sort="price_asc">Sort by price: low to high</a></li>
+                                    <li class="{{ $sort == 'price_desc' ? 'active' : '' }}"><a href="#" data-sort="price_desc">Sort by price: high to low</a></li>
                                 </ul>
-                            </div> --}}
+                                <form id="sortForm" method="get" style="display:none;">
+                                    <input type="hidden" name="sort" id="sortInput" value="{{ $sort }}">
+                                </form>
+                            </div>
                             <ul class="layout-toggle nav nav-tabs">
                                 <li class="nav-item">
                                     <a class="layout-grid nav-link active" data-toggle="tab" href="#layout-grid" role="tab"><span class="icon-column"><span class="layer first"><span></span><span></span><span></span></span><span class="layer middle"><span></span><span></span><span></span></span><span class="layer last"><span></span><span></span><span></span></span></span></a>
@@ -598,6 +610,13 @@ $(document).ready(function() {
                 btn_atc.removeClass('loading');
             }
         });
+    });
+
+    $('.sort-list a').on('click', function(e) {
+        e.preventDefault();
+        var sort = $(this).data('sort');
+        $('#sortInput').val(sort);
+        $('#sortForm').submit();
     });
 });
 </script>

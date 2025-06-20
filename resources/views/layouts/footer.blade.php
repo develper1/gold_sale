@@ -356,7 +356,7 @@
 		<!-- Dependency Scripts -->
 		<script src="{{ asset('assets/vendor/libs/popper/js/popper.min.js') }}"></script>
 		{{-- <script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script> --}}
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/js/bootstrap.min.js"></script>
 		<script src="{{ asset('assets/vendor/libs/slick/js/slick.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/mmenu/js/jquery.mmenu.all.min.js') }}"></script>
 
@@ -365,6 +365,7 @@
 		<script src="{{ asset('assets/vendor/libs/slider/js/draggable-0.1.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/slider/js/jquery.slider.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/elevatezoom/js/jquery.elevatezoom.js') }}"></script>
+		<script src="{{ asset('assets/vendor/libs/select2/js/select2.min.js') }}"></script>
 		
 		<!-- Site Scripts -->
 		<script src="{{ asset('assets/js/app.js') }}"></script>

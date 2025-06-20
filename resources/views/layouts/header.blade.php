@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/slick/css/slick-theme.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/mmenu/css/mmenu.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/slider/css/jslider.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/css/select2.min.css') }}">
     
     <!-- Site Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" type="text/css">

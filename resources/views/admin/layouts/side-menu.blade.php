@@ -150,6 +150,13 @@
         </a>
       </li>
 
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'settings' ? ' active open' : '' }}">
+        <a href="{{ route('admin.settings.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-settings"></i>
+          <div data-i18n="Settings">Settings</div>
+        </a>
+      </li>
+
     </ul>
     
     

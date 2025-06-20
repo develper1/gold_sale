@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::with('subCategories')->get();
         
@@ -28,13 +28,23 @@ class ShopController extends Controller
             }
         }
         
-        $products = Product::where('is_active', true)
-                         ->with(['images', 'subCategory'])
-                         ->get();
+        $sort = $request->input('sort', 'default');
+        $productsQuery = Product::where('is_active', true)->with(['images', 'subCategory']);
+        if ($sort === 'latest') {
+            $productsQuery->orderBy('id', 'desc');
+        } else {
+            $productsQuery->orderBy('id', 'asc');
+        }
+        $products = $productsQuery->get();
+        if ($sort === 'price_asc') {
+            $products = $products->sortBy(function($product) { return $product->current_price; })->values();
+        } elseif ($sort === 'price_desc') {
+            $products = $products->sortByDesc(function($product) { return $product->current_price; })->values();
+        }
         return view('thumbs', compact('categories', 'products'));
     }
 
-    public function subcategory($slug)
+    public function subcategory(Request $request, $slug)
     {
         $categories = Category::with('subCategories')->get();
         
@@ -53,15 +63,26 @@ class ShopController extends Controller
         }
         
         $subcategory = SubCategory::where('slug', $slug)->firstOrFail();
-        $products = Product::where('sub_category_id', $subcategory->id)
-                         ->where('is_active', true)
-                         ->with('images')
-                         ->get();
+        $sort = $request->input('sort', 'default');
+        $productsQuery = Product::where('sub_category_id', $subcategory->id)
+            ->where('is_active', true)
+            ->with('images');
+        if ($sort === 'latest') {
+            $productsQuery->orderBy('id', 'desc');
+        } else {
+            $productsQuery->orderBy('id', 'asc');
+        }
+        $products = $productsQuery->get();
+        if ($sort === 'price_asc') {
+            $products = $products->sortBy(function($product) { return $product->current_price; })->values();
+        } elseif ($sort === 'price_desc') {
+            $products = $products->sortByDesc(function($product) { return $product->current_price; })->values();
+        }
         
         return view('thumbs', compact('categories', 'subcategory', 'products'));
     }
 
-    public function category($slug)
+    public function category(Request $request, $slug)
     {
         $categories = Category::with('subCategories')->get();
         
@@ -81,14 +102,26 @@ class ShopController extends Controller
         
         $category = Category::where('slug', $slug)->firstOrFail();
         
-        // Get all products for this category's subcategories
-        $products = Product::whereHas('subCategory', function($query) use ($category) {
+        $sort = $request->input('sort', 'default');
+        $productsQuery = Product::whereHas('subCategory', function($query) use ($category) {
             $query->where('category_id', $category->id);
         })
         ->where('is_active', true)
-        ->with(['images', 'subCategory'])
-        ->get()
-        ->groupBy('sub_category_id');
+        ->with(['images', 'subCategory']);
+        if ($sort === 'latest') {
+            $productsQuery->orderBy('id', 'desc');
+        } else {
+            $productsQuery->orderBy('id', 'asc');
+        }
+        $products = $productsQuery->get();
+        if ($sort === 'price_asc' || $sort === 'price_desc') {
+            $products = ($sort === 'price_asc')
+                ? $products->sortBy(function($product) { return $product->current_price; })->values()
+                : $products->sortByDesc(function($product) { return $product->current_price; })->values();
+            $products = $products->groupBy('sub_category_id');
+        } else {
+            $products = $products->groupBy('sub_category_id');
+        }
         
         return view('thumbs', compact('categories', 'category', 'products'));
     }
@@ -115,8 +148,9 @@ class ShopController extends Controller
                         ->where('is_active', true)
                         ->with(['images', 'subCategory'])
                         ->firstOrFail();
-        
-        return view('product-detail', compact('categories', 'product'));
+        $setting = \App\Models\Setting::first();
+        $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
+        return view('product-detail', compact('categories', 'product', 'credit_card_percentage'));
     }
 
     public function addToCart(Request $request)
