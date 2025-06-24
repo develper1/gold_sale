@@ -1,3 +1,36 @@
+
+<div class="top-ticker-section">
+    <div class="section-padding">
+        <div class="section-container">
+            <div class="ticker-collection">
+                <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="gold">
+                    <div class="cbox">
+                      <span class="c-text">GOLD
+                      </span>
+                      <span class="dollar-sign">$</span><span class="currency-rate" id="goldPrice">0.00</span>
+                      <span>
+                        <img id="goldArrow" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+                      </span>
+                      <span id="goldChange" style="color: rgb(255, 0, 0);">$0.00</span>
+                      <span id="goldPer" style="margin-left: 6px;">0.00</span>%
+                    </div>
+                  </div>
+                  <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="silver">
+                    <div class="cbox">
+                      <span class="c-text">SILVER
+                      </span>
+                      <span class="dollar-sign">$</span><span class="currency-rate" id="silverPrice">0.00</span>
+                      <span>
+                        <img id="silverArrow" src=" https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+                      </span>
+                      <span id="silverChange" style="color: rgb(255, 0, 0);">$0.00</span>
+                      <span id="silverPer" style="margin-left: 6px;">0.00</span>%
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
 <header id="site-header" class="site-header header-v4">
     <div class="header-mobile">
         <div class="section-padding">
@@ -338,6 +371,78 @@ $(document).ready(function() {
             }
         });
     });
+
+    window.METALPRICE_API_KEY = "{{ config('services.metalpriceapi.key') }}";
+
+    const apiKey = window.METALPRICE_API_KEY; 
+    const baseUrl = 'https://api.metalpriceapi.com/v1/';
+    const baseCurrency = 'USD';
+    const metals = ['XAU', 'XAG']; // XAU = Gold, XAG = Silver
+
+    // Helper to format price
+    function formatPrice(price) {
+        return parseFloat(price).toFixed(2);
+    }
+
+    // Helper to set price and change
+    function setPriceAndChange(metal, latest, yesterday) {
+        const priceElem = $(`#${metal.toLowerCase()}Price`);
+        const changeElem = $(`#${metal.toLowerCase()}Change`);
+        const perElem = $(`#${metal.toLowerCase()}Per`);
+        const arrowElem = $(`#${metal.toLowerCase()}Arrow`);
+
+        const diff = latest - yesterday;
+        console.log('diff',diff);
+        const percent = (diff / yesterday) * 100;
+
+        priceElem.text(formatPrice(latest));
+        changeElem.text((diff >= 0 ? '+' : '') + '$' + formatPrice(diff));
+        perElem.text((diff >= 0 ? '+' : '') + percent.toFixed(2));
+
+        if (diff > 0) {
+            changeElem.css('color', 'green');
+            perElem.css('color', '#ffff');
+            arrowElem.attr('src', 'https://cdn.shopify.com/s/files/1/0643/9849/1787/files/crate.png?v=1731954034'); // You can use a green up arrow image
+        } else if (diff < 0) {
+            changeElem.css('color', 'red');
+            perElem.css('color', '#ffff');
+            arrowElem.attr('src', 'https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034'); // You can use a red down arrow image
+        } else {
+            changeElem.css('color', '#ffff');
+            perElem.css('color', '#ffff');
+        }
+    }
+
+    // Fetch prices and update UI
+    function updatePrices() {
+        // Get today's date and yesterday's date in YYYY-MM-DD
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+
+        const formatDate = d => d.toISOString().split('T')[0];
+
+        // Fetch latest prices
+        $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(latestData) {
+            if (!latestData.success) return;
+
+            // Fetch yesterday's prices
+            $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(yesterdayData) {
+                if (!yesterdayData.success) return;
+
+                metals.forEach(metal => {
+                    const latestPrice = latestData.rates[baseCurrency + metal];
+                    const yesterdayPrice = yesterdayData.rates[baseCurrency + metal];
+                    setPriceAndChange(metal === 'XAU' ? 'gold' : 'silver', latestPrice, yesterdayPrice);
+                });
+            });
+        });
+    }
+
+    updatePrices();
+    // Optionally, refresh every X minutes
+    // setInterval(updatePrices, 5 * 60 * 1000);
+
 });
 </script>
 @endpush

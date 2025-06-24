@@ -4,3 +4,36 @@
 .modal-content {
     margin-top: 100px;
 }
+.top-ticker-section{
+    min-height: 40px;
+    background-color: #022952;
+}
+.ticker-collection{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+ .cbox {
+    color: #fff;
+    font-size: 15px;
+}
+ .homepage-collection-grid-item {
+    flex-basis: auto;
+    width: calc((100% - 0px * 3) / 4);
+    position: relative;
+}
+.c-text {
+    font-weight: 550;
+    color: #fff;
+}
+ .dollar-sign,.currency-rate {
+    font-weight: bold;
+    color: #fff;
+}
+#goldArrow{
+    vertical-align: middle;
+}
+#silverArrow{
+    vertical-align: middle;
+}

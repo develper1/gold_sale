@@ -31,7 +31,8 @@ class Product extends Model
         'sub_category_id',
         'status',
         'use_tier_pricing',
-        'use_spot_tier_pricing'
+        'use_spot_tier_pricing',
+        'spot_percentage'
     ];
 
     protected $appends = ['current_price', 'formatted_price'];
@@ -80,6 +81,10 @@ class Product extends Model
         if ($spotPrice === null) {
             return $this->fixed_price;
         }
+
+        // spot percentage
+        $spotPrice = $spotPrice * $this->spot_percentage;
+        
         // If use_spot_tier_pricing is enabled, override blanket markup with tier
         if ($this->use_spot_tier_pricing) {
             $tier = $this->getSpotTierPriceForQuantity(1); // Default to 1, should be replaced with actual quantity in context

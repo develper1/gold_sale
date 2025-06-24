@@ -12,7 +12,7 @@ class MetalPriceService
 
     public function __construct()
     {
-        $this->apiKey = 'fb90526111cd959a88ed7d761670db19';
+        $this->apiKey = env('METALPRICE_API_KEY');
         $this->baseUrl = 'https://api.metalpriceapi.com/v1/latest';
     }
 

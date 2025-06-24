@@ -147,8 +147,14 @@
                         
                             <!-- Fixed Price (conditionally shown) -->
                             <div class="col-lg-6 col-md-6 col-sm-12 fixed-price-field" style="display: {{ $pricing_type == 'fixed' ? 'block' : 'none' }};">
-                                <label class="form-label" for="label">Fixed Price</label>
+                                <label class="form-label" for="label">Fixed Price <span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" value="{{ $product->fixed_price ?? '' }}" class="form-control" id="fixed_price" name="fixed_price">
+                            </div>
+
+                            <!-- Spot Percentage (conditionally shown) -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 spot-price-field" style="display: {{ $pricing_type == 'spot' ? 'block' : 'none' }};">
+                                <label class="form-label" for="label">Spot Percentage <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" value="{{ $product->spot_percentage ?? '' }}" class="form-control" id="spot_percentage" name="spot_percentage">
                             </div>
                             
                         
@@ -373,12 +379,16 @@
             $('.fixed-price-field').show();
             $('.tier-pricing-section').show();
             $('#fixed_price').attr('required', true);
+            $('.spot-price-field').hide();
+            $('#spot_percentage').removeAttr('required');
         } else {
             $('.fixed-price-field').hide();
             $('.tier-pricing-section').hide();
             $('#tier_pricing_section').hide();
             $('#use_tier_pricing').prop('checked', false);
             $('#fixed_price').removeAttr('required');
+            $('.spot-price-field').show();
+            $('#spot_percentage').attr('required', true);
         }
     });
 
@@ -495,6 +505,8 @@
     });
     // Initial call
     updateSpotPriceDisplay();
+
+
 });
 </script>
     
