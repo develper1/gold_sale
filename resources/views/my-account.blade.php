@@ -35,10 +35,13 @@
                                 <a class="nav-link" data-toggle="tab" href="#account-details" role="tab">Account details</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="page-login.html">Logout</a>
+                                <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
                             </li>
                         </ul>
                     </nav>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
                     <div class="my-account-content tab-content">
                         <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
                             <div class="my-account-dashboard">

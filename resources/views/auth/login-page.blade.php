@@ -25,18 +25,24 @@
                             <h2>Login</h2>
                             <div class="box-content">
                                 <div class="form-login">
-                                    <form method="post" class="login">
+                                    <form method="post" class="login" action="{{ route('login') }}">
+                                        @csrf
                                         <div class="username">
-                                            <label>Username or email address <span class="required">*</span></label>
-                                            <input type="text" class="input-text" name="username" id="username">
+                                            <label>{{ __('Email Address') }} <span class="required">*</span></label>
+                                            <input id="email" type="email" class="input-text @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
+                                            @error('email')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
                                         <div class="password">
-                                            <label for="password">Password <span class="required">*</span></label>
-                                            <input class="input-text" type="password" name="password">
+                                            <label for="password">{{ __('Password') }} <span class="required">*</span></label>
+                                            <input class="input-text @error('password') is-invalid @enderror" type="password" name="password" required autocomplete="current-password">
                                         </div>
                                         <div class="rememberme-lost">
                                             <div class="remember-me">
-                                                <input name="rememberme" type="checkbox" value="forever">
+                                                <input name="rememberme" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
                                                 <label class="inline">Remember me</label>
                                             </div>
                                             <div class="lost-password">
@@ -56,14 +62,39 @@
                             <h2 class="register">Register</h2>
                             <div class="box-content">
                                 <div class="form-register">
-                                    <form method="post" class="register">
+                                    <form method="post" class="register" action="{{ route('register') }}">
+                                        @csrf
+                                        <div class="email">
+                                            <label>Name <span class="required">*</span></label>
+                                            <input type="text" class="input-text @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
+                                            @error('name')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
                                         <div class="email">
                                             <label>Email address <span class="required">*</span></label>
-                                            <input type="email" class="input-text" name="email" value="">
+                                            <input type="email" class="input-text @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                            @error('email')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
                                         </div>
                                         <div class="password">
                                             <label>Password <span class="required">*</span></label>
-                                            <input type="password" class="input-text" name="password">
+                                            <input type="password" class="input-text @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
+                                            @error('password')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                            @enderror
+                                        </div>
+                                        <div class="password">
+                                            <label>{{ __('Confirm Password') }} <span class="required">*</span></label>
+                                            <input type="password" class="input-text" name="password_confirmation" required autocomplete="new-password">
+                                            
                                         </div>
                                         <div class="button-register">
                                             <input type="submit" class="button" name="register" value="Register">
