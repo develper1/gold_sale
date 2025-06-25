@@ -114,6 +114,11 @@ Route::middleware([GuestUserMiddleware::class])->group(function(){
     Route::get('/login', [App\Http\Controllers\Auth\UserLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [App\Http\Controllers\Auth\UserLoginController::class, 'login'])->name('login.submit');
 
+    Route::get('/forget-password', [App\Http\Controllers\Auth\UserLoginController::class, 'showForgetPassForm'])->name('forget-password');
+    Route::post('/forget-password', [App\Http\Controllers\Auth\UserLoginController::class, 'submitForgetPassword'])->name('forget-password.submit');
+    Route::get('/reset-password/{token}', [App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->name('password.update');
+
     Route::get('/register', [App\Http\Controllers\Auth\UserRegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [App\Http\Controllers\Auth\UserRegisterController::class, 'register'])->name('register.submit');
 });

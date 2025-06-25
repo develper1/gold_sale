@@ -46,7 +46,7 @@
                                                 <label class="inline">Remember me</label>
                                             </div>
                                             <div class="lost-password">
-                                                <a href="page-forgot-password.html">Lost your password?</a>
+                                                <a href="{{ route('forget-password') }}">Lost your password?</a>
                                             </div>
                                         </div>
                                         <div class="button-login">

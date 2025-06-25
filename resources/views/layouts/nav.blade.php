@@ -413,35 +413,79 @@ $(document).ready(function() {
         }
     }
 
-    // Fetch prices and update UI
-    function updatePrices() {
-        // Get today's date and yesterday's date in YYYY-MM-DD
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
+    let priceUpdateTimeout = null;
+    let currentAjax = null;
 
-        const formatDate = d => d.toISOString().split('T')[0];
+    function updatePrices() {
+        // Abort previous AJAX if still running
+        if (currentAjax && currentAjax.readyState !== 4) {
+            currentAjax.abort();
+        }
+
+        // Only run if tab is visible
+        if (document.hidden) {
+            // Define your time variables (in milliseconds)
+            const SECOND = 1000;
+            const MINUTE = 60 * SECOND;
+            const HOUR   = 60 * MINUTE;
+            const DAY    = 24 * HOUR;
+
+            // Set your desired interval here
+            let updateInterval = 1 * DAY; // Change this to 5 * MINUTE, 2 * HOUR, etc.
+
+            // Try again in 1 minute
+            // priceUpdateTimeout = setTimeout(updatePrices, updateInterval);
+            return;
+        }
 
         // Fetch latest prices
-        $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(latestData) {
-            if (!latestData.success) return;
+        currentAjax = $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(latestData) {
+            if (!latestData.success) {
+                scheduleNext();
+                return;
+            }
 
             // Fetch yesterday's prices
-            $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(yesterdayData) {
-                if (!yesterdayData.success) return;
+            currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(yesterdayData) {
+                if (!yesterdayData.success) {
+                    scheduleNext();
+                    return;
+                }
 
                 metals.forEach(metal => {
                     const latestPrice = latestData.rates[baseCurrency + metal];
                     const yesterdayPrice = yesterdayData.rates[baseCurrency + metal];
                     setPriceAndChange(metal === 'XAU' ? 'gold' : 'silver', latestPrice, yesterdayPrice);
                 });
+
+                scheduleNext();
             });
         });
     }
 
+    function scheduleNext() {
+        // Define your time variables (in milliseconds)
+        const SECOND = 1000;
+        const MINUTE = 60 * SECOND;
+        const HOUR   = 60 * MINUTE;
+        const DAY    = 24 * HOUR;
+
+        // Set your desired interval here
+        let updateInterval = 1 * DAY; // Change this to 5 * MINUTE, 2 * HOUR, etc.
+
+        // priceUpdateTimeout = setTimeout(updatePrices, updateInterval);
+    }
+
+    // Start the first update
     updatePrices();
-    // Optionally, refresh every X minutes
-    // setInterval(updatePrices, 5 * 60 * 1000);
+
+    // Optional: Listen for tab visibility changes to trigger update immediately when tab becomes active
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            if (priceUpdateTimeout) clearTimeout(priceUpdateTimeout);
+            updatePrices();
+        }
+    });
 
 });
 </script>
