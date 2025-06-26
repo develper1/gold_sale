@@ -78,6 +78,7 @@ class Product extends Model
         // For spot pricing, get the current metal price
         $metalPriceService = app(MetalPriceService::class);
         $spotPrice = $metalPriceService->getSpotPrice($this->product_type);
+       
         if ($spotPrice === null) {
             return $this->fixed_price;
         }
@@ -101,6 +102,7 @@ class Product extends Model
         if ($markupPercentage) {
             $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));
         }
+      
         return $spotPrice;
     }
 

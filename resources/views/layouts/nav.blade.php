@@ -27,6 +27,30 @@
                       <span id="silverPer" style="margin-left: 6px;">0.00</span>%
                     </div>
                   </div>
+                  <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="platinum">
+                    <div class="cbox">
+                      <span class="c-text">PLAT
+                      </span>
+                      <span class="dollar-sign">$</span><span class="currency-rate" id="platinumPrice">0.00</span>
+                      <span>
+                        <img id="platinumArrow" src=" https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+                      </span>
+                      <span id="platinumChange" style="color: rgb(255, 0, 0);">$0.00</span>
+                      <span id="platinumPer" style="margin-left: 6px;">0.00</span>%
+                    </div>
+                  </div>
+                  <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="palladium">
+                    <div class="cbox">
+                      <span class="c-text">PALL
+                      </span>
+                      <span class="dollar-sign">$</span><span class="currency-rate" id="palladiumPrice">0.00</span>
+                      <span>
+                        <img id="palladiumArrow" src=" https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+                      </span>
+                      <span id="palladiumChange" style="color: rgb(255, 0, 0);">$0.00</span>
+                      <span id="palladiumPer" style="margin-left: 6px;">0.00</span>%
+                    </div>
+                  </div>
             </div>
         </div>
     </div>
@@ -377,7 +401,7 @@ $(document).ready(function() {
     const apiKey = window.METALPRICE_API_KEY; 
     const baseUrl = 'https://api.metalpriceapi.com/v1/';
     const baseCurrency = 'USD';
-    const metals = ['XAU', 'XAG']; // XAU = Gold, XAG = Silver
+    const metals = ['XAU', 'XAG', 'XPT', 'XPD']; // XAU = Gold, XAG = Silver, XPT = platinum, XPD = palladium
 
     // Helper to format price
     function formatPrice(price) {
@@ -439,14 +463,14 @@ $(document).ready(function() {
         }
 
         // Fetch latest prices
-        currentAjax = $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(latestData) {
+        currentAjax = $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(latestData) {
             if (!latestData.success) {
                 scheduleNext();
                 return;
             }
 
             // Fetch yesterday's prices
-            currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&symbols=${metals.join(',')}`, function(yesterdayData) {
+            currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(yesterdayData) {
                 if (!yesterdayData.success) {
                     scheduleNext();
                     return;
@@ -455,7 +479,16 @@ $(document).ready(function() {
                 metals.forEach(metal => {
                     const latestPrice = latestData.rates[baseCurrency + metal];
                     const yesterdayPrice = yesterdayData.rates[baseCurrency + metal];
-                    setPriceAndChange(metal === 'XAU' ? 'gold' : 'silver', latestPrice, yesterdayPrice);
+                    if(metal === 'XAU') {
+                        var element = 'gold';
+                    }else if(metal === 'XAG'){
+                        var element = 'silver';
+                    }else if(metal === 'XPT'){
+                        var element = 'platinum';
+                    }else{
+                        var element = 'palladium';
+                    }
+                    setPriceAndChange(element, latestPrice, yesterdayPrice);
                 });
 
                 scheduleNext();

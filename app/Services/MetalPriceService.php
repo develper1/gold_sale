@@ -18,22 +18,20 @@ class MetalPriceService
 
     public function getSpotPrice($productType)
     {
-        // Cache the price for 5 minutes to avoid too many API calls
-        return Cache::remember("metal_price_{$productType}", 300, function () use ($productType) {
-            $currency = strtolower($productType) === 'gold' ? 'XAU' : 'XAG';
-            
-            $response = Http::get($this->baseUrl, [
-                'api_key' => $this->apiKey,
-                'base' => 'USD',
-                'currencies' => $currency
-            ]);
+        $currency = strtolower($productType) === 'gold' ? 'XAU' : 'XAG';
+        
+        $response = Http::get($this->baseUrl, [
+            'api_key' => $this->apiKey,
+            'base' => 'USD',
+            'currencies' => $currency
+        ]);
 
-            if ($response->successful()) {
-                $data = $response->json();
-                return $data['rates']['USD'.$currency] ?? null;
-            }
+        if ($response->successful()) {
+            $data = $response->json();
+            return $data['rates']['USD'.$currency] ?? null;
+        }
 
-            return null;
-        });
+        return null;
+        
     }
 } 
