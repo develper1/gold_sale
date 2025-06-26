@@ -134,7 +134,7 @@
                                             </div> --}}
                                             <div class="buttons">
                                                 <a href="{{ route('cart.view') }}" class="button btn view-cart btn-primary">View cart</a>
-                                                <a href="#" class="button btn checkout btn-default">Check out</a>
+                                                <a href="{{ route('checkout') }}" class="button btn checkout btn-default">Check out</a>
                                             </div>
                                         @endif
                                     </div>
@@ -320,7 +320,7 @@
                                                     </div> --}}
                                                     <div class="buttons">
                                                         <a href="{{ route('cart.view') }}" class="button btn view-cart btn-primary">View cart</a>
-                                                        <a href="#" class="button btn checkout btn-default">Check out</a>
+                                                        <a href="{{ route('checkout') }}" class="button btn checkout btn-default">Check out</a>
                                                     </div>
                                                 @endif
                                             </div>
@@ -513,12 +513,12 @@ $(document).ready(function() {
     updatePrices();
 
     // Optional: Listen for tab visibility changes to trigger update immediately when tab becomes active
-    document.addEventListener('visibilitychange', function() {
-        if (!document.hidden) {
-            if (priceUpdateTimeout) clearTimeout(priceUpdateTimeout);
-            updatePrices();
-        }
-    });
+    // document.addEventListener('visibilitychange', function() {
+    //     if (!document.hidden) {
+    //         if (priceUpdateTimeout) clearTimeout(priceUpdateTimeout);
+    //         updatePrices();
+    //     }
+    // });
 
 });
 </script>

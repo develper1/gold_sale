@@ -43,3 +43,9 @@
 #palladiumArrow{
     vertical-align: middle;
 }
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -5px;
+    margin-left: -5px;
+}

@@ -322,4 +322,15 @@ class ShopController extends Controller
         $product->load('tierPrices.priceTierRange');
         return view('_tier_price_table', compact('product'));
     }
+
+    public function checkout()
+    {
+        $cart = session()->get('cart', []);
+        $total = 0;
+        foreach($cart as $item) {
+            $total += $item['price'] * $item['quantity'];
+        }
+        $stateFees = \App\Models\StateFee::all(['code', 'amount']);
+        return view('checkout', compact('cart', 'total', 'stateFees'));
+    }
 } 

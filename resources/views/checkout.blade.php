@@ -41,15 +41,7 @@
                                         <p class="form-row form-row-wide validate-required">
                                             <label>Country / Region <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <select name="billing_country" class="country-select custom-select">
-                                                    <option value="">Select a country / region…</option>
-                                                    <option value="AF">Afghanistan</option>
-                                                    <option value="AX">Åland Islands</option>
-                                                    <option value="AL">Albania</option>
-                                                    <option value="DZ">Algeria</option>
-                                                    <option value="AS">American Samoa</option>
-                                                    <option value="AD">Andorra</option>
-                                                </select>
+                                                <select id="billing_country" name="billing_country" class="country-select custom-select"></select>
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required form-row-wide">
@@ -73,14 +65,7 @@
                                         <p class="form-row address-field validate-required validate-state form-row-wide">
                                             <label>State / County <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <select name="billing_state" class="state-select custom-select">
-                                                    <option value="">Select a state / county…</option>
-                                                    <option value="VN">Vinnytsia Oblast</option>
-                                                    <option value="VL">Volyn Oblast</option>
-                                                    <option value="DP">Dnipropetrovsk Oblast</option>
-                                                    <option value="DT">Donetsk Oblast</option>
-                                                    <option value="ZT">Zhytomyr Oblast</option>
-                                                </select>
+                                                <select id="billing_state" name="billing_state" class="state-select custom-select"></select>
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required validate-postcode form-row-wide">
@@ -151,14 +136,7 @@
                                     <p class="form-row form-row-wide address-field validate-required">
                                         <label for="shipping_country" class="">Country / Region <span class="required" title="required">*</span></label>
                                         <span class="input-wrapper">
-                                            <select name="billing_state" class="state-select custom-select">
-                                                <option value="">Select a country / region…</option>
-                                                <option value="VN">Vinnytsia Oblast</option>
-                                                <option value="VL">Volyn Oblast</option>
-                                                <option value="DP">Dnipropetrovsk Oblast</option>
-                                                <option value="DT">Donetsk Oblast</option>
-                                                <option value="ZT">Zhytomyr Oblast</option>
-                                            </select>
+                                            <select id="shipping_country" name="shipping_country" class="country-select custom-select"></select>
                                         </span>
                                     </p>
                                     <p class="form-row address-field validate-required form-row-wide">
@@ -180,14 +158,7 @@
                                     <p class="form-row address-field validate-required validate-state form-row-wide">
                                         <label for="shipping_state" class="">State / County <span class="required" title="required">*</span></label>
                                         <span class="input-wrapper">
-                                            <select name="billing_state" class="state-select custom-select">
-                                                <option value="">Select a state / county…</option>
-                                                <option value="VN">Vinnytsia Oblast</option>
-                                                <option value="VL">Volyn Oblast</option>
-                                                <option value="DP">Dnipropetrovsk Oblast</option>
-                                                <option value="DT">Donetsk Oblast</option>
-                                                <option value="ZT">Zhytomyr Oblast</option>
-                                            </select>
+                                            <select id="shipping_state" name="shipping_state" class="state-select custom-select"></select>
                                         </span>
                                     </p>
                                     <p class="form-row address-field validate-required validate-postcode form-row-wide">
@@ -212,40 +183,38 @@
                                 <div class="checkout-review-order-table">
                                     <h3 class="review-order-title">Product</h3>
                                     <div class="cart-items">
+                                        @forelse($cart as $item)
                                         <div class="cart-item">
                                             <div class="info-product">
                                                 <div class="product-thumbnail">
-                                                    <img width="600" height="600" src="{{ asset('assets/media/product/3.jpg') }}" alt="">					
+                                                    <img width="60" height="60" src="{{ asset('storage/app/public/' . $item['image']) }}" alt="{{ $item['name'] }}">
                                                 </div>
                                                 <div class="product-name">
-                                                    Twin Hoops
-                                                    <strong class="product-quantity">QTY : 2</strong>											
+                                                    {{ $item['name'] }}
+                                                    <strong class="product-quantity">QTY : {{ $item['quantity'] }}</strong>
                                                 </div>
                                             </div>
                                             <div class="product-total">
-                                                <span>$300.00</span>
+                                                <span>${{ number_format($item['price'] * $item['quantity'], 2) }}</span>
                                             </div>
                                         </div>
+                                        @empty
                                         <div class="cart-item">
                                             <div class="info-product">
-                                                <div class="product-thumbnail">
-                                                    <img width="600" height="600" src="{{ asset('assets/media/product/1.jpg') }}" alt="">					
-                                                </div>
-                                                <div class="product-name">
-                                                    Medium Flat Hoops
-                                                    <strong class="product-quantity">QTY : 1</strong>											
-                                                </div>
-                                            </div>
-                                            <div class="product-total">
-                                                <span>$180.00</span>
+                                                <div class="product-name">Your cart is empty</div>
                                             </div>
                                         </div>
+                                        @endforelse
                                     </div>
                                     <div class="cart-subtotal">
                                         <h2>Subtotal</h2>
                                         <div class="subtotal-price">
-                                            <span>$480.00</span>
+                                            <span>${{ number_format($total, 2) }}</span>
                                         </div>
+                                    </div>
+                                    <div class="state-fee">
+                                        <h2>State Fee</h2>
+                                        <div class="state-fee-amount">$0.00</div>
                                     </div>
                                     <div class="shipping-totals shipping">
                                         <h2>Shipping</h2>
@@ -264,7 +233,7 @@
                                         <h2>Total</h2>
                                         <div class="total-price">
                                             <strong>
-                                                <span>$480.00</span>
+                                                <span class="cart-total">${{ number_format($total, 2) }}</span>
                                             </strong> 
                                         </div>
                                     </div>
@@ -296,7 +265,7 @@
                                             <input type="radio" class="input-radio" name="payment_method" value="paypal">
                                             <label>PayPal</label>
                                             <div class="payment-box">
-                                                <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal account.</p>
+                                                <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
                                             </div>
                                         </li>
                                     </ul>
@@ -316,3 +285,68 @@
     </div>
 </div><!-- #content -->
 @endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    let countriesData = [];
+    // Load countries and states from JSON
+    $.getJSON('public/countries.json', function(data) {
+        countriesData = data;
+        let countryOptions = '<option value="">Select a country / region…</option>';
+        data.forEach(function(country) {
+            countryOptions += `<option value="${country.iso2}">${country.name}</option>`;
+        });
+        $('#billing_country, #shipping_country').html(countryOptions);
+    });
+    // Billing country change
+    $('#billing_country').on('change', function() {
+        let selectedCountry = $(this).val();
+        let states = [];
+        countriesData.forEach(function(country) {
+            if (country.iso2 === selectedCountry) {
+                states = country.states;
+            }
+        });
+        let stateOptions = '<option value="">Select a state / county…</option>';
+        states.forEach(function(state) {
+            stateOptions += `<option value="${state.state_code}">${state.name}</option>`;
+        });
+        $('#billing_state').html(stateOptions);
+        // Reset state fee and total
+        // updateStateFee();
+    });
+    // Billing state change
+    $('#billing_state').on('change', function() {
+        var stateCode = $(this).val();
+        $.ajax({
+            url: '{{ url('/state-fee') }}/' + stateCode,
+            method: 'GET',
+            success: function(response) {
+                var fee = response.amount ? parseFloat(response.amount) : 0;
+                $('.state-fee-amount').text(fee > 0 ? '$' + fee.toFixed(2) : '$0.00');
+                var baseTotal = parseFloat($('.subtotal-price span').text().replace('$',''));
+                var newTotal = baseTotal + fee;
+                $('.cart-total').text('$' + newTotal.toFixed(2));
+            },
+            error: function() {
+                $('.state-fee-amount').text('$0.00');
+                var baseTotal = parseFloat($('.subtotal-price span').text().replace('$',''));
+                $('.cart-total').text('$' + baseTotal.toFixed(2));
+            }
+        });
+    });
+    // function updateStateFee() {
+    //     var stateCode = $('#billing_state').val();
+    //     var fee = window.stateFees && window.stateFees[stateCode] ? parseFloat(window.stateFees[stateCode]) : 0;
+    //     $('.state-fee-amount').text(fee > 0 ? '$' + fee.toFixed(2) : '$0.00');
+    //     var baseTotal = parseFloat($('.subtotal-price span').text().replace('$',''));
+    //     var newTotal = baseTotal + fee;
+    //     $('.cart-total').text('$' + newTotal.toFixed(2));
+    // }
+    // Also update on page load in case of pre-selected state
+    // updateStateFee();
+    // Shipping country/state logic (if needed) can be added similarly
+});
+</script>
+@endpush

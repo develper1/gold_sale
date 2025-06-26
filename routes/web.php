@@ -19,6 +19,12 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\SubCategoryController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\PriceTierRangeController;
+use App\Http\Controllers\Auth\UserLoginController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\SpotTierPriceController;
+use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\UserRegisterController;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -60,9 +66,6 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-Route::get('/checkout', function () {
-    return view('checkout');
-})->name('checkout');
 
 // Route::get('/thumbs', function () {
 //     return view('thumbs');
@@ -92,7 +95,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource("/users", UserController::class);
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
         Route::resource("/products", ProductController::class)->except(['show']);
-        Route::resource('/coupons', \App\Http\Controllers\Admin\CouponController::class);
+        Route::resource('/coupons', CouponController::class);
         Route::resource('shipping', ShippingController::class);
         Route::resource('services', ServiceController::class);
         Route::resource('statefee', StateFeeController::class)->only(['index', 'edit', 'update'])->parameters([
@@ -102,8 +105,8 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/get-sub-categories/{categoryId}', [SubCategoryController::class, 'getSubCategoriesByCategory'])->name('sub-categories.getSubCategoriesByCategory');
         Route::resource('sub-categories', SubCategoryController::class);
         Route::resource('price-tier-ranges', PriceTierRangeController::class);
-        Route::resource('spot-tier-prices', App\Http\Controllers\Admin\SpotTierPriceController::class);
-        Route::resource('settings', App\Http\Controllers\Admin\SettingsController::class)->only(['index', 'update']);
+        Route::resource('spot-tier-prices', SpotTierPriceController::class);
+        Route::resource('settings', SettingsController::class)->only(['index', 'update']);
 
     });
 });
@@ -111,22 +114,24 @@ Route::prefix('admin')->name('admin.')->group(function(){
 // Auth::routes();
 Route::middleware([GuestUserMiddleware::class])->group(function(){
 
-    Route::get('/login', [App\Http\Controllers\Auth\UserLoginController::class, 'showLoginForm'])->name('login');
-    Route::post('/login', [App\Http\Controllers\Auth\UserLoginController::class, 'login'])->name('login.submit');
+    Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [UserLoginController::class, 'login'])->name('login.submit');
 
-    Route::get('/forget-password', [App\Http\Controllers\Auth\UserLoginController::class, 'showForgetPassForm'])->name('forget-password');
-    Route::post('/forget-password', [App\Http\Controllers\Auth\UserLoginController::class, 'submitForgetPassword'])->name('forget-password.submit');
-    Route::get('/reset-password/{token}', [App\Http\Controllers\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-    Route::post('/reset-password', [App\Http\Controllers\Auth\ResetPasswordController::class, 'reset'])->name('password.update');
+    Route::get('/forget-password', [UserLoginController::class, 'showForgetPassForm'])->name('forget-password');
+    Route::post('/forget-password', [UserLoginController::class, 'submitForgetPassword'])->name('forget-password.submit');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-    Route::get('/register', [App\Http\Controllers\Auth\UserRegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('/register', [App\Http\Controllers\Auth\UserRegisterController::class, 'register'])->name('register.submit');
+    Route::get('/register', [UserRegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [UserRegisterController::class, 'register'])->name('register.submit');
 });
 
 Route::group(['middleware' => ['auth:web', 'user']], function () {
 
     // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::post('/logout', [App\Http\Controllers\Auth\UserLoginController::class, 'logout'])->name('logout');
+    Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
+    Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
+
 
 });
 
@@ -159,3 +164,7 @@ Route::get('/admin/products/spot-price', function (\Illuminate\Http\Request $req
     return response()->json(['success' => true, 'spot_price' => $spotPrice]);
 })->name('admin.products.spot_price');
 
+Route::get('/state-fee/{code}', function ($code) {
+    $fee = \App\Models\StateFee::where('code', $code)->value('amount');
+    return response()->json(['amount' => $fee ?? 0]);
+})->name('state.fee');

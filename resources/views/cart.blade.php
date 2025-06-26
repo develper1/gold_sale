@@ -134,7 +134,7 @@
                                 </div>
                             </div>
                             <div class="proceed-to-checkout">		
-                                <a href="#" class="checkout-button button">
+                                <a href="{{ route('checkout') }}" class="checkout-button button">
                                     Proceed to checkout
                                 </a>
                             </div>
