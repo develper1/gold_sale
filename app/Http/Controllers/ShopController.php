@@ -333,4 +333,68 @@ class ShopController extends Controller
         $stateFees = \App\Models\StateFee::all(['code', 'amount']);
         return view('checkout', compact('cart', 'total', 'stateFees'));
     }
+
+    /**
+     * Get shipping fee for a given subtotal (AJAX endpoint)
+     */
+    public function getShippingFee($subtotal)
+    {
+        $shippings = \App\Models\Shipping::orderBy('order_amount')->get();
+        $fee = 0;
+        if ($shippings->count() > 0) {
+            // If subtotal is less than the lowest order_amount, use the lowest bracket
+            if ($subtotal < $shippings->first()->order_amount) {
+                $fee = $shippings->first()->shipping_charges;
+            } else {
+                foreach ($shippings as $index => $shipping) {
+                    $next = $shippings->get($index + 1);
+                    if ($next) {
+                        if ($subtotal >= $shipping->order_amount && $subtotal < $next->order_amount) {
+                            $fee = $shipping->shipping_charges;
+                            break;
+                        }
+                    } else {
+                        // Last range: if subtotal >= last order_amount
+                        if ($subtotal >= $shipping->order_amount) {
+                            $fee = $shipping->shipping_charges;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return response()->json(['amount' => $fee]);
+    }
+
+    /**
+     * Get service fee for a given subtotal (AJAX endpoint)
+     */
+    public function getServiceFee($subtotal)
+    {
+        $services = \App\Models\Service::orderBy('order_amount')->get();
+        $fee = 0;
+        if ($services->count() > 0) {
+            // If subtotal is less than the lowest order_amount, use the lowest bracket
+            if ($subtotal < $services->first()->order_amount) {
+                $fee = $services->first()->services_fee;
+            } else {
+                foreach ($services as $index => $service) {
+                    $next = $services->get($index + 1);
+                    if ($next) {
+                        if ($subtotal >= $service->order_amount && $subtotal < $next->order_amount) {
+                            $fee = $service->services_fee;
+                            break;
+                        }
+                    } else {
+                        // Last range: if subtotal >= last order_amount
+                        if ($subtotal >= $service->order_amount) {
+                            $fee = $service->services_fee;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return response()->json(['amount' => $fee]);
+    }
 } 

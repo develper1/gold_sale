@@ -88,7 +88,7 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="account-fields">
+                                {{-- <div class="account-fields">
                                     <p class="form-row form-row-wide">
                                         <label class="checkbox">
                                             <input class="input-checkbox" type="checkbox" name="createaccount" value="1"> 
@@ -105,7 +105,7 @@
                                         </p>								
                                         <div class="clear"></div>
                                     </div>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="shipping-fields">
                                 <p class="form-row form-row-wide ship-to-different-address">
@@ -212,22 +212,18 @@
                                             <span>${{ number_format($total, 2) }}</span>
                                         </div>
                                     </div>
+                                    
+                                    <div class="shipping-totals shipping">
+                                        <h2>Shipping</h2>
+                                        <div class="shipping-fee-amount">$0.00</div>
+                                    </div>
                                     <div class="state-fee">
                                         <h2>State Fee</h2>
                                         <div class="state-fee-amount">$0.00</div>
                                     </div>
-                                    <div class="shipping-totals shipping">
-                                        <h2>Shipping</h2>
-                                        <div data-title="Shipping">
-                                            <ul class="shipping-methods custom-radio">
-                                                <li>
-                                                    <input type="radio" name="shipping_method" data-index="0" value="free_shipping" class="shipping_method" checked="checked"><label>Free shipping</label>
-                                                </li>
-                                                <li>
-                                                    <input type="radio" name="shipping_method" data-index="0" value="flat_rate" class="shipping_method"><label>Flat rate</label>					
-                                                </li>
-                                            </ul>
-                                        </div>
+                                    <div class="service-fee">
+                                        <h2>Service Fee</h2>
+                                        <div class="service-fee-amount">$0.00</div>
                                     </div>
                                     <div class="order-total">
                                         <h2>Total</h2>
@@ -290,6 +286,52 @@
 <script>
 $(document).ready(function() {
     let countriesData = [];
+    let shippingFee = 0;
+    let stateFee = 0;
+    let serviceFee = 0;
+
+    function updateShippingFee() {
+        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+        $.ajax({
+            url: 'shipping-fee/' + baseTotal,
+            method: 'GET',
+            success: function(response) {
+                shippingFee = response.amount ? parseFloat(response.amount) : 0;
+                $('.shipping-fee-amount').text(shippingFee > 0 ? '$' + shippingFee.toFixed(2) : '$0.00');
+                updateOrderTotal();
+            },
+            error: function() {
+                shippingFee = 0;
+                $('.shipping-fee-amount').text('$0.00');
+                updateOrderTotal();
+            }
+        });
+    }
+
+    function updateServiceFee() {
+        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+        $.ajax({
+            url: 'service-fee/' + baseTotal,
+            method: 'GET',
+            success: function(response) {
+                serviceFee = response.amount ? parseFloat(response.amount) : 0;
+                $('.service-fee-amount').text(serviceFee > 0 ? '$' + serviceFee.toFixed(2) : '$0.00');
+                updateOrderTotal();
+            },
+            error: function() {
+                serviceFee = 0;
+                $('.service-fee-amount').text('$0.00');
+                updateOrderTotal();
+            }
+        });
+    }
+
+    function updateOrderTotal() {
+        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+        var total = baseTotal + shippingFee + stateFee + serviceFee;
+        $('.cart-total').text('$' + total.toFixed(2));
+    }
+
     // Load countries and states from JSON
     $.getJSON('public/countries.json', function(data) {
         countriesData = data;
@@ -299,6 +341,7 @@ $(document).ready(function() {
         });
         $('#billing_country, #shipping_country').html(countryOptions);
     });
+
     // Billing country change
     $('#billing_country').on('change', function() {
         let selectedCountry = $(this).val();
@@ -316,6 +359,7 @@ $(document).ready(function() {
         // Reset state fee and total
         // updateStateFee();
     });
+
     // Billing state change
     $('#billing_state').on('change', function() {
         var stateCode = $(this).val();
@@ -323,30 +367,26 @@ $(document).ready(function() {
             url: '{{ url('/state-fee') }}/' + stateCode,
             method: 'GET',
             success: function(response) {
-                var fee = response.amount ? parseFloat(response.amount) : 0;
-                $('.state-fee-amount').text(fee > 0 ? '$' + fee.toFixed(2) : '$0.00');
-                var baseTotal = parseFloat($('.subtotal-price span').text().replace('$',''));
-                var newTotal = baseTotal + fee;
-                $('.cart-total').text('$' + newTotal.toFixed(2));
+                stateFee = response.amount ? parseFloat(response.amount) : 0;
+                $('.state-fee-amount').text(stateFee > 0 ? '$' + stateFee.toFixed(2) : '$0.00');
+                updateOrderTotal();
             },
             error: function() {
+                stateFee = 0;
                 $('.state-fee-amount').text('$0.00');
-                var baseTotal = parseFloat($('.subtotal-price span').text().replace('$',''));
-                $('.cart-total').text('$' + baseTotal.toFixed(2));
+                updateOrderTotal();
             }
         });
     });
-    // function updateStateFee() {
-    //     var stateCode = $('#billing_state').val();
-    //     var fee = window.stateFees && window.stateFees[stateCode] ? parseFloat(window.stateFees[stateCode]) : 0;
-    //     $('.state-fee-amount').text(fee > 0 ? '$' + fee.toFixed(2) : '$0.00');
-    //     var baseTotal = parseFloat($('.subtotal-price span').text().replace('$',''));
-    //     var newTotal = baseTotal + fee;
-    //     $('.cart-total').text('$' + newTotal.toFixed(2));
-    // }
-    // Also update on page load in case of pre-selected state
-    // updateStateFee();
-    // Shipping country/state logic (if needed) can be added similarly
+
+    // Initial fetch of shipping fee on page load
+    updateShippingFee();
+    // Initial fetch of service fee on page load
+    updateServiceFee();
+
+    // If you have logic that changes the subtotal, call updateShippingFee() and updateServiceFee() after subtotal changes
+    // For now, if you want to re-fetch shipping/service fee after state fee changes, you can do so here if needed
+    // Example: $(".some-class-that-changes-subtotal").on('change', function() { updateShippingFee(); updateServiceFee(); });
 });
 </script>
 @endpush

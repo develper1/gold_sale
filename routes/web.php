@@ -168,3 +168,8 @@ Route::get('/state-fee/{code}', function ($code) {
     $fee = \App\Models\StateFee::where('code', $code)->value('amount');
     return response()->json(['amount' => $fee ?? 0]);
 })->name('state.fee');
+
+// Add this route for shipping fee by subtotal
+Route::get('/shipping-fee/{subtotal}', [\App\Http\Controllers\ShopController::class, 'getShippingFee'])->name('shipping.fee');
+// Add this route for service fee by subtotal
+Route::get('/service-fee/{subtotal}', [\App\Http\Controllers\ShopController::class, 'getServiceFee'])->name('service.fee');

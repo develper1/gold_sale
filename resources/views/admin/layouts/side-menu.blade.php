@@ -66,21 +66,21 @@
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'subscribers' ? ' active open' : '' }}">
         <a href="{{ route('admin.subscribers.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-smart-home"></i>
+          <i class="menu-icon tf-icons ti ti-user-plus"></i>
           <div data-i18n="Subscribers">Subscribers</div>
         </a>
       </li>
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'coupons' ? ' active open' : '' }}">
         <a href="{{ route('admin.coupons.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-smart-home"></i>
+          <i class="menu-icon tf-icons ti ti-ticket"></i>
           <div data-i18n="Coupons">Coupons</div>
         </a>
       </li>
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'shipping' ? ' active open' : '' }}">
         <a href="{{ route('admin.shipping.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
           <div data-i18n="Shipping Fee">Shipping Fee</div>
         </a>
       </li>
@@ -94,7 +94,7 @@
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'categories' ? ' active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons ti ti-tags"></i>
+          <i class="menu-icon tf-icons ti ti-category"></i>
           <div data-i18n="Categories">Categories</div>
         </a>
         <ul class="menu-sub">
@@ -113,7 +113,7 @@
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'sub-categories' ? ' active open' : '' }}">
         <a href="javascript:void(0);" class="menu-link menu-toggle">
-          <i class="menu-icon tf-icons ti ti-tags"></i>
+          <i class="menu-icon tf-icons ti ti-category-2"></i>
           <div data-i18n="Sub Categories">Sub Categories</div>
         </a>
         <ul class="menu-sub">
@@ -132,20 +132,20 @@
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'statefee' ? ' active open' : '' }}">
         <a href="{{ route('admin.statefee.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <i class="menu-icon tf-icons ti ti-map-pin-cog"></i>
           <div data-i18n="State Fee">State Fee</div>
         </a>
       </li>
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'price-tier-ranges' ? ' active open' : '' }}">
         <a href="{{ route('admin.price-tier-ranges.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <i class="menu-icon tf-icons ti ti-receipt-2"></i>
           <div data-i18n="Price Tier Ranges">Price Tier Ranges</div>
         </a>
       </li>
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'spot-tier-prices' ? ' active open' : '' }}">
         <a href="{{ route('admin.spot-tier-prices.index') }}" class="menu-link">
-          <i class="menu-icon tf-icons ti ti-currency-dollar"></i>
+          <i class="menu-icon tf-icons ti ti-message-dollar"></i>
           <div data-i18n="Spot Tier Pricing">Spot Tier Pricing</div>
         </a>
       </li>
