@@ -27,6 +27,8 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\UserRegisterController;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,9 +53,7 @@ Route::get('/home', function () {
     return view('home');
 })->name('home');
 
-Route::get('/account', function () {
-    return view('my-account');
-})->name('account');
+Route::get('/account', [AccountController::class, 'index'])->name('account');
 Route::get('/about', function () {
     return view('about');
 })->name('about');
@@ -107,6 +107,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('price-tier-ranges', PriceTierRangeController::class);
         Route::resource('spot-tier-prices', SpotTierPriceController::class);
         Route::resource('settings', SettingsController::class)->only(['index', 'update']);
+        Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show']);
 
     });
 });
@@ -173,3 +174,6 @@ Route::get('/state-fee/{code}', function ($code) {
 Route::get('/shipping-fee/{subtotal}', [\App\Http\Controllers\ShopController::class, 'getShippingFee'])->name('shipping.fee');
 // Add this route for service fee by subtotal
 Route::get('/service-fee/{subtotal}', [\App\Http\Controllers\ShopController::class, 'getServiceFee'])->name('service.fee');
+
+Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
+Route::get('/order-confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');

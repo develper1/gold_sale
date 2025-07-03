@@ -354,7 +354,8 @@
 		<!-- Dependency Scripts -->
 		<script src="{{ asset('assets/vendor/libs/popper/js/popper.min.js') }}"></script>
 		{{-- <script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script> --}}
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/js/bootstrap.min.js"></script>
+		{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/js/bootstrap.min.js"></script> --}}
+		<script src="{{ asset('assets/vendor/libs/bootstrap/js/bootstrap.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/slick/js/slick.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/mmenu/js/jquery.mmenu.all.min.js') }}"></script>
 

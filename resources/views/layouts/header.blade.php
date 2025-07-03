@@ -9,7 +9,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset('landingPageAseets/assets/img/favicon.png') }}">
     
     <!-- Dependency Styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/css/bootstrap.min.css" type="text/css">
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/css/bootstrap.min.css" type="text/css"> --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap/css/bootstrap.min.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/feather-font/css/iconfont.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/icomoon-font/css/icomoon.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/font-awesome/css/font-awesome.css') }}" type="text/css">

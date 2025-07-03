@@ -19,7 +19,8 @@
     <div class="section-padding">
         <div class="section-container p-l-r">
             <div class="shop-checkout">
-                <form name="checkout" method="post" class="checkout" action="" autocomplete="off">
+                <form name="checkout" method="post" class="checkout" action="{{ route('checkout.store') }}" autocomplete="off">
+                    @csrf
                     <div class="row">
                         <div class="col-xl-8 col-lg-7 col-md-12 col-12">
                             <div class="customer-details">

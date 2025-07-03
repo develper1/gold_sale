@@ -63,7 +63,12 @@
           
         </ul>
       </li>
-
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'orders' ? ' active open' : '' }}">
+        <a href="{{ route('admin.orders.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
+          <div data-i18n="Orders">Orders</div>
+        </a>
+      </li>
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'subscribers' ? ' active open' : '' }}">
         <a href="{{ route('admin.subscribers.index') }}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-user-plus"></i>
@@ -149,6 +154,8 @@
           <div data-i18n="Spot Tier Pricing">Spot Tier Pricing</div>
         </a>
       </li>
+
+      
 
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'settings' ? ' active open' : '' }}">
         <a href="{{ route('admin.settings.index') }}" class="menu-link">
