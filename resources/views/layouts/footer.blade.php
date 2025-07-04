@@ -33,8 +33,8 @@
 			<div class="wishlist-popup-inner">
                 <div class="wishlist-popup-content">
                     <div class="wishlist-popup-content-top">
-                        <span class="wishlist-name">Wishlist</span>
-						<span class="wishlist-count-wrapper"><span class="wishlist-count">2</span></span>                                
+                        <span class="wishlist-name">Price Tier Range</span>
+						{{-- <span class="wishlist-count-wrapper"><span class="wishlist-count">2</span></span>                                 --}}
 						<span class="wishlist-popup-close"></span>
                     </div>
                     <div class="wishlist-popup-content-mid">
@@ -98,7 +98,7 @@
 							</tbody>
 						</table>
 					</div>
-                    <div class="wishlist-popup-content-bot">
+                    {{-- <div class="wishlist-popup-content-bot">
                         <div class="wishlist-popup-content-bot-inner">
                             <a class="wishlist-page" href="shop-wishlist.html">
 								Open wishlist page                                    
@@ -108,7 +108,7 @@
                             </span>
                         </div>
                         <div class="wishlist-notice wishlist-notice-show">Added to the wishlist!</div>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
 		</div>
@@ -299,7 +299,9 @@
 				</div> 
 			</div>
 		</div>
-		<div class="modal fade" id="tierPriceModal" tabindex="-1" role="dialog" aria-labelledby="tierPriceModalLabel" aria-hidden="true">
+
+
+		{{-- <div class="modal fade" id="tierPriceModal" tabindex="-1" role="dialog" aria-labelledby="tierPriceModalLabel" aria-hidden="true">
 			<div class="modal-dialog" role="document">
 			  <div class="modal-content">
 				<div class="modal-header">
@@ -317,7 +319,7 @@
 				</div>
 			  </div>
 			</div>
-		  </div>
+		  </div> --}}
 
 		<!-- Newsletter Popup -->
 		{{-- <div class="popup-shadow"></div> --}}
@@ -421,8 +423,8 @@
 						method: 'GET',
 						success: function(response) {
 			
-							$('.tierContent').html(response);
-							$('#tierPriceModal').modal('show');
+							$('.wishlist-popup-content-mid').html(response);
+							$('.wishlist-popup').addClass('show');
 						},
 						error: function(xhr) {
 							console.error('Error fetching tier prices:', xhr);

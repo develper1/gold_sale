@@ -6500,7 +6500,7 @@ body.home.title-6 .block-newsletter .newsletter-title {
   line-height: 35px;
   -webkit-transition: all .1s ease;
   transition: all .1s ease;
-  content: "\e977";
+  /* content: "\e977"; */
   font-family: feather;
   margin: 0;
   position: relative;

@@ -6,11 +6,39 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
     public function store(Request $request)
     {
+        // Verify PayPal payment
+        $paypalOrderId = $request->input('paypal_order_id');
+        if (!$paypalOrderId) {
+            return response()->json(['error' => 'Missing PayPal order ID'], 422);
+        }
+
+        // Get PayPal access token
+        $clientId = "Ae_-r7qYW9bpiddFlcATBJ2bZRzjQOW_eG-4_PoPF7kfgKwzbE07KCq8w3HyKQj-OCWGB7i3am_0mema";
+        $secret = "EFy2yQ556SeynlAPS0QU-nAfMtnMlTlFfpkDz4P0APWXw7CSr1ClctGafrX67SYfGLIKLFW5QA5bog_Y";
+        $isSandbox = true; // Set to false for live
+        $baseUrl = $isSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
+        $accessTokenResponse = Http::asForm()->withBasicAuth($clientId, $secret)
+            ->post($baseUrl . '/v1/oauth2/token', [
+                'grant_type' => 'client_credentials',
+            ]);
+        if (!$accessTokenResponse->ok()) {
+            return response()->json(['error' => 'Could not authenticate with PayPal'], 500);
+        }
+        $accessToken = $accessTokenResponse['access_token'];
+
+        // Verify order status
+        $paypalResponse = Http::withToken($accessToken)
+            ->get($baseUrl . '/v2/checkout/orders/' . $paypalOrderId);
+        if (!$paypalResponse->ok() || $paypalResponse['status'] !== 'COMPLETED') {
+            return response()->json(['error' => 'PayPal payment not completed'], 422);
+        }
+
         $validated = $request->validate([
             'billing_first_name' => 'required',
             'billing_last_name' => 'required',
@@ -20,7 +48,7 @@ class OrderController extends Controller
             'billing_state' => 'required',
             'billing_postcode' => 'required',
             'billing_country' => 'required',
-            'payment_method' => 'required',
+            // 'payment_method' => 'required', // No longer needed
         ]);
 
         $cart = session('cart', []);
@@ -60,8 +88,8 @@ class OrderController extends Controller
             'state_fee' => $state_fee,
             'service_fee' => $service_fee,
             'total' => $total,
-            'payment_method' => $request->payment_method,
-            'status' => 'pending',
+            'payment_method' => 'paypal',
+            'status' => 'paid',
         ]);
 
         foreach ($cart as $item) {
@@ -76,7 +104,7 @@ class OrderController extends Controller
 
         session()->forget('cart');
 
-        return redirect()->route('order.confirmation', $order->id);
+        return response()->json(['redirect_url' => route('order.confirmation', $order->id)]);
     }
 
     public function confirmation($orderId)

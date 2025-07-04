@@ -237,45 +237,20 @@
                                 </div>
                                 <div id="payment" class="checkout-payment">
                                     <ul class="payment-methods methods custom-radio">
-                                        <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="bacs" checked="checked">
-                                            <label for="payment_method_bacs">Direct bank transfer</label>
-                                            <div class="payment-box">
-                                                <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                                            </div>
-                                        </li>
-                                        <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="cheque">
-                                            <label>Check payments</label>
-                                            <div class="payment-box">
-                                                <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                            </div>
-                                        </li>
-                                        <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="cod">
-                                            <label>Cash on delivery</label>
-                                            <div class="payment-box">
-                                                <p>Pay with cash upon delivery.</p>
-                                            </div>
-                                        </li>
-                                        <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="paypal">
-                                            <label>PayPal</label>
-                                            <div class="payment-box">
-                                                <p>Pay via PayPal; you can pay with your credit card if you don't have a PayPal account.</p>
-                                            </div>
-                                        </li>
+                                        <div id="paypal-button-container"></div>
                                     </ul>
                                     <div class="form-row place-order">
                                         <div class="terms-and-conditions-wrapper">
                                             <div class="privacy-policy-text"></div>
                                         </div>
-                                        <button type="submit" class="button alt" name="checkout_place_order" value="Place order">Place order</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="shipping_fee" id="shipping_fee" value="0">
+                    <input type="hidden" name="state_fee" id="state_fee" value="0">
+                    <input type="hidden" name="service_fee" id="service_fee" value="0">
                 </form>
             </div>
         </div>
@@ -284,6 +259,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://www.paypal.com/sdk/js?client-id=Ae_-r7qYW9bpiddFlcATBJ2bZRzjQOW_eG-4_PoPF7kfgKwzbE07KCq8w3HyKQj-OCWGB7i3am_0mema&disable-funding=credit,card,paylater"></script>
 <script>
 $(document).ready(function() {
     let countriesData = [];
@@ -299,11 +275,13 @@ $(document).ready(function() {
             success: function(response) {
                 shippingFee = response.amount ? parseFloat(response.amount) : 0;
                 $('.shipping-fee-amount').text(shippingFee > 0 ? '$' + shippingFee.toFixed(2) : '$0.00');
+                $('#shipping_fee').val(shippingFee);
                 updateOrderTotal();
             },
             error: function() {
                 shippingFee = 0;
                 $('.shipping-fee-amount').text('$0.00');
+                $('#shipping_fee').val(0);
                 updateOrderTotal();
             }
         });
@@ -317,11 +295,13 @@ $(document).ready(function() {
             success: function(response) {
                 serviceFee = response.amount ? parseFloat(response.amount) : 0;
                 $('.service-fee-amount').text(serviceFee > 0 ? '$' + serviceFee.toFixed(2) : '$0.00');
+                $('#service_fee').val(serviceFee);
                 updateOrderTotal();
             },
             error: function() {
                 serviceFee = 0;
                 $('.service-fee-amount').text('$0.00');
+                $('#service_fee').val(0);
                 updateOrderTotal();
             }
         });
@@ -370,11 +350,13 @@ $(document).ready(function() {
             success: function(response) {
                 stateFee = response.amount ? parseFloat(response.amount) : 0;
                 $('.state-fee-amount').text(stateFee > 0 ? '$' + stateFee.toFixed(2) : '$0.00');
+                $('#state_fee').val(stateFee);
                 updateOrderTotal();
             },
             error: function() {
                 stateFee = 0;
                 $('.state-fee-amount').text('$0.00');
+                $('#state_fee').val(0);
                 updateOrderTotal();
             }
         });
@@ -388,6 +370,85 @@ $(document).ready(function() {
     // If you have logic that changes the subtotal, call updateShippingFee() and updateServiceFee() after subtotal changes
     // For now, if you want to re-fetch shipping/service fee after state fee changes, you can do so here if needed
     // Example: $(".some-class-that-changes-subtotal").on('change', function() { updateShippingFee(); updateServiceFee(); });
+
+    // --- Validation function ---
+    function isCheckoutFormValid() {
+        let valid = true;
+        let requiredFields = [
+            'input[name="billing_first_name"]',
+            'input[name="billing_last_name"]',
+            'select[name="billing_country"]',
+            'input[name="billing_address_1"]',
+            'input[name="billing_city"]',
+            'select[name="billing_state"]',
+            'input[name="billing_postcode"]',
+            'input[name="billing_phone"]',
+            'input[name="billing_email"]'
+        ];
+        requiredFields.forEach(function(selector) {
+            let $field = $(selector);
+            if ($field.length && !$field.val()) {
+                $field.addClass('is-invalid');
+                valid = false;
+            } else {
+                $field.removeClass('is-invalid');
+            }
+        });
+        return valid;
+    }
+
+    // Render PayPal button only
+    if ($('#paypal-button-container').length && typeof paypal !== 'undefined') {
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                if (!isCheckoutFormValid()) {
+                    alert('Please fill in all required fields.');
+                    return actions.reject();
+                }
+                let total = $('.cart-total').text().replace('$', '').replace(/,/g, '');
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: { value: total }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(details) {
+                    // Gather all form data
+                    var formData = $('form.checkout').serializeArray();
+                    // Add PayPal details
+                    formData.push({name: 'paypal_order_id', value: data.orderID});
+                    formData.push({name: 'paypal_details', value: JSON.stringify(details)});
+                    // Send to backend via AJAX
+                    $.ajax({
+                        url: $('form.checkout').attr('action'),
+                        method: 'POST',
+                        data: formData,
+                        headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
+                        success: function(response) {
+                            if (response.redirect_url) {
+                                window.location.href = response.redirect_url;
+                            } else {
+                                window.location.href = '/order-confirmation';
+                            }
+                        },
+                        error: function(xhr) {
+                            alert('There was an error processing your order. Please contact support.');
+                        }
+                    });
+                });
+            }
+        }).render('#paypal-button-container');
+    }
+
+    // Hide the manual place order button if it exists (for safety)
+    $('button[name="checkout_place_order"]').hide();
 });
 </script>
+
+<style>
+.is-invalid {
+    /* border: 1px solid red !important; */
+}
+</style>
 @endpush
