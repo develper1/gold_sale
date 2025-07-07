@@ -52,11 +52,7 @@
 
 .shop-checkout .checkout-review-order .state-fee {
     margin-top: 30px;
-}
-
-.shop-checkout .checkout-review-order .state-fee{
-    display: flex
-;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid #dedede;
@@ -65,14 +61,19 @@
 
 .shop-checkout .checkout-review-order .service-fee {
     margin-top: 30px;
-}
-
-.shop-checkout .checkout-review-order .service-fee{
-    display: flex
-;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     border-top: 1px solid #dedede;
     padding: 20px 0;
 }
+.shop-checkout .checkout-review-order .credit-card-fee {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dedede;
+    padding: 20px 0;
+}
+
 

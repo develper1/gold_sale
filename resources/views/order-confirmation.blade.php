@@ -3,12 +3,11 @@
 @section('content')
 <div class="container py-5">
     <h1>Order Confirmation</h1>
-    <p>Thank you for your order! Your order ID is <strong>{{ $order->id }}</strong>.</p>
+    <p>Thank you for your order! Your order ID is <strong>{{ $order->order_uid }}</strong>.</p>
     <h3>Order Details</h3>
     <ul>
         <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>
         <li>Email: {{ $order->billing_email }}</li>
-        <li>Total: ${{ number_format($order->total, 2) }}</li>
         <li>Status: {{ ucfirst($order->status) }}</li>
     </ul>
     <h3>Order Items</h3>
@@ -30,6 +29,10 @@
                 <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
             </tr>
             @endforeach
+            <tr>
+                <td colspan="3"></td>
+                <td><strong>Total: ${{ number_format($order->total, 2) }}</strong></td>
+            </tr>
         </tbody>
     </table>
 </div>

@@ -38,6 +38,7 @@ return new class extends Migration
             $table->decimal('total', 10, 2);
             $table->string('payment_method');
             $table->string('status')->default('pending');
+            
             $table->timestamps();
         });
     }

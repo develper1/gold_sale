@@ -331,7 +331,9 @@ class ShopController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
         $stateFees = \App\Models\StateFee::all(['code', 'amount']);
-        return view('checkout', compact('cart', 'total', 'stateFees'));
+        $setting = \App\Models\Setting::first();
+        $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
+        return view('checkout', compact('cart', 'total', 'stateFees', 'creditCardPercentage'));
     }
 
     /**

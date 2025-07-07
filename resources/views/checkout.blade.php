@@ -226,6 +226,10 @@
                                         <h2>Service Fee</h2>
                                         <div class="service-fee-amount">$0.00</div>
                                     </div>
+                                    <div class="credit-card-fee">
+                                        <h2>Credit Card Fee ({{ $creditCardPercentage }}%)</h2>
+                                        <div class="credit-card-fee-amount">$0.00</div>
+                                    </div>
                                     <div class="order-total">
                                         <h2>Total</h2>
                                         <div class="total-price">
@@ -266,6 +270,8 @@ $(document).ready(function() {
     let shippingFee = 0;
     let stateFee = 0;
     let serviceFee = 0;
+    let creditCardPercentage = {{ $creditCardPercentage ?? 0 }};
+    let creditCardFee = 0;
 
     function updateShippingFee() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
@@ -307,9 +313,16 @@ $(document).ready(function() {
         });
     }
 
+    function updateCreditCardFee() {
+        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+        creditCardFee = (baseTotal) * (creditCardPercentage / 100);
+        $('.credit-card-fee-amount').text(creditCardFee > 0 ? '$' + creditCardFee.toFixed(2) : '$0.00');
+        updateOrderTotal();
+    }
+
     function updateOrderTotal() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        var total = baseTotal + shippingFee + stateFee + serviceFee;
+        var total = baseTotal + shippingFee + stateFee + serviceFee + creditCardFee;
         $('.cart-total').text('$' + total.toFixed(2));
     }
 
@@ -362,14 +375,10 @@ $(document).ready(function() {
         });
     });
 
-    // Initial fetch of shipping fee on page load
+    // Call updateCreditCardFee after other fee updates
     updateShippingFee();
-    // Initial fetch of service fee on page load
     updateServiceFee();
-
-    // If you have logic that changes the subtotal, call updateShippingFee() and updateServiceFee() after subtotal changes
-    // For now, if you want to re-fetch shipping/service fee after state fee changes, you can do so here if needed
-    // Example: $(".some-class-that-changes-subtotal").on('change', function() { updateShippingFee(); updateServiceFee(); });
+    updateCreditCardFee();
 
     // --- Validation function ---
     function isCheckoutFormValid() {

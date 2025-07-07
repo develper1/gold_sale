@@ -4,15 +4,21 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="card-header">
-            <h5>Order #{{ $order->id }}</h5>
+            <h5>Order #{{ $order->order_uid }}</h5>
         </div>
         <div class="card-body">
-            <h6>Customer Info</h6>
+            <h6>Billing Info</h6>
             <ul>
                 <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>
                 <li>Email: {{ $order->billing_email }}</li>
                 <li>Phone: {{ $order->billing_phone }}</li>
                 <li>Address: {{ $order->billing_address_1 }}, {{ $order->billing_city }}, {{ $order->billing_state }}, {{ $order->billing_postcode }}, {{ $order->billing_country }}</li>
+            </ul>
+            <h6>Shipping Info</h6>
+            <ul>
+                <li>Name: {{ $order->shipping_first_name }} {{ $order->shipping_last_name }}</li>
+                <li>Company: {{ $order->shipping_company }}</li>
+                <li>Address: {{ $order->shipping_address_1 }}, {{ $order->shipping_city }}, {{ $order->shipping_state }}, {{ $order->shipping_postcode }}, {{ $order->shipping_country }}</li>
             </ul>
             <h6>Order Info</h6>
             <ul>
@@ -22,9 +28,11 @@
                 <li>Shipping Fee: ${{ number_format($order->shipping_fee, 2) }}</li>
                 <li>State Fee: ${{ number_format($order->state_fee, 2) }}</li>
                 <li>Service Fee: ${{ number_format($order->service_fee, 2) }}</li>
-                <li>Total: ${{ number_format($order->total, 2) }}</li>
+                <li>Credit Card Fee: ${{ number_format($order->credit_card_fee, 2) }}</li>
+                <li>Credit Card Percentage: {{ $order->credit_card_percentage }}%</li>
                 <li>Order Comments: {{ $order->order_comments }}</li>
                 <li>Created At: {{ $order->created_at->format('Y-m-d H:i') }}</li>
+                <li>Transaction ID: {{ $order->transaction_id }}</li>
             </ul>
             <h6>Order Items</h6>
             <table class="table">
@@ -53,6 +61,10 @@
                         <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
                     </tr>
                     @endforeach
+                    <tr>
+                        <td colspan="4"></td>
+                        <td><strong>Total: ${{ number_format($order->total, 2) }}</strong></td>
+                    </tr>
                 </tbody>
             </table>
         </div>

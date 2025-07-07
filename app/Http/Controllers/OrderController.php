@@ -7,6 +7,8 @@ use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OrderConfirmation;
 
 class OrderController extends Controller
 {
@@ -59,10 +61,15 @@ class OrderController extends Controller
         $shipping_fee = $request->input('shipping_fee', 0);
         $state_fee = $request->input('state_fee', 0);
         $service_fee = $request->input('service_fee', 0);
-        $total = $subtotal + $shipping_fee + $state_fee + $service_fee;
+        $setting = \App\Models\Setting::first();
+        $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
+        $creditCardFee = ($subtotal) * ($creditCardPercentage / 100);
+        $total = $subtotal + $shipping_fee + $state_fee + $service_fee + $creditCardFee;
 
         $order = Order::create([
             'user_id' => Auth::id(),
+            'order_uid' => Order::generateOrderUid(),
+            'transaction_id' => $paypalOrderId,
             'billing_first_name' => $request->billing_first_name,
             'billing_last_name' => $request->billing_last_name,
             'billing_email' => $request->billing_email,
@@ -87,6 +94,8 @@ class OrderController extends Controller
             'shipping_fee' => $shipping_fee,
             'state_fee' => $state_fee,
             'service_fee' => $service_fee,
+            'credit_card_fee' => $creditCardFee,
+            'credit_card_percentage' => $creditCardPercentage,
             'total' => $total,
             'payment_method' => 'paypal',
             'status' => 'paid',
@@ -100,6 +109,14 @@ class OrderController extends Controller
                 'quantity' => $item['quantity'],
                 'image' => $item['image'] ?? null,
             ]);
+        }
+
+        // Send order confirmation email
+        $order->load('items');
+        try {
+            Mail::to($order->billing_email)->send(new OrderConfirmation($order));
+        } catch (\Exception $e) {
+            dd($e->getMessage());
         }
 
         session()->forget('cart');

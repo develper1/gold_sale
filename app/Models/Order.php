@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -38,10 +39,22 @@ class Order extends Model
         'total',
         'payment_method',
         'status',
+        'order_uid',
+        'transaction_id',
+        'credit_card_fee',
+        'credit_card_percentage',
     ];
 
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public static function generateOrderUid()
+    {
+        do {
+            $uid = strtoupper(Str::random(8));
+        } while (self::where('order_uid', $uid)->exists());
+        return $uid;
     }
 } 
