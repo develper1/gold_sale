@@ -29,7 +29,7 @@
                         <td>{{ $order->billing_email }}</td>
                         <td>${{ number_format($order->total, 2) }}</td>
                         <td>{{ ucfirst($order->status) }}</td>
-                        <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
+                        <td>{{ $order->created_at->format('d M Y') }}</td>
                         <td>
                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-info">View</a>
                             <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline-block;">

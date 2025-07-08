@@ -1,6 +1,6 @@
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
     <h1 style="color: #333;">Order Confirmation</h1>
-    <p>Thank you for your order! Your order ID is <strong>{{ $order->order_uid }}</strong>.</p>
+    <p>Thank you for your order! Your order ID is <strong>{{ $order->id }}</strong>.</p>
     <h3 style="color: #333;">Order Details</h3>
     <ul>
         <li><strong>Name:</strong> {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>

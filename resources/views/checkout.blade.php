@@ -263,7 +263,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://www.paypal.com/sdk/js?client-id=Ae_-r7qYW9bpiddFlcATBJ2bZRzjQOW_eG-4_PoPF7kfgKwzbE07KCq8w3HyKQj-OCWGB7i3am_0mema&disable-funding=credit,card,paylater"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AS1q2MeR_lXKqcjYgcZrVY1wRN4n1CLbgOz1p0dpaIFu-LsW2slgQtuiqq1anG2Yi-2eoc2ByMjcjf7U&disable-funding=credit,card,paylater"></script>
 <script>
 $(document).ready(function() {
     let countriesData = [];

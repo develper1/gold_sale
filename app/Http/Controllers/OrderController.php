@@ -21,8 +21,8 @@ class OrderController extends Controller
         }
 
         // Get PayPal access token
-        $clientId = "Ae_-r7qYW9bpiddFlcATBJ2bZRzjQOW_eG-4_PoPF7kfgKwzbE07KCq8w3HyKQj-OCWGB7i3am_0mema";
-        $secret = "EFy2yQ556SeynlAPS0QU-nAfMtnMlTlFfpkDz4P0APWXw7CSr1ClctGafrX67SYfGLIKLFW5QA5bog_Y";
+        $clientId = "AS1q2MeR_lXKqcjYgcZrVY1wRN4n1CLbgOz1p0dpaIFu-LsW2slgQtuiqq1anG2Yi-2eoc2ByMjcjf7U";
+        $secret = "EKTLhYTd_VWl0otXtQc4K3DxmxGwLGMu_gL-uHXhq2YGRvFViDMN5g8GDbAt33yQ_DUC-4CpZV0fuksL";
         $isSandbox = true; // Set to false for live
         $baseUrl = $isSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com';
         $accessTokenResponse = Http::asForm()->withBasicAuth($clientId, $secret)
