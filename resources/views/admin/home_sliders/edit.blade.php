@@ -12,7 +12,7 @@
                 @method('PUT')
                 <div class="mb-3">
                     <label for="image" class="form-label">Image</label><br>
-                    <img src="{{ asset('public/storage/' . $slider->image_path) }}" width="180" class="mb-2" />
+                    <img src="{{ asset('storage/app/public/' . $slider->image_path) }}" width="180" class="mb-2" />
                     <input type="file" class="form-control" name="image" id="image">
                 </div>
                 <div class="mb-3">

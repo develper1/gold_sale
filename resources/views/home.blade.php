@@ -10,7 +10,7 @@
                 <div class="item slick-slide">
                     <div class="item-content">
                         <div class="content-image">
-                            <img width="1920" height="781" src="{{ asset('public/storage/' . $slider->image_path) }}" alt="Slider Image">
+                            <img width="1920" height="781" src="{{ asset('storage/app/public/' . $slider->image_path) }}" alt="Slider Image">
                         </div>
                         <div class="item-info horizontal-center vertical-middle text-center">
                             <div class="content">
@@ -50,7 +50,7 @@
                                             <a href="{{ route('shop.category', $category->slug) }}">
                                                 <div class="item-image animation-horizontal">
                                                     @if($image)
-                                                        <img width="273" src="{{ asset('public/storage/' . $image) }}" alt="{{ $category->name }}" style="height:300px">
+                                                        <img width="273" src="{{ asset('storage/app/public/' . $image) }}" alt="{{ $category->name }}" style="height:300px">
                                                     @else
                                                         <img width="273"  src="{{ asset('assets/media/product/cat-placeholder.jpg') }}" alt="No Image" style="height:300px">
                                                     @endif
