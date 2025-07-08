@@ -188,6 +188,20 @@
                                 <label class="form-label" for="label">Blanket Markup Percentage<span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" value="{{ $product->blanket_markup_percentage ?? '' }}" class="form-control" id="blanket_markup_percentage" name="blanket_markup_percentage">
                             </div>
+                            <div class="form-group mt-2">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1" {{ old('is_featured', $product->is_featured ?? false) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="is_featured">Featured Item</label>
+                                </div>
+                                
+                            </div>
+                            <div class="form-group mt-2">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="is_best_seller" name="is_best_seller" value="1" {{ old('is_best_seller', $product->is_best_seller ?? false) ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="is_best_seller">Best Seller</label>
+                                    </div>
+                                
+                            </div>
                         
                             
                             <div class="form-group mt-2 tier-pricing-section" style="display: none;">
@@ -293,6 +307,9 @@
                                     Drop your files here
                                 </div> 
                             </div>
+
+                            
+
                         </div>
 
                         

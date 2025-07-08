@@ -49,9 +49,7 @@ Route::get('/landing', function () {
     return view('index');
 });
 
-Route::get('/home', function () {
-    return view('home');
-})->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::get('/account', [AccountController::class, 'index'])->name('account');
 Route::get('/about', function () {
@@ -107,7 +105,8 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('price-tier-ranges', PriceTierRangeController::class);
         Route::resource('spot-tier-prices', SpotTierPriceController::class);
         Route::resource('settings', SettingsController::class)->only(['index', 'update']);
-        Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show']);
+        Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'destroy']);
+        Route::resource('home-sliders', App\Http\Controllers\Admin\HomeSliderController::class);
 
     });
 });

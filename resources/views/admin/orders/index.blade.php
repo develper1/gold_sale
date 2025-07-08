@@ -32,6 +32,11 @@
                         <td>{{ $order->created_at->format('Y-m-d H:i') }}</td>
                         <td>
                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-info">View</a>
+                            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this order?')">Delete</button>
+                            </form>
                         </td>
                     </tr>
                     @endforeach

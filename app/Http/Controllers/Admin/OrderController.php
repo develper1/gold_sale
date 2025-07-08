@@ -19,4 +19,11 @@ class OrderController extends Controller
         $order = \App\Models\Order::with(['items', 'items.product.images'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
+
+    public function destroy($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
+    }
 } 

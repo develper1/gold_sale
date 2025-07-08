@@ -69,6 +69,12 @@
           <div data-i18n="Orders">Orders</div>
         </a>
       </li>
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'home-sliders' ? ' active open' : '' }}">
+        <a href="{{ route('admin.home-sliders.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-photo"></i>
+          <div data-i18n="Home Sliders">Home Sliders</div>
+        </a>
+      </li>
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'subscribers' ? ' active open' : '' }}">
         <a href="{{ route('admin.subscribers.index') }}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-user-plus"></i>
