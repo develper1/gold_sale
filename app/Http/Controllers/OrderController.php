@@ -64,6 +64,17 @@ class OrderController extends Controller
         $setting = \App\Models\Setting::first();
         $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
         $creditCardFee = ($subtotal) * ($creditCardPercentage / 100);
+
+        // Coupon logic
+        $appliedCoupon = session('applied_coupon');
+        if ($appliedCoupon) {
+            if (!empty($appliedCoupon['free_shipping'])) {
+                $shipping_fee = 0;
+            }
+            if (!empty($appliedCoupon['free_service_fee'])) {
+                $service_fee = 0;
+            }
+        }
         $total = $subtotal + $shipping_fee + $state_fee + $service_fee + $creditCardFee;
 
         $order = Order::create([
@@ -120,6 +131,7 @@ class OrderController extends Controller
         }
 
         session()->forget('cart');
+        session()->forget('applied_coupon');
 
         return response()->json(['redirect_url' => route('order.confirmation', $order->id)]);
     }
@@ -128,5 +140,34 @@ class OrderController extends Controller
     {
         $order = Order::with('items')->findOrFail($orderId);
         return view('order-confirmation', compact('order'));
+    }
+
+    public function validateCoupon(Request $request)
+    {
+        $code = $request->input('coupon_code');
+        if (!$code) {
+            return response()->json(['valid' => false, 'message' => 'No coupon code provided.']);
+        }
+        $coupon = \App\Models\Coupon::where('code', $code)
+            ->where('is_active', true)
+            ->where(function($q) {
+                $today = date('Y-m-d');
+                $q->whereNull('valid_from')->orWhere('valid_from', '<=', $today);
+            })
+            ->where(function($q) {
+                $today = date('Y-m-d');
+                $q->whereNull('valid_to')->orWhere('valid_to', '>=', $today);
+            })
+            ->first();
+        if (!$coupon) {
+            return response()->json(['valid' => false, 'message' => 'Invalid or expired coupon.']);
+        }
+        // Store coupon in session for use on order
+        session(['applied_coupon' => $coupon->only(['id','code','free_shipping','free_service_fee'])]);
+        return response()->json([
+            'valid' => true,
+            'free_shipping' => (bool)$coupon->free_shipping,
+            'free_service_fee' => (bool)$coupon->free_service_fee,
+        ]);
     }
 } 

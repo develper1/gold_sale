@@ -9045,11 +9045,11 @@ body.home.title-6 .block-newsletter .newsletter-title {
   align-items: center;
   flex-wrap: wrap;
 }
-.shop-cart .cart-items .actions .coupon {
+.coupon {
   flex: 0 0 50%;
   display: flex;
 }
-.shop-cart .cart-items .actions .coupon input {
+ .coupon input {
   line-height: 40px;
   padding: 0 10px;
   flex: 1;
@@ -9060,7 +9060,7 @@ body.home.title-6 .block-newsletter .newsletter-title {
   -ms-border-radius: 0;
   -o-border-radius: 0;
 }
-.shop-cart .cart-items .actions .bottom-cart .button {
+.coupon-button {
   padding: 0 35px;
   background: #000;
   text-transform: uppercase;
@@ -9078,7 +9078,7 @@ body.home.title-6 .block-newsletter .newsletter-title {
   letter-spacing: .1em;
   font-weight: 500;
 }
-.shop-cart .cart-items .actions .bottom-cart .button:hover {
+.coupon-button:hover {
   background: #cb8161;
 }
 .shop-cart .cart-items .actions .bottom-cart h2 {

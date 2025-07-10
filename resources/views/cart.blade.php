@@ -91,10 +91,7 @@
                                     <tr>
                                         <td colspan="6" class="actions">
                                             <div class="bottom-cart">
-                                                <div class="coupon">
-                                                    <input type="text" name="coupon_code" class="input-text" id="coupon-code" value="" placeholder="Coupon code"> 
-                                                    <button type="submit" name="apply_coupon" class="button" value="Apply coupon">Apply coupon</button>
-                                                </div>
+                                                {{-- Coupon field removed, now on checkout page --}}
                                                 <h2><a href="{{ route('shop.index') }}">Continue Shopping</a></h2>
                                                 {{-- <button type="submit" name="update_cart" class="button" value="Update cart">Update cart</button> --}}
                                             </div>	

@@ -180,6 +180,7 @@
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-5 col-md-12 col-12">
+                          
                             <div class="checkout-review-order">
                                 <div class="checkout-review-order-table">
                                     <h3 class="review-order-title">Product</h3>
@@ -229,6 +230,16 @@
                                     <div class="credit-card-fee">
                                         <h2>Credit Card Fee ({{ $creditCardPercentage }}%)</h2>
                                         <div class="credit-card-fee-amount">$0.00</div>
+                                    </div>
+
+                                    <div class="coupon-code">
+                                        <label for="checkout-coupon-code">Have a coupon?</label>
+                                        <div class="coupon">
+                                            <input type="text" name="coupon_code" class="input-text" id="checkout-coupon-code" value="" placeholder="Coupon code"> 
+                                            <button type="button" name="apply_coupon" id="apply-coupon-btn" class="coupon-button" value="Apply coupon">Apply coupon</button>
+                                        </div>
+                                        <div id="coupon-feedback" class="mt-2 text-danger" style="display:none;"></div>
+
                                     </div>
                                     <div class="order-total">
                                         <h2>Total</h2>
@@ -449,6 +460,46 @@ $(document).ready(function() {
             }
         }).render('#paypal-button-container');
     }
+
+    // --- Coupon application logic ---
+    $('#apply-coupon-btn').on('click', function() {
+        var code = $('#checkout-coupon-code').val().trim();
+        if (!code) {
+            $('#coupon-feedback').text('Please enter a coupon code.').show();
+            return;
+        }
+        $.ajax({
+            url: 'validate-coupon',
+            method: 'POST',
+            data: {
+                coupon_code: code,
+                _token: $('input[name="_token"]').val()
+            },
+            success: function(response) {
+                if (response.valid) {
+                    $('#coupon-feedback').removeClass('text-danger').addClass('text-success').text('Coupon applied!').show();
+                    // If free shipping, set shipping fee to 0
+                    if (response.free_shipping) {
+                        shippingFee = 0;
+                        $('.shipping-fee-amount').text('$0.00');
+                        $('#shipping_fee').val(0);
+                    }
+                    // If free service fee, set service fee to 0
+                    if (response.free_service_fee) {
+                        serviceFee = 0;
+                        $('.service-fee-amount').text('$0.00');
+                        $('#service_fee').val(0);
+                    }
+                    updateOrderTotal();
+                } else {
+                    $('#coupon-feedback').removeClass('text-success').addClass('text-danger').text(response.message || 'Invalid or expired coupon.').show();
+                }
+            },
+            error: function(xhr) {
+                $('#coupon-feedback').removeClass('text-success').addClass('text-danger').text('Error validating coupon.').show();
+            }
+        });
+    });
 
     // Hide the manual place order button if it exists (for safety)
     $('button[name="checkout_place_order"]').hide();

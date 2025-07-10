@@ -176,3 +176,4 @@ Route::get('/service-fee/{subtotal}', [\App\Http\Controllers\ShopController::cla
 
 Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
 Route::get('/order-confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
+Route::post('/validate-coupon', [OrderController::class, 'validateCoupon'])->name('coupon.validate');
