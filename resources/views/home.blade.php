@@ -18,7 +18,10 @@
                                 <h2 class="title-slider">{{ $slider->subtitle }}</h2>
                                 
                                 
-                                <a class="button-slider button button-white button-outline thick-border" href="{{ route('shop.index') }}">Explore Bestseller</a>
+                                {{-- Dynamic Button --}}
+                                @if($slider->button_name && $slider->button_link)
+                                    <a class="button-slider button button-white button-outline thick-border" href="{{ $slider->button_link }}">{{ $slider->button_name }}</a>
+                                @endif
                             </div>
                         </div>
                     </div>

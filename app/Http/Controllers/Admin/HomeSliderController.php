@@ -26,12 +26,16 @@ class HomeSliderController extends Controller
             'image' => 'required|image',
             'title' => 'nullable|string',
             'subtitle' => 'nullable|string',
+            'button_name' => 'nullable|string|max:255',
+            'button_link' => 'nullable|string|max:255',
         ]);
         $path = $request->file('image')->store('home-sliders', 'public');
         HomeSlider::create([
             'image_path' => $path,
             'title' => $request->title,
             'subtitle' => $request->subtitle,
+            'button_name' => $request->button_name,
+            'button_link' => $request->button_link,
             'order' => HomeSlider::max('order') + 1,
         ]);
         return redirect()->route('admin.home-sliders.index')->with('success', 'Slider added successfully.');
@@ -50,10 +54,14 @@ class HomeSliderController extends Controller
             'image' => 'nullable|image',
             'title' => 'nullable|string',
             'subtitle' => 'nullable|string',
+            'button_name' => 'nullable|string|max:255',
+            'button_link' => 'nullable|string|max:255',
         ]);
         $data = [
             'title' => $request->title,
             'subtitle' => $request->subtitle,
+            'button_name' => $request->button_name,
+            'button_link' => $request->button_link,
         ];
         if ($request->hasFile('image')) {
             if ($slider->image_path) {

@@ -23,6 +23,14 @@
                     <label for="subtitle" class="form-label">Subtitle</label>
                     <input type="text" class="form-control" name="subtitle" id="subtitle" value="{{ $slider->subtitle }}">
                 </div>
+                <div class="mb-3">
+                    <label for="button_name" class="form-label">Button Name</label>
+                    <input type="text" class="form-control" name="button_name" id="button_name" value="{{ $slider->button_name }}">
+                </div>
+                <div class="mb-3">
+                    <label for="button_link" class="form-label">Button Link</label>
+                    <input type="text" class="form-control" name="button_link" id="button_link" value="{{ $slider->button_link }}">
+                </div>
                 <button type="submit" class="btn btn-primary">Update Slider</button>
                 <a href="{{ route('admin.home-sliders.index') }}" class="btn btn-secondary">Cancel</a>
             </form>

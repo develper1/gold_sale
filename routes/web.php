@@ -49,9 +49,7 @@ Route::get('/landing', function () {
     return view('index');
 });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/account', [AccountController::class, 'index'])->name('account');
 Route::get('/about', function () {
     return view('about');
 })->name('about');
@@ -124,14 +122,16 @@ Route::middleware([GuestUserMiddleware::class])->group(function(){
 
     Route::get('/register', [UserRegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register.submit');
+
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 });
 
 Route::group(['middleware' => ['auth:web', 'user']], function () {
 
-    // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
     Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
-
+    Route::get('/account', [AccountController::class, 'index'])->name('account');
 
 });
 

@@ -13,6 +13,8 @@ class HomeSlider extends Model
         'image_path',
         'title',
         'subtitle',
+        'button_name',
+        'button_link',
         'order',
     ];
 } 

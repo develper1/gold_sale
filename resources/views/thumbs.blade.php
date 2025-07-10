@@ -437,7 +437,7 @@ $(document).ready(function() {
                         // Update cart count in header
                         $('.cart-count').text(response.cart_count);
                         btn_atc.removeClass('loading');
-                        btn_atc.addClass('added');
+                        // btn_atc.addClass('added');
                         
                         // Display message
                         $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
@@ -591,16 +591,17 @@ $(document).ready(function() {
                     // Update cart count in header
                     $('.cart-count').text(response.cart_count);
                     // btn_atc.removeClass('loading');
-                    btn_atc.addClass('added');
+                    // btn_atc.addClass('added');
                     
                     // Display message
                     $('body').append('<div class="cart-product-added"><div class="added-message">' + response.message + '</div>');
                     
-                    // Close quick view immediately
-                    $('.quickview-popup').removeClass('show');
+                    
                     
                     // Remove message after delay
                     setTimeout(function() {
+                        // Close quick view immediately
+                        $('.quickview-popup').removeClass('show');
                         $('.cart-product-added').remove();
                     }, 2000);
                 }
