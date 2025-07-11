@@ -36,9 +36,12 @@
                                                 </span>
                                             @enderror
                                         </div>
-                                        <div class="password">
+                                        <div class="password" style="position:relative;">
                                             <label for="password">{{ __('Password') }} <span class="required">*</span></label>
-                                            <input class="input-text @error('password') is-invalid @enderror" type="password" name="password" required autocomplete="current-password">
+                                            <input class="input-text @error('password') is-invalid @enderror" type="password" name="password" id="password" required autocomplete="current-password">
+                                            <span class="password-toggle" onclick="togglePassword('password', this)" style="position:absolute;top:38px;right:15px;cursor:pointer;z-index:2;">
+                                                <i class="fa fa-eye"></i>
+                                            </span>
                                         </div>
                                         <div class="rememberme-lost">
                                             <div class="remember-me">
@@ -111,3 +114,22 @@
 </div><!-- #content -->
 
 @endsection
+
+@push('scripts')
+<script>
+function togglePassword(fieldId, el) {
+    var input = document.getElementById(fieldId);
+    var icon = el.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+</script>
+@endpush

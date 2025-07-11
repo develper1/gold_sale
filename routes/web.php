@@ -132,6 +132,11 @@ Route::group(['middleware' => ['auth:web', 'user']], function () {
     Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
     Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
     Route::get('/account', [AccountController::class, 'index'])->name('account');
+    Route::get('/account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');
+    Route::get('/account/orders/{order}/ajax', [AccountController::class, 'orderDetailAjax'])->name('account.orders.ajax');
+
+    Route::post('/account/update', [AccountController::class, 'update'])->name('account.update');
+
 
 });
 

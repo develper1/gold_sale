@@ -73,8 +73,9 @@
                                                 <td>{{ $order->created_at->format('F d, Y') }}</td>
                                                 <td>{{ ucfirst($order->status) }}</td>
                                                 <td>${{ number_format($order->total, 2) }}</td>
-                                                <td><a href="#" class="btn-small d-block">View</a></td>
+                                                <td><a href="javascript:void(0);" class="btn-small d-block view-order-detail" data-order-id="{{ $order->id }}">View</a></td>
                                             </tr>
+                                            <tr class="order-detail-row" id="order-detail-row-{{ $order->id }}" style="display:none;"><td colspan="5"></td></tr>
                                             @empty
                                             <tr>
                                                 <td colspan="5">No orders found.</td>
@@ -120,42 +121,47 @@
                         </div>
                         <div class="tab-pane fade" id="account-details" role="tabpanel">
                             <div class="my-account-account-details">
-                                <form class="edit-account" action="" method="post">
+                                <form class="edit-account" id="edit-account-form" action="{{ route('account.update') }}" method="post">
+                                    @csrf
                                     <p class="form-row">
-                                        <label for="account_first_name">First name <span class="required">*</span></label>
-                                        <input type="text" class="input-text" name="account_first_name">
+                                        <label for="account_first_name">Name <span class="required">*</span></label>
+                                        <input type="text" class="input-text" name="account_first_name" value="{{ $user ? $user->name : '' }}">
                                     </p>
-                                    <p class="form-row">
-                                        <label>Last name <span class="required">*</span></label>
-                                        <input type="text" class="input-text" name="account_last_name">
-                                    </p>
+                                   
                                     <div class="clear"></div>
-                                    <p class="form-row">
-                                        <label>Display name <span class="required">*</span></label>
-                                        <input type="text" class="input-text" name="account_display_name"> 
-                                        <span><em>This will be how your name will be displayed in the account section and in reviews</em></span>
-                                    </p>
-                                    <div class="clear"></div>
+          
                                     <p class="form-row">
                                         <label>Email address <span class="required">*</span></label>
-                                        <input type="email" class="input-text" name="account_email">
+                                        <input type="email" class="input-text" name="account_email" value="{{ $user ? $user->email : '' }}">
                                     </p>
                                     <fieldset>
                                         <legend>Password change</legend>
-                                        <p class="form-row">
-                                            <label>Current password (leave blank to leave unchanged)</label>
-                                            <input type="password" class="input-text" name="password_current" autocomplete="off">
+                                        <p class="form-row" style="position:relative;">
+                                            <label>Current password</label>
+                                            <input type="password" class="input-text" name="password_current" autocomplete="off" id="password_current" style="width:100%;padding-right:40px;">
+                                            <span class="password-toggle" onclick="togglePassword('password_current', this)" style="position:absolute;top:38px;right:15px;cursor:pointer;z-index:2;">
+                                                <i class="fa fa-eye"></i>
+                                            </span>
                                         </p>
-                                        <p class="form-row">
-                                            <label>New password (leave blank to leave unchanged)</label>
-                                            <input type="password" class="input-text" name="password_1" autocomplete="off">
+                                        <p class="form-row" style="position:relative;">
+                                            <label>New password</label>
+                                            <input type="password" class="input-text" name="password_1" autocomplete="off" id="password_1" style="width:100%;padding-right:40px;">
+                                            <span class="password-toggle" onclick="togglePassword('password_1', this)" style="position:absolute;top:38px;right:15px;cursor:pointer;z-index:2;">
+                                                <i class="fa fa-eye"></i>
+                                            </span>
                                         </p>
-                                        <p class="form-row">
+                                        <p class="form-row" style="position:relative;">
                                             <label>Confirm new password</label>
-                                            <input type="password" class="input-text" name="password_2" autocomplete="off">
+                                            <input type="password" class="input-text" name="password_2" autocomplete="off" id="password_2" style="width:100%;padding-right:40px;">
+                                            <span class="password-toggle" onclick="togglePassword('password_2', this)" style="position:absolute;top:38px;right:15px;cursor:pointer;z-index:2;">
+                                                <i class="fa fa-eye"></i>
+                                            </span>
                                         </p>
                                     </fieldset>
                                     <div class="clear"></div>
+                                    <div class="account-success-message text-success" id="account-success-message"></div>
+                                    
+                                    <div id="account-error-message" class="alert alert-danger text-danger" style="display:none;"></div>
                                     <p class="form-row">
                                         <button type="submit" class="button" name="save_account_details" value="Save changes">Save changes</button>
                                     </p>
@@ -170,4 +176,104 @@
 </div><!-- #content -->
 
 
+
 @endsection
+
+@push('scripts')
+<script>
+function togglePassword(fieldId, el) {
+    var input = document.getElementById(fieldId);
+    var icon = el.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+$(document).ready(function() {
+    $('#edit-account-form').on('submit', function(e) {
+        e.preventDefault();
+        $('#account-error-message').hide().html('');
+        $('#account-success-message').hide().html('');
+        var form = $(this);
+        var formData = form.serialize();
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: formData,
+            success: function(response) {
+                $('#account-success-message').html('');
+                $('#account-success-message').html(response.message || 'Account details updated successfully.').show();
+                $('#password_current').val('');
+                $('#password_1').val('');
+                $('#password_2').val('');
+            },
+            error: function(xhr) {
+                var errors = xhr.responseJSON && xhr.responseJSON.errors ? xhr.responseJSON.errors : null;
+                var message = '';
+                if (errors) {
+                    $.each(errors, function(key, val) {
+                        message += val[0] + '<br>';
+                    });
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                } else {
+                    message = 'An error occurred. Please try again.';
+                }
+                $('#account-error-message').html(message).show();
+            }
+        });
+    });
+});
+$(document).on('click', '.view-order-detail', function(e) {
+    e.preventDefault();
+    var btn = $(this);
+    var orderId = btn.data('order-id');
+    var detailRow = $('#order-detail-row-' + orderId);
+    if (detailRow.is(':visible')) {
+        detailRow.hide();
+        detailRow.find('td').html('');
+        return;
+    }
+    // Hide any other open detail rows
+    $('.order-detail-row').hide().find('td').html('');
+    $.ajax({
+        url: 'account/orders/' + orderId + '/ajax',
+        method: 'GET',
+        success: function(response) {
+            var order = response.order;
+            var html = '<div class="order-detail-box">';
+            html += '<strong>Order #' + order.id + '</strong> | Date: ' + order.created_at + ' | Status: ' + order.status + '<br>';
+            html += '<table class="table table-sm mt-2"><thead><tr><th>Image</th><th>Product</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr></thead><tbody>';
+            order.items.forEach(function(item) {
+                html += '<tr>';
+                html += '<td>' + (item.image ? '<img src="' + item.image + '" alt="'+item.name+'" style="max-width:50px;max-height:50px;">' : '') + '</td>';
+                html += '<td>' + item.name + '</td>';
+                html += '<td>' + item.quantity + '</td>';
+                html += '<td>$' + parseFloat(item.price).toFixed(2) + '</td>';
+                html += '<td>$' + parseFloat(item.subtotal).toFixed(2) + '</td>';
+                html += '</tr>';
+            });
+            html += '<tr><td colspan="3" class="text-right">Subtotal:</td><td>$' + parseFloat(order.subtotal).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="3" class="text-right">Shipping Fee:</td><td>$' + parseFloat(order.shipping_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="3" class="text-right">State Fee:</td><td>$' + parseFloat(order.state_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="3" class="text-right">Service Fee:</td><td>$' + parseFloat(order.service_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="3" class="text-right">Credit Card Fee:</td><td>$' + parseFloat(order.credit_card_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="3" class="text-right"><strong>Total:</strong></td><td><strong>$' + parseFloat(order.total).toFixed(2) + '</strong></td></tr>';
+            html += '</tbody></table></div>';
+            detailRow.find('td').html(html);
+            detailRow.show();
+        },
+        error: function(xhr) {
+            detailRow.find('td').html('<div class="text-danger">Could not load order details.</div>');
+            detailRow.show();
+        }
+    });
+});
+</script>
+@endpush
