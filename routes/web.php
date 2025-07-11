@@ -66,6 +66,7 @@ Route::get('/contact', function () {
 // Route::get('/thumbs', function () {
 //     return view('thumbs');
 // });
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::post('/subscriber', [SubscriberController::class, 'store'])->name('subscriber.store');
 Route::post('/subscriber/detail', [SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
@@ -123,7 +124,6 @@ Route::middleware([GuestUserMiddleware::class])->group(function(){
     Route::get('/register', [UserRegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register.submit');
 
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 });
 

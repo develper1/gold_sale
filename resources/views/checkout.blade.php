@@ -234,12 +234,15 @@
 
                                     <div class="coupon-code">
                                         <label for="checkout-coupon-code">Have a coupon?</label>
-                                        <div class="coupon">
+                                        <div class="coupon" id="coupon-input-group">
                                             <input type="text" name="coupon_code" class="input-text" id="checkout-coupon-code" value="" placeholder="Coupon code"> 
                                             <button type="button" name="apply_coupon" id="apply-coupon-btn" class="coupon-button" value="Apply coupon">Apply coupon</button>
                                         </div>
+                                        <div id="coupon-applied-group" style="display:none;">
+                                            <span id="coupon-description" class="text-success"></span>
+                                            <button type="button" id="remove-coupon-btn" class="btn btn-link text-danger p-0 ms-2">Remove</button>
+                                        </div>
                                         <div id="coupon-feedback" class="mt-2 text-danger" style="display:none;"></div>
-
                                     </div>
                                     <div class="order-total">
                                         <h2>Total</h2>
@@ -462,6 +465,8 @@ $(document).ready(function() {
     }
 
     // --- Coupon application logic ---
+    var originalShippingFee = null;
+    var originalServiceFee = null;
     $('#apply-coupon-btn').on('click', function() {
         var code = $('#checkout-coupon-code').val().trim();
         if (!code) {
@@ -477,7 +482,10 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.valid) {
-                    $('#coupon-feedback').removeClass('text-danger').addClass('text-success').text('Coupon applied!').show();
+                    // $('#coupon-feedback').removeClass('text-danger').addClass('text-success').text('Coupon applied!').show();
+                    // Save original fees if not already saved
+                    if (originalShippingFee === null) originalShippingFee = shippingFee;
+                    if (originalServiceFee === null) originalServiceFee = serviceFee;
                     // If free shipping, set shipping fee to 0
                     if (response.free_shipping) {
                         shippingFee = 0;
@@ -491,6 +499,10 @@ $(document).ready(function() {
                         $('#service_fee').val(0);
                     }
                     updateOrderTotal();
+                    // Hide input, show description and remove button
+                    $('#coupon-input-group').hide();
+                    $('#coupon-applied-group').show();
+                    $('#coupon-description').text('Coupon applied: ' + (response.description ? response.description : code));
                 } else {
                     $('#coupon-feedback').removeClass('text-success').addClass('text-danger').text(response.message || 'Invalid or expired coupon.').show();
                 }
@@ -499,6 +511,28 @@ $(document).ready(function() {
                 $('#coupon-feedback').removeClass('text-success').addClass('text-danger').text('Error validating coupon.').show();
             }
         });
+    });
+    // Remove coupon logic
+    $('#remove-coupon-btn').on('click', function() {
+        // Revert fees
+        if (originalShippingFee !== null) {
+            shippingFee = originalShippingFee;
+            $('.shipping-fee-amount').text('$' + shippingFee.toFixed(2));
+            $('#shipping_fee').val(shippingFee);
+        }
+        if (originalServiceFee !== null) {
+            serviceFee = originalServiceFee;
+            $('.service-fee-amount').text('$' + serviceFee.toFixed(2));
+            $('#service_fee').val(serviceFee);
+        }
+        updateOrderTotal();
+        // Remove coupon from session via AJAX (optional, for backend consistency)
+        $.post('validate-coupon', { coupon_code: '', _token: $('input[name="_token"]').val() });
+        // Show input, hide description and remove button
+        $('#coupon-input-group').show();
+        $('#coupon-applied-group').hide();
+        $('#coupon-feedback').hide();
+        $('#checkout-coupon-code').val('');
     });
 
     // Hide the manual place order button if it exists (for safety)

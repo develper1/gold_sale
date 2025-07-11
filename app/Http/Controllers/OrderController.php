@@ -146,6 +146,7 @@ class OrderController extends Controller
     {
         $code = $request->input('coupon_code');
         if (!$code) {
+            session()->forget('applied_coupon');
             return response()->json(['valid' => false, 'message' => 'No coupon code provided.']);
         }
         $coupon = \App\Models\Coupon::where('code', $code)
@@ -168,6 +169,8 @@ class OrderController extends Controller
             'valid' => true,
             'free_shipping' => (bool)$coupon->free_shipping,
             'free_service_fee' => (bool)$coupon->free_service_fee,
+            'description' => $coupon->description,
+            'code' => $coupon->code,
         ]);
     }
 } 
