@@ -259,12 +259,12 @@ $(document).on('click', '.view-order-detail', function(e) {
                 html += '<td>$' + parseFloat(item.subtotal).toFixed(2) + '</td>';
                 html += '</tr>';
             });
-            html += '<tr><td colspan="3" class="text-right">Subtotal:</td><td>$' + parseFloat(order.subtotal).toFixed(2) + '</td></tr>';
-            html += '<tr><td colspan="3" class="text-right">Shipping Fee:</td><td>$' + parseFloat(order.shipping_fee).toFixed(2) + '</td></tr>';
-            html += '<tr><td colspan="3" class="text-right">State Fee:</td><td>$' + parseFloat(order.state_fee).toFixed(2) + '</td></tr>';
-            html += '<tr><td colspan="3" class="text-right">Service Fee:</td><td>$' + parseFloat(order.service_fee).toFixed(2) + '</td></tr>';
-            html += '<tr><td colspan="3" class="text-right">Credit Card Fee:</td><td>$' + parseFloat(order.credit_card_fee).toFixed(2) + '</td></tr>';
-            html += '<tr><td colspan="3" class="text-right"><strong>Total:</strong></td><td><strong>$' + parseFloat(order.total).toFixed(2) + '</strong></td></tr>';
+            html += '<tr><td colspan="4" class="text-right">Subtotal:</td><td>$' + parseFloat(order.subtotal).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="4" class="text-right">Shipping Fee:</td><td>$' + parseFloat(order.shipping_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="4" class="text-right">State Fee:</td><td>$' + parseFloat(order.state_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="4" class="text-right">Service Fee:</td><td>$' + parseFloat(order.service_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="4" class="text-right">Credit Card Fee:</td><td>$' + parseFloat(order.credit_card_fee).toFixed(2) + '</td></tr>';
+            html += '<tr><td colspan="4" class="text-right"><strong>Total:</strong></td><td><strong>$' + parseFloat(order.total).toFixed(2) + '</strong></td></tr>';
             html += '</tbody></table></div>';
             detailRow.find('td').html(html);
             detailRow.show();
