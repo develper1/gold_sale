@@ -243,7 +243,7 @@
                                         <h2>Service Fee</h2>
                                         <div class="service-fee-amount">$0.00</div>
                                     </div>
-                                    <div class="credit-card-fee">
+                                    <div class="credit-card-fee" style="display:none;">
                                         <h2>Credit Card Fee ({{ $creditCardPercentage }}%)</h2>
                                         <div class="credit-card-fee-amount">$0.00</div>
                                     </div>
@@ -271,15 +271,9 @@
                                 </div>
                                 <div id="payment" class="checkout-payment">
                                     <ul class="payment-methods methods custom-radio">
+                                        
                                         <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="bacs" checked="checked" id="payment_method_bacs">
-                                            <label for="payment_method_bacs">Direct bank transfer</label>
-                                            {{-- <div class="payment-box">
-                                                <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
-                                            </div> --}}
-                                        </li>
-                                        <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="cheque" id="payment_method_cheque">
+                                            <input type="radio" class="input-radio" name="payment_method" value="cheque" id="payment_method_cheque" checked>
                                             <label for="payment_method_cheque">Check payments</label>
                                             {{-- <div class="payment-box">
                                                 <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
@@ -492,7 +486,11 @@ $(document).ready(function() {
 
     function updateOrderTotal() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        var total = baseTotal + shippingFee + stateFee + serviceFee + creditCardFee;
+        var total = baseTotal + shippingFee + stateFee + serviceFee;
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected === 'credit_card') {
+            total += creditCardFee;
+        }
         $('.cart-total').text('$' + total.toFixed(2));
     }
 
@@ -566,6 +564,25 @@ $(document).ready(function() {
         togglePaymentButtons(); // keep existing logic
     });
 
+    function handleCreditCardFeeDisplay() {
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected === 'credit_card') {
+            $('.credit-card-fee').show();
+            updateCreditCardFee();
+        } else {
+            $('.credit-card-fee').hide();
+            creditCardFee = 0;
+            updateOrderTotal();
+        }
+    }
+    // Initial call
+    handleCreditCardFeeDisplay();
+    // Update payment method change handler
+    $('input[name="payment_method"]').on('change', function() {
+        toggleCreditCardFields();
+        togglePaymentButtons();
+        handleCreditCardFeeDisplay();
+    });
 
 
     // Extend validation for credit card fields on submit
@@ -665,6 +682,8 @@ $(document).ready(function() {
     var originalShippingFee = null;
     var originalServiceFee = null;
     $('#apply-coupon-btn').on('click', function() {
+        $('#coupon-feedback').text('');
+        $('#coupon-feedback').hide();
         var code = $('#checkout-coupon-code').val().trim();
         if (!code) {
             $('#coupon-feedback').text('Please enter a coupon code.').show();
@@ -787,6 +806,25 @@ $(document).ready(function() {
                 }
             }
         });
+    });
+    // On form submit, ensure credit_card_fee is only submitted if payment method is credit_card
+    $('form.checkout').on('submit', function(e) {
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected !== 'credit_card') {
+            // Remove credit_card_fee input if it exists
+            if ($('input[name="credit_card_fee"]').length) {
+                $('input[name="credit_card_fee"]').val(0);
+            } else {
+                $(this).append('<input type="hidden" name="credit_card_fee" value="0">');
+            }
+        } else {
+            // Set the correct value
+            if ($('input[name="credit_card_fee"]').length) {
+                $('input[name="credit_card_fee"]').val(creditCardFee);
+            } else {
+                $(this).append('<input type="hidden" name="credit_card_fee" value="' + creditCardFee + '">');
+            }
+        }
     });
 });
 </script>

@@ -8,6 +8,17 @@
         <li><strong>Total:</strong> ${{ number_format($order->total, 2) }}</li>
         <li><strong>Status:</strong> {{ ucfirst($order->status) }}</li>
     </ul>
+    <h3 style="color: #333;">Order Fees</h3>
+    <ul>
+        <li><strong>Subtotal:</strong> ${{ number_format($order->subtotal, 2) }}</li>
+        <li><strong>Shipping Fee:</strong> ${{ number_format($order->shipping_fee, 2) }}</li>
+        <li><strong>State Fee:</strong> ${{ number_format($order->state_fee, 2) }}</li>
+        <li><strong>Service Fee:</strong> ${{ number_format($order->service_fee, 2) }}</li>
+        @if($order->payment_method === 'credit_card')
+        <li><strong>Credit Card Fee:</strong> ${{ number_format($order->credit_card_fee, 2) }}</li>
+        @endif
+        <li><strong>Total:</strong> ${{ number_format($order->total, 2) }}</li>
+    </ul>
     <h3 style="color: #333;">Order Items</h3>
     <table style="width: 100%; border-collapse: collapse;">
         <thead>

@@ -28,9 +28,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#orders" role="tab">Orders</a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#addresses" role="tab">Addresses</a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#account-details" role="tab">Account details</a>
                             </li>
@@ -49,7 +49,7 @@
                                     Hello <strong>{{ $user ? $user->name : '' }}</strong> (not <strong>{{ $user ? $user->name : '' }}</strong>? <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log out</a>)
                                 </p>
                                 <p>
-                                    From your account dashboard you can view your <strong>recent orders</strong>, manage your <strong>shipping and billing addresses</strong>, and <strong>edit your password and account details</strong>.
+                                    From your account dashboard you can view your <strong>recent orders</strong>, and <strong>edit your password and account details</strong>.
                                 </p>
                             </div>
                         </div>
@@ -263,7 +263,9 @@ $(document).on('click', '.view-order-detail', function(e) {
             html += '<tr><td colspan="4" class="text-right">Shipping Fee:</td><td>$' + parseFloat(order.shipping_fee).toFixed(2) + '</td></tr>';
             html += '<tr><td colspan="4" class="text-right">State Fee:</td><td>$' + parseFloat(order.state_fee).toFixed(2) + '</td></tr>';
             html += '<tr><td colspan="4" class="text-right">Service Fee:</td><td>$' + parseFloat(order.service_fee).toFixed(2) + '</td></tr>';
-            html += '<tr><td colspan="4" class="text-right">Credit Card Fee:</td><td>$' + parseFloat(order.credit_card_fee).toFixed(2) + '</td></tr>';
+            if(order.payment_method === 'credit_card') {
+                html += '<tr><td colspan="4" class="text-right">Credit Card Fee:</td><td>$' + parseFloat(order.credit_card_fee).toFixed(2) + '</td></tr>';
+            }
             html += '<tr><td colspan="4" class="text-right"><strong>Total:</strong></td><td><strong>$' + parseFloat(order.total).toFixed(2) + '</strong></td></tr>';
             html += '</tbody></table></div>';
             detailRow.find('td').html(html);
