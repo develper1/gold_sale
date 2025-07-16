@@ -1,7 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-
+<style>
+    .is-valid {
+        border-color: #28a745 !important;
+    }
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+</style>
 <div id="title" class="page-title">
     <div class="section-container">
         <div class="content-title-heading">
@@ -21,6 +28,15 @@
             <div class="shop-checkout">
                 <form name="checkout" method="post" class="checkout" action="{{ route('checkout.store') }}" autocomplete="off">
                     @csrf
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="row">
                         <div class="col-xl-8 col-lg-7 col-md-12 col-12">
                             <div class="customer-details">
@@ -255,12 +271,90 @@
                                 </div>
                                 <div id="payment" class="checkout-payment">
                                     <ul class="payment-methods methods custom-radio">
-                                        <div id="paypal-button-container"></div>
+                                        <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="bacs" checked="checked" id="payment_method_bacs">
+                                            <label for="payment_method_bacs">Direct bank transfer</label>
+                                            {{-- <div class="payment-box">
+                                                <p>Make your payment directly into our bank account. Please use your Order ID as the payment reference. Your order will not be shipped until the funds have cleared in our account.</p>
+                                            </div> --}}
+                                        </li>
+                                        <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="cheque" id="payment_method_cheque">
+                                            <label for="payment_method_cheque">Check payments</label>
+                                            {{-- <div class="payment-box">
+                                                <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
+                                            </div> --}}
+                                        </li>
+                                        <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="cod" id="payment_method_cod">
+                                            <label for="payment_method_cod">Cash on delivery</label>
+                                            {{-- <div class="payment-box">
+                                                <p>Pay with cash upon delivery.</p>
+                                            </div> --}}
+                                        </li>
+                                        <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="credit_card" id="payment_method_credit_card">
+                                            <label for="payment_method_credit_card">Credit Card</label>
+                                        </li>
+                                        <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="paypal" id="payment_method_paypal">
+                                            <label for="payment_method_paypal">PayPal</label>
+                                            {{-- <div class="payment-box">
+                                                <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal account.</p>
+                                            </div> --}}
+                                        </li>
                                     </ul>
+                                    <div id="credit-card-fields" style="display:none; margin-top: 20px;">
+                                       <div class="payment-form px-3 py-3 row m-0">
+                                            <div class="col-12">
+                                                <div class="form-group  ">
+                                                    <input type="tel" class="form-control" name="cc_no" id="cc_no"
+                                                        maxlength="16"
+                                                        onkeyup="javascript:this.value=this.value.replace(/[^0-9]/g,'');"
+                                                        value="" placeholder="Card No">
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group  ">
+                                                    <select class="form-control" name="cc_month" id="cc_month" maxlength="2"
+                                                        placeholder="Month(MM)">
+                                                        <option value="" selected="selected">Month(MM)</option>
+                                                        <?php for ($month = 01; $month < 13; $month = $month + 1) { ?>
+                                                        <option value=<?= $month ?>><?= sprintf("%02d", $month); ?></option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group  ">
+                                                    <select class="form-control" name="cc_year" id="cc_year" maxlength="4"
+                                                        placeholder="Year(YYYY)">
+                                                        <option value="" selected="selected">Year(YYYY)</option>
+                                                        <?php $c_year = date('Y');
+                                                        for ($year = $c_year; $year < ($c_year + 11); $year = $year + 1) { ?>
+                                                        <option value=<?= $year ?>> <?= $year ?> </option>
+                                                        <?php } ?>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="form-group mb-0  ">
+                                                    <input type="tel" class="form-control" name="CVV" id="cvv" maxlength="3"
+                                                        onkeyup="javascript:this.value=this.value.replace(/[^0-9]/g,'');"
+                                                        placeholder="CVV" value="">
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
                                     <div class="form-row place-order">
                                         <div class="terms-and-conditions-wrapper">
                                             <div class="privacy-policy-text"></div>
                                         </div>
+                                        <div id="checkout-errors" style="display:none;"></div>
+                                        <button type="submit" name="checkout_place_order" id="place-order-btn" class="button alt">Place Order</button>
+                                        <div id="checkout-loading" style="display:none;margin-top:10px;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...</div>
+                                        <div id="paypal-button-container" class="mt-3" style="display:none;width: 100%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -277,7 +371,69 @@
 @endsection
 
 @push('scripts')
-<script src="https://www.paypal.com/sdk/js?client-id=AS1q2MeR_lXKqcjYgcZrVY1wRN4n1CLbgOz1p0dpaIFu-LsW2slgQtuiqq1anG2Yi-2eoc2ByMjcjf7U&disable-funding=credit,card,paylater"></script>
+
+@if(env('PAYPAL_SANDBOX'))
+    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}&disable-funding=credit,card,paylater"></script>
+@else
+    <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_LIVE_CLIENT_ID') }}&disable-funding=credit,card,paylater"></script>
+@endif
+<script src="{{ asset('assets/vendor/libs/cleavejs/cleave.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.payment/3.0.0/jquery.payment.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Format card number
+        $('#cc_no').payment('formatCardNumber');
+        
+        // Format CVV
+        $('#cvv').payment('formatCardCVC');
+        
+        // Detect card type and show icon
+        $('#cc_no').on('input', function() {
+            var cardNumber = $(this).val().replace(/\s+/g, '');
+            var paymentCardType  = $.payment.cardType(cardNumber);
+            var $cardBrand = $('.card-brand-icons');
+            
+            // Validate card number length
+            if ($.payment.validateCardNumber(cardNumber)) {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+        
+        // Validate expiry date
+        $('#cc_month, #cc_year').on('change', function() {
+            var month = $('#cc_month').val();
+            var year = $('#cc_year').val();
+            
+            if (month && year) {
+                if ($.payment.cardExpiryVal(month, year)) {
+                    $('#cc_month, #cc_year').removeClass('is-invalid').addClass('is-valid');
+                } else {
+                    $('#cc_month, #cc_year').removeClass('is-valid').addClass('is-invalid');
+                }
+            }
+        });
+        
+        // Validate CVV
+        $('#cvv').on('input', function() {
+            var cvv = $(this).val();
+            var cardNumber = $('#cc_no').val().replace(/\s+/g, '');
+            var cardType = $.payment.cardType(cardNumber);
+            
+            if ($.payment.validateCardCVC(cvv, cardType)) {
+                $(this).removeClass('is-invalid').addClass('is-valid');
+            } else {
+                $(this).removeClass('is-valid').addClass('is-invalid');
+            }
+        });
+    });
+    
+    function popop_cvv() {
+        // Your existing CVV popup function
+        alert("The CVV is the 3-digit code on the back of your card (4 digits for American Express).");
+    }
+    </script>
 <script>
 $(document).ready(function() {
     let countriesData = [];
@@ -394,7 +550,25 @@ $(document).ready(function() {
     updateServiceFee();
     updateCreditCardFee();
 
-    // --- Validation function ---
+    // --- Credit Card fields toggle and validation ---
+    function toggleCreditCardFields() {
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected === 'credit_card') {
+            $('#credit-card-fields').show();
+        } else {
+            $('#credit-card-fields').hide();
+        }
+    }
+    // Initial toggle
+    toggleCreditCardFields();
+    $('input[name="payment_method"]').on('change', function() {
+        toggleCreditCardFields();
+        togglePaymentButtons(); // keep existing logic
+    });
+
+
+
+    // Extend validation for credit card fields on submit
     function isCheckoutFormValid() {
         let valid = true;
         let requiredFields = [
@@ -417,52 +591,75 @@ $(document).ready(function() {
                 $field.removeClass('is-invalid');
             }
         });
+    
         return valid;
     }
 
-    // Render PayPal button only
-    if ($('#paypal-button-container').length && typeof paypal !== 'undefined') {
-        paypal.Buttons({
-            createOrder: function(data, actions) {
-                if (!isCheckoutFormValid()) {
-                    alert('Please fill in all required fields.');
-                    return actions.reject();
-                }
-                let total = $('.cart-total').text().replace('$', '').replace(/,/g, '');
-                return actions.order.create({
-                    purchase_units: [{
-                        amount: { value: total }
-                    }]
-                });
-            },
-            onApprove: function(data, actions) {
-                return actions.order.capture().then(function(details) {
-                    // Gather all form data
-                    var formData = $('form.checkout').serializeArray();
-                    // Add PayPal details
-                    formData.push({name: 'paypal_order_id', value: data.orderID});
-                    formData.push({name: 'paypal_details', value: JSON.stringify(details)});
-                    // Send to backend via AJAX
-                    $.ajax({
-                        url: $('form.checkout').attr('action'),
-                        method: 'POST',
-                        data: formData,
-                        headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
-                        success: function(response) {
-                            if (response.redirect_url) {
-                                window.location.href = response.redirect_url;
-                            } else {
-                                window.location.href = '/order-confirmation';
-                            }
-                        },
-                        error: function(xhr) {
-                            alert('There was an error processing your order. Please contact support.');
+    // --- Payment method toggle logic ---
+    function togglePaymentButtons() {
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected === 'paypal') {
+            $('#paypal-button-container').show();
+            $('#place-order-btn').hide();
+            // Render PayPal button if not already rendered
+            if (!$('#paypal-button-container').data('paypal-rendered') && typeof paypal !== 'undefined') {
+                paypal.Buttons({
+                    createOrder: function(data, actions) {
+                        if (!isCheckoutFormValid()) {
+                            alert('Please fill in all required fields.');
+                            return actions.reject();
                         }
-                    });
-                });
+                        let total = $('.cart-total').text().replace('$', '').replace(/,/g, '');
+                        return actions.order.create({
+                            purchase_units: [{
+                                amount: { value: total }
+                            }]
+                        });
+                    },
+                    onApprove: function(data, actions) {
+                        return actions.order.capture().then(function(details) {
+                            var formData = $('form.checkout').serializeArray();
+                            formData.push({name: 'paypal_order_id', value: data.orderID});
+                            formData.push({name: 'paypal_details', value: JSON.stringify(details)});
+                            $.ajax({
+                                url: $('form.checkout').attr('action'),
+                                method: 'POST',
+                                data: formData,
+                                headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
+                                success: function(response) {
+                                    if (response.redirect_url) {
+                                        window.location.href = response.redirect_url;
+                                    } else {
+                                        window.location.href = '/order-confirmation';
+                                    }
+                                },
+                                error: function(xhr) {
+                                    alert('There was an error processing your order. Please contact support.');
+                                }
+                            });
+                        });
+                    }
+                }).render('#paypal-button-container');
+                $('#paypal-button-container').data('paypal-rendered', true);
             }
-        }).render('#paypal-button-container');
+        } else {
+            $('#paypal-button-container').hide();
+            $('#place-order-btn').show();
+        }
     }
+    // Initial toggle
+    togglePaymentButtons();
+    // Listen for payment method change
+    $('input[name="payment_method"]').on('change', togglePaymentButtons);
+    // Place order button handler for non-PayPal
+    $('#place-order-btn').on('click', function(e) {
+        if (!isCheckoutFormValid()) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+        // Allow normal form submission
+    });
 
     // --- Coupon application logic ---
     var originalShippingFee = null;
@@ -536,7 +733,61 @@ $(document).ready(function() {
     });
 
     // Hide the manual place order button if it exists (for safety)
-    $('button[name="checkout_place_order"]').hide();
+
+    // --- AJAX form submission for checkout ---
+    $('form.checkout').on('submit', function(e) {
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected === 'paypal') {
+            // Let PayPal JS handle it
+            return true;
+        }
+        e.preventDefault();
+        $('#checkout-errors').hide().empty();
+        if (!isCheckoutFormValid()) {
+            $('#checkout-errors').html('<div class="alert alert-danger">Please fill in all required fields correctly.</div>').show();
+            return false;
+        }
+        var form = $(this);
+        var formData = form.serialize();
+        // Show spinner and disable button
+        $('#checkout-loading').show();
+        $('#place-order-btn').prop('disabled', true);
+        $.ajax({
+            url: form.attr('action'),
+            method: 'POST',
+            data: formData,
+            headers: { 'X-CSRF-TOKEN': $('input[name="_token"]').val() },
+            success: function(response) {
+                $('#checkout-loading').hide();
+                $('#place-order-btn').prop('disabled', false);
+                if (response.redirect_url) {
+                    window.location.href = response.redirect_url;
+                } 
+            },
+            error: function(xhr) {
+                $('#checkout-loading').hide();
+                $('#place-order-btn').prop('disabled', false);
+                var msg = 'An error occurred. Please try again.';
+                if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                    var errors = xhr.responseJSON.errors;
+                    var html = '<div class="alert alert-danger text-danger"><ul>';
+                    $.each(errors, function(key, val) {
+                        if (Array.isArray(val)) {
+                            val.forEach(function(v) { html += '<li>' + v + '</li>'; });
+                        } else {
+                            html += '<li>' + val + '</li>';
+                        }
+                    });
+                    html += '</ul></div>';
+                    $('#checkout-errors').html(html).show();
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    $('#checkout-errors').html('<div class="alert alert-danger">' + xhr.responseJSON.message + '</div>').show();
+                } else {
+                    $('#checkout-errors').html('<div class="alert alert-danger">' + msg + '</div>').show();
+                }
+            }
+        });
+    });
 });
 </script>
 
@@ -544,5 +795,6 @@ $(document).ready(function() {
 .is-invalid {
     /* border: 1px solid red !important; */
 }
+.spinner-border { vertical-align: middle; }
 </style>
 @endpush

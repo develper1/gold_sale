@@ -46,10 +46,10 @@
                         <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
                             <div class="my-account-dashboard">
                                 <p>
-                                    Hello <strong>Rosie</strong> (not <strong>Rosie</strong>? <a href="page-login.html">Log out</a>)
+                                    Hello <strong>{{ $user ? $user->name : '' }}</strong> (not <strong>{{ $user ? $user->name : '' }}</strong>? <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log out</a>)
                                 </p>
                                 <p>
-                                    From your account dashboard you can view your <a href="#">recent orders</a>, manage your <a href="#">shipping and billing addresses</a>, and <a href="#">edit your password and account details</a>.
+                                    From your account dashboard you can view your <strong>recent orders</strong>, manage your <strong>shipping and billing addresses</strong>, and <strong>edit your password and account details</strong>.
                                 </p>
                             </div>
                         </div>

@@ -613,15 +613,15 @@
         // });
 
         // Custom radio
-        $('.custom-radio li .payment-box').hide();
-        $('.custom-radio li .input-radio:checked').closest('li').find('.payment-box').show();
-        $('.custom-radio li').on('click', function(e) {
-            $(this).closest('.custom-radio').find('li input').prop('checked', false); 
-            $(this).find('input').prop('checked', true);
+        // $('.custom-radio li .payment-box').hide();
+        // $('.custom-radio li .input-radio:checked').closest('li').find('.payment-box').show();
+        // $('.custom-radio li').on('click', function(e) {
+        //     $(this).closest('.custom-radio').find('li input').prop('checked', false); 
+        //     $(this).find('input').prop('checked', true);
 
-             $(this).closest('.custom-radio').find('li .payment-box').hide();
-             $(this).find('.payment-box').show();
-        });
+        //      $(this).closest('.custom-radio').find('li .payment-box').hide();
+        //      $(this).find('.payment-box').show();
+        // });
 
         // Custom select
         if ($('.custom-select').length) {
