@@ -75,7 +75,7 @@
                                                 <td>${{ number_format($order->total, 2) }}</td>
                                                 <td><a href="javascript:void(0);" class="btn-small d-block view-order-detail" data-order-id="{{ $order->id }}">View</a></td>
                                             </tr>
-                                            <tr class="order-detail-row" id="order-detail-row-{{ $order->id }}" style="display:none;"><td colspan="5"></td></tr>
+                                            <tr class="order-detail-row" id="order-detail-row-{{ $order->id }}" style="display:none;background: #f5f5f5;"><td colspan="5"></td></tr>
                                             @empty
                                             <tr>
                                                 <td colspan="5">No orders found.</td>
