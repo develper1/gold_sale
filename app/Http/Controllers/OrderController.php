@@ -75,7 +75,7 @@ class OrderController extends Controller
         $setting = \App\Models\Setting::first();
         $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
         $creditCardFee = 0;
-        if ($isCreditCard) {
+        if ($isCreditCard || $isPaypal) {
             $creditCardFee = ($subtotal) * ($creditCardPercentage / 100);
         }
 
@@ -90,7 +90,7 @@ class OrderController extends Controller
             }
         }
         $total = $subtotal + $shipping_fee + $state_fee + $service_fee;
-        if ($isCreditCard) {
+        if ($isCreditCard || $isPaypal) {
             $total += $creditCardFee;
         }
 

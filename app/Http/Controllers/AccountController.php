@@ -41,6 +41,7 @@ class AccountController extends Controller
             'state_fee' => $order->state_fee,
             'service_fee' => $order->service_fee,
             'credit_card_fee' => $order->credit_card_fee,
+            'payment_method' => $order->payment_method,
             'total' => $order->total,
             'items' => $order->items->map(function($item) {
                 $image = null;

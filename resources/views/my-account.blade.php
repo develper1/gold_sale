@@ -263,7 +263,7 @@ $(document).on('click', '.view-order-detail', function(e) {
             html += '<tr><td colspan="4" class="text-right">Shipping Fee:</td><td>$' + parseFloat(order.shipping_fee).toFixed(2) + '</td></tr>';
             html += '<tr><td colspan="4" class="text-right">State Fee:</td><td>$' + parseFloat(order.state_fee).toFixed(2) + '</td></tr>';
             html += '<tr><td colspan="4" class="text-right">Service Fee:</td><td>$' + parseFloat(order.service_fee).toFixed(2) + '</td></tr>';
-            if(order.payment_method === 'credit_card') {
+            if(order.payment_method === 'credit_card' || order.payment_method === 'paypal') {
                 html += '<tr><td colspan="4" class="text-right">Credit Card Fee:</td><td>$' + parseFloat(order.credit_card_fee).toFixed(2) + '</td></tr>';
             }
             html += '<tr><td colspan="4" class="text-right"><strong>Total:</strong></td><td><strong>$' + parseFloat(order.total).toFixed(2) + '</strong></td></tr>';

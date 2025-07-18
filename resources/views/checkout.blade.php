@@ -26,7 +26,7 @@
     <div class="section-padding">
         <div class="section-container p-l-r">
             <div class="shop-checkout">
-                <form name="checkout" method="post" class="checkout" action="{{ route('checkout.store') }}" autocomplete="off">
+                <form name="checkout" method="post" class="checkout" action="{{ route('checkout.store') }}" autocomplete="on">
                     @csrf
                     @if ($errors->any())
                         <div class="alert alert-danger">
@@ -45,7 +45,7 @@
                                     <div class="billing-fields-wrapper">
                                         <p class="form-row form-row-first validate-required">
                                             <label>First name <span class="required" title="required">*</span></label>
-                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_first_name" value=""></span>
+                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_first_name" value="" autocomplete="given-name"></span>
                                         </p>
                                         <p class="form-row form-row-last validate-required">
                                             <label>Last name <span class="required" title="required">*</span></label>
@@ -53,7 +53,7 @@
                                         </p>
                                         <p class="form-row form-row-wide">
                                             <label>Company name <span class="optional">(optional)</span></label>
-                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_company" value=""></span>
+                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_company" value="" autocomplete="organization"></span>
                                         </p>
                                         <p class="form-row form-row-wide validate-required">
                                             <label>Country / Region <span class="required" title="required">*</span></label>
@@ -64,19 +64,19 @@
                                         <p class="form-row address-field validate-required form-row-wide">
                                             <label>Street address <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_address_1" placeholder="House number and street name" value="">
+                                                <input type="text" class="input-text" name="billing_address_1" placeholder="House number and street name" value="" autocomplete="address-line1">
                                             </span>
                                         </p>
                                         <p class="form-row address-field form-row-wide">
                                             <label>Apartment, suite, unit, etc.&nbsp;<span class="optional">(optional)</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_address_2" placeholder="Apartment, suite, unit, etc. (optional)" value="">
+                                                <input type="text" class="input-text" name="billing_address_2" placeholder="Apartment, suite, unit, etc. (optional)" value="" autocomplete="address-line2">
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required form-row-wide">
                                             <label for="billing_city" class="">Town / City <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_city" value="">
+                                                <input type="text" class="input-text" name="billing_city" value="" autocomplete="address-level2">
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required validate-state form-row-wide">
@@ -88,19 +88,19 @@
                                         <p class="form-row address-field validate-required validate-postcode form-row-wide">
                                             <label>Postcode / ZIP <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_postcode" value="">
+                                                <input type="text" class="input-text" name="billing_postcode" value="" autocomplete="postal-code">
                                             </span>
                                         </p>
                                         <p class="form-row form-row-wide validate-required validate-phone">
                                             <label>Phone <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="tel" class="input-text" name="billing_phone" value="">
+                                                <input type="tel" class="input-text" name="billing_phone" value="" autocomplete="tel">
                                             </span>
                                         </p>
                                         <p class="form-row form-row-wide validate-required validate-email">
                                             <label>Email address <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="email" class="input-text" name="billing_email" value="" autocomplete="off">
+                                                <input type="email" class="input-text" name="billing_email" value="" autocomplete="off" autocomplete="email">
                                             </span>
                                         </p>
                                     </div>
@@ -488,7 +488,7 @@ $(document).ready(function() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
         var total = baseTotal + shippingFee + stateFee + serviceFee;
         var selected = $('input[name="payment_method"]:checked').val();
-        if (selected === 'credit_card') {
+        if (selected === 'credit_card' || selected === 'paypal') {
             total += creditCardFee;
         }
         $('.cart-total').text('$' + total.toFixed(2));
@@ -566,7 +566,7 @@ $(document).ready(function() {
 
     function handleCreditCardFeeDisplay() {
         var selected = $('input[name="payment_method"]:checked').val();
-        if (selected === 'credit_card') {
+        if (selected === 'credit_card' || selected === 'paypal') {
             $('.credit-card-fee').show();
             updateCreditCardFee();
         } else {
@@ -810,7 +810,7 @@ $(document).ready(function() {
     // On form submit, ensure credit_card_fee is only submitted if payment method is credit_card
     $('form.checkout').on('submit', function(e) {
         var selected = $('input[name="payment_method"]:checked').val();
-        if (selected !== 'credit_card') {
+        if (selected !== 'credit_card' || selected !== 'paypal') {
             // Remove credit_card_fee input if it exists
             if ($('input[name="credit_card_fee"]').length) {
                 $('input[name="credit_card_fee"]').val(0);

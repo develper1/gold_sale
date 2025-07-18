@@ -54,23 +54,15 @@
 											<div class="block-content">
 												<ul>
 													<li>
-														<a href="#">About Us</a>
+														<a href="{{ route('privacy-policy') }}">Privacy Policy</a>
 													</li>
 													<li>
-														<a href="#">FAQ</a>
+														<a href="{{ route('user-agreement') }}">User Agreement</a>
 													</li>
 													<li>
-														<a href="#">Our Producers</a>
+														<a href="{{ route('return-market-policy') }}">Return & Market Policy</a>
 													</li>
-													<li>
-														<a href="#">Sitemap</a>
-													</li>
-													<li>
-														<a href="#">Terms & Conditions</a>
-													</li>
-													<li>
-														<a href="#">Privacy Policy</a>
-													</li>
+													
 												</ul>
 											</div>
 										</div>

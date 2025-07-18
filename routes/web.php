@@ -58,6 +58,18 @@ Route::get('/faq', function () {
     return view('faq');
 })->name('faq');
 
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy-policy');
+
+Route::get('/user-agreement', function () {
+    return view('user-agreement');
+})->name('user-agreement');
+
+Route::get('/return-market-policy', function () {
+    return view('return-market-policy');
+})->name('return-market-policy');
+
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
