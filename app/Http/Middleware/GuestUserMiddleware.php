@@ -19,7 +19,7 @@ class GuestUserMiddleware
     {
 
         if (Auth::guard('web')->check()) {
-            return redirect()->route('home');
+            return redirect()->route('cart.view');
         }
 
 

@@ -26,4 +26,20 @@ class OrderController extends Controller
         $order->delete();
         return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,paid,canceled',
+        ]);
+
+        $order = Order::findOrFail($id);
+        if ($order->status === 'paid') {
+            return back()->with('error', 'Paid orders cannot be updated.');
+        }
+        $order->status = $request->status;
+        $order->save();
+
+        return back()->with('success', 'Order status updated to ' . $order->status . '.');
+    }
 } 

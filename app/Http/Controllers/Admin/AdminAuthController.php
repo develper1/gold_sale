@@ -24,7 +24,9 @@ class AdminAuthController extends Controller
 
        if (Auth::guard('admin')->attempt($credentials)) {
            if (Auth::guard('admin')->user()->is_admin) {
-               return redirect()->intended(route('admin.home'));
+               // Ensure admin login never uses a frontend intended URL
+               session()->forget('url.intended');
+               return redirect()->route('admin.home');
            } else {
                Auth::guard('admin')->logout();
                return back()->withErrors(['email' => 'Unauthorized.']);

@@ -15,6 +15,25 @@
                 <li>Created At: {{ $order->created_at->format('d M Y') }}</li>
                 <li>Transaction ID: {{ $order->transaction_id }}</li>
             </ul>
+
+            @if($order->status !== 'paid')
+                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="mb-4">
+                    @csrf
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Update Status</label>
+                            <select name="status" class="form-select">
+                                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Paid</option>
+                                <option value="canceled" {{ $order->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
+            @endif
             <h6>Billing Info</h6>
             <ul>
                 <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>

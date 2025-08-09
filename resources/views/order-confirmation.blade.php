@@ -4,6 +4,7 @@
 <div class="container py-5">
     <h1>Order Confirmation</h1>
     <p>Thank you for your order! Your order ID is <strong>{{ $order->id }}</strong>.</p>
+    <p><strong>Payment must be received within 48 hours of order placed or the order will be automatically canceled.</strong></p>
     <h3>Order Details</h3>
     <ul>
         <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>

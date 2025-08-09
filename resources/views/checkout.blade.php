@@ -297,6 +297,14 @@
                                                 <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal account.</p>
                                             </div> --}}
                                         </li>
+                                         <li class="payment-method">
+                                             <input type="radio" class="input-radio" name="payment_method" value="bank_wire" id="payment_method_bank_wire">
+                                             <label for="payment_method_bank_wire">Bank Wire</label>
+                                         </li>
+                                         <li class="payment-method">
+                                             <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
+                                             <label for="payment_method_ach">ACH</label>
+                                         </li>
                                     </ul>
                                     <div id="credit-card-fields" style="display:none; margin-top: 20px;">
                                        <div class="payment-form px-3 py-3 row m-0">

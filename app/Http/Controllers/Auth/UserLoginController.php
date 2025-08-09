@@ -10,8 +10,18 @@ use Illuminate\Support\Facades\Validator;
 
 class UserLoginController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
+        $returnUrl = $request->query('return');
+        if ($returnUrl) {
+            session()->put('url.intended', $returnUrl);
+        } elseif (!session()->has('url.intended')) {
+            $previousUrl = url()->previous();
+            if ($previousUrl && !str_contains($previousUrl, '/login') && !str_contains($previousUrl, '/register')) {
+                session()->put('url.intended', $previousUrl);
+            }
+        }
+
         return view('auth.login-page');
     }
 
@@ -28,7 +38,7 @@ class UserLoginController extends Controller
 
         if (Auth::guard('web')->attempt($credentials)) {
             if (!Auth::guard('web')->user()->is_admin) {
-                return redirect()->intended(route('home'));
+                return redirect()->intended(route('cart.view'));
             } else {
                 Auth::guard('web')->logout();
                 return back()->withErrors(['email' => 'Unauthorized.']);

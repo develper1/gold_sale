@@ -64,6 +64,10 @@
                         <div class="box-form-login">
                             <h2 class="register">Register</h2>
                             <div class="box-content">
+                                <div class="alert alert-info mb-3" role="alert">
+                                    <strong>Note:</strong> For anti-money laundering compliance, you must register an account to place orders. Guest checkout is not available.
+                                    
+                                </div>
                                 <div class="form-register">
                                     <form method="post" class="register" action="{{ route('register') }}">
                                         @csrf

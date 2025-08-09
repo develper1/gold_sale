@@ -2,6 +2,36 @@
 
 @section('content')
 <div id="content" class="site-content" role="main">
+    @push('scripts')
+    <script>
+    $(document).ready(function() {
+        $('.btn-add-to-cart a').on('click', function(e) {
+            e.preventDefault();
+            var btn_atc = $(this);
+            var productId = btn_atc.data('product-id');
+            btn_atc.addClass('loading');
+            $.ajax({
+                url: '{{ route("cart.add") }}',
+                method: 'POST',
+                data: {
+                    product_id: productId,
+                    quantity: 1,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update cart count in header
+                        $('.cart-count').text(response.cart_count);
+                        btn_atc.removeClass('loading');
+                        btn_atc.addClass('added');
+                        // Optional: feedback toast could be added here
+                    }
+                }
+            });
+        });
+    });
+    </script>
+    @endpush
     <section class="section m-b-0">
         <!-- Block Sliders (Layout 4) -->
         <div class="block block-sliders layout-4 auto-height color-white nav-center">
@@ -116,6 +146,11 @@
                                                         </a>
                                                     </div>
                                                 </div>
+                                                <div class="product-button mt-2">
+                                                    <div class="btn-add-to-cart" data-title="Add to cart">
+                                                        <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
+                                                    </div>
+                                                </div>
                                                 <div class="products-content">
                                                     <div class="contents">
                                                         <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
@@ -142,7 +177,8 @@
             </div>
             <div class="video-caption">
                 <h2 class="caption-title">Stand Out In Style</h2>
-                <a class="button button-white animation-horizontal" href="shop-grid-left.html">DISCOVER NOW</a>
+                <p class="caption-subtitle">Unique Jewelry and Great Gift Ideas</p>
+                <a class="button button-white animation-horizontal" href="{{ route('coming-soon') }}">DISCOVER NOW</a>
             </div>
         </div>
     </section>
@@ -184,6 +220,11 @@
                                                         </a>
                                                     </div>
                                                 </div>
+                                                <div class="product-button mt-2">
+                                                    <div class="btn-add-to-cart" data-title="Add to cart">
+                                                        <a rel="nofollow" href="#" class="product-btn button" data-product-id="{{ $product->id }}">Add to cart</a>
+                                                    </div>
+                                                </div>
                                                 <div class="products-content">
                                                     <div class="contents">
                                                         <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
@@ -219,7 +260,7 @@
                                 </div>
                                 <div class="box-title-wrap">
                                     <h3 class="box-title">
-                                          Shipping Worldwide
+                                          Ships USA Nationwide
                                     </h3>
                                     <p class="box-description">
                                          Lorem ipsum dolor sit amet, consectetur adipiscing elit 
@@ -236,7 +277,7 @@
                                 </div>
                                 <div class="box-title-wrap">
                                     <h3 class="box-title">
-                                          14 Days Return 
+                                          Dedicated Customer Support
                                     </h3>
                                     <p class="box-description">
                                          Lorem ipsum dolor sit amet, consectetur adipiscing elit 
@@ -253,7 +294,7 @@
                                 </div>
                                 <div class="box-title-wrap">
                                     <h3 class="box-title">
-                                          Security Payment 
+                                          Secure Payments 
                                     </h3>
                                     <p class="box-description">
                                          Lorem ipsum dolor sit amet, consectetur adipiscing elit 

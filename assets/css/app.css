@@ -10502,3 +10502,11 @@ body.home.title-6 .block-newsletter .newsletter-title {
 #site-footer.three-columns .footer-bottom {
   margin-top: 0;
 }
+
+.block-video .video-caption .caption-subtitle {
+    color: #FFFFFF;
+    font-size: 25px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 25px;
+}

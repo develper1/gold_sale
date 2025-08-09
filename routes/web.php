@@ -48,6 +48,9 @@ Route::get('/', function () {
 Route::get('/landing', function () {
     return view('index');
 });
+Route::get('/coming-soon', function () {
+    return view('coming-soon');
+})->name('coming-soon');
 
 
 Route::get('/about', function () {
@@ -117,6 +120,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('spot-tier-prices', SpotTierPriceController::class);
         Route::resource('settings', SettingsController::class)->only(['index', 'update']);
         Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'destroy']);
+        Route::post('/orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
         Route::resource('home-sliders', App\Http\Controllers\Admin\HomeSliderController::class);
 
     });

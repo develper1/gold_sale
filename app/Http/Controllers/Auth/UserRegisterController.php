@@ -10,9 +10,19 @@ use Illuminate\Support\Facades\Auth;
 
 class UserRegisterController extends Controller
 {
-    public function showRegistrationForm()
+    public function showRegistrationForm(Request $request)
     {
-        return view('auth.register');
+        $returnUrl = $request->query('return');
+        if ($returnUrl) {
+            session()->put('url.intended', $returnUrl);
+        } elseif (!session()->has('url.intended')) {
+            $previousUrl = url()->previous();
+            if ($previousUrl && !str_contains($previousUrl, '/login') && !str_contains($previousUrl, '/register')) {
+                session()->put('url.intended', $previousUrl);
+            }
+        }
+
+        return view('auth.login-page');
     }
 
     public function register(Request $request)
@@ -31,6 +41,6 @@ class UserRegisterController extends Controller
 
         Auth::guard('web')->login($user);
 
-        return redirect()->route('home');
+        return redirect()->intended(route('cart.view'));
     }
 }
