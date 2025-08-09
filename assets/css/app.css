@@ -552,25 +552,25 @@ input:-webkit-autofill {
   background-size: cover;
 }
 .section.bg-img-1 {
-  background-image: url(../../media/banner/bg-img-1.jpg);
+  background-image: url('../media/banner/bg-img-1.jpg');
 }
 .section.bg-img-2 {
-  background-image: url(../../media/banner/bg-img-2.jpg);
+  background-image: url('../media/banner/bg-img-2.jpg');
 }
 .section.bg-img-3 {
-  background-image: url(../../media/banner/bg-img-3.jpg);
+  background-image: url('../media/banner/bg-img-3.jpg');
 }
 .section.bg-img-4 {
-  background-image: url(../../media/banner/bg-img-4.jpg);
+  background-image: url('../media/banner/bg-img-4.jpg');
 }
 .section.bg-img-5 {
-  background-image: url(../../media/banner/bg-img-5.jpg);
+  background-image: url('../media/banner/bg-img-5.jpg');
 }
 .section.bg-img-6 {
-  background-image: url(../../media/banner/bg-img-6.jpg);
+  background-image: url('../media/banner/bg-img-6.jpg');
 }
 .section.bg-img-7 {
-  background-image: url(../../media/banner/bg-img-7.jpg);
+  background-image: url('../media/banner/bg-img-7.jpg');
 }
 .section-padding {
   padding: 0 22.5px;

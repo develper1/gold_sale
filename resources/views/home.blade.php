@@ -31,7 +31,7 @@
         </div>
     </section>
 
-    <section class="section section-padding background-img bg-img-2 p-t-70 p-b-50 m-b-70">
+    <section class="section section-padding background-img bg-img-2 p-t-70 p-b-50 m-b-70" style="margin-bottom: 0px;">
         <div class="section-container">
             <!-- Block Product Categories (Layout 3) -->
             <div class="block block-product-cats slider layout-3">
@@ -53,9 +53,9 @@
                                             <a href="{{ route('shop.category', $category->slug) }}">
                                                 <div class="item-image animation-horizontal">
                                                     @if($image)
-                                                        <img width="273" src="{{ asset('storage/app/public/' . $image) }}" alt="{{ $category->name }}" style="height:300px">
+                                                        <img width="273" src="{{ asset('storage/app/public/' . $image) }}" alt="{{ $category->name }}">
                                                     @else
-                                                        <img width="273"  src="{{ asset('assets/media/product/cat-placeholder.jpg') }}" alt="No Image" style="height:300px">
+                                                        <img width="273"  src="{{ asset('assets/media/product/cat-placeholder.jpg') }}" alt="No Image">
                                                     @endif
                                                 </div>
                                             </a>
@@ -76,7 +76,7 @@
     </section>
 
 
-    <section class="section section-padding top-border p-t-70 m-b-70">
+    <section class="section section-padding  p-t-70 m-b-70">
         <div class="section-container large">
             <!-- Block Products -->
             <div class="block block-products slider">
@@ -87,7 +87,7 @@
                     </div>
                     <div class="block-content">
                         <div class="content-product-list slick-wrap">
-                            <div class="slick-sliders products-list grid" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="4">
+                            <div class="slick-sliders products-list grid" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
                                 @foreach($featuredProducts as $product)
                                     <div class="item-product slick-slide">
                                         <div class="items">
@@ -100,16 +100,16 @@
                                                     </div>
                                                     <div class="product-thumb-hover">
                                                         <a href="{{ route('shop.product', $product->slug) }}">
-                                                            <img width="600" height="600" 
+                                                            <img width="300" height="600" 
                                                                     src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                     class="post-image" alt="{{ $product->name }}">
 
                                                             @if(isset($product->images[1]))
-                                                                    <img width="600" height="600" 
+                                                                    <img width="300" height="600" 
                                                                         src="{{ asset('storage/app/public/' . $product->images[1]->image_path) }}" 
                                                                         class="hover-image back" alt="{{ $product->name }}">
                                                             @else 
-                                                                <img width="600" height="600" 
+                                                                <img width="300" height="600" 
                                                                 src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                 class="hover-image back" alt="{{ $product->name }}">
                                                             @endif
@@ -158,7 +158,7 @@
                     </div>
                     <div class="block-content">
                         <div class="content-product-list slick-wrap">
-                            <div class="slick-sliders products-list grid" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="4">
+                            <div class="slick-sliders products-list grid" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
                                 @foreach($bestSellerProducts as $product)
                                     <div class="item-product slick-slide">
                                         <div class="items">
@@ -169,15 +169,15 @@
                                                     </div>
                                                     <div class="product-thumb-hover">
                                                         <a href="{{ route('shop.product', $product->slug) }}">
-                                                            <img width="600" height="600" 
+                                                            <img width="300" height="600" 
                                                                 src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                 class="post-image" alt="{{ $product->name }}">
                                                             @if(isset($product->images[1]))
-                                                                <img width="600" height="600" 
+                                                                <img width="300" height="600" 
                                                                     src="{{ asset('storage/app/public/' . $product->images[1]->image_path) }}" 
                                                                     class="hover-image back" alt="{{ $product->name }}">
                                                             @else 
-                                                                <img width="600" height="600" 
+                                                                <img width="300" height="600" 
                                                                 src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                 class="hover-image back" alt="{{ $product->name }}">
                                                             @endif
