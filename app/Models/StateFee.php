@@ -12,6 +12,19 @@ class StateFee extends Model
     protected $fillable = [
         'name',
         'code',
+        'fee_type',
         'amount'
     ];
+
+    /**
+     * Calculate the state fee amount based on subtotal
+     */
+    public function calculateFee($subtotal)
+    {
+        if ($this->fee_type === 'percentage') {
+            return ($subtotal * $this->amount) / 100;
+        }
+        
+        return $this->amount;
+    }
 } 

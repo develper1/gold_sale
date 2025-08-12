@@ -455,12 +455,15 @@ $(document).ready(function() {
                 $('.shipping-fee-amount').text(shippingFee > 0 ? '$' + shippingFee.toFixed(2) : '$0.00');
                 $('#shipping_fee').val(shippingFee);
                 updateOrderTotal();
+                // Update state fee when shipping fee changes (in case subtotal affects state fee)
+                updateStateFee();
             },
             error: function() {
                 shippingFee = 0;
                 $('.shipping-fee-amount').text('$0.00');
                 $('#shipping_fee').val(0);
                 updateOrderTotal();
+                updateStateFee();
             }
         });
     }
@@ -475,12 +478,15 @@ $(document).ready(function() {
                 $('.service-fee-amount').text(serviceFee > 0 ? '$' + serviceFee.toFixed(2) : '$0.00');
                 $('#service_fee').val(serviceFee);
                 updateOrderTotal();
+                // Update state fee when service fee changes (in case subtotal affects state fee)
+                updateStateFee();
             },
             error: function() {
                 serviceFee = 0;
                 $('.service-fee-amount').text('$0.00');
                 $('#service_fee').val(0);
                 updateOrderTotal();
+                updateStateFee();
             }
         });
     }
@@ -532,24 +538,48 @@ $(document).ready(function() {
 
     // Billing state change
     $('#billing_state').on('change', function() {
-        var stateCode = $(this).val();
+        updateStateFee();
+    });
+
+    function updateStateFee() {
+        var stateCode = $('#billing_state').val();
+        if (!stateCode) {
+            stateFee = 0;
+            $('.state-fee-amount').text('$0.00');
+            $('#state_fee').val(0);
+            updateOrderTotal();
+            return;
+        }
+
+        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+        
         $.ajax({
             url: '{{ url('/state-fee') }}/' + stateCode,
             method: 'GET',
+            data: { subtotal: baseTotal },
             success: function(response) {
                 stateFee = response.amount ? parseFloat(response.amount) : 0;
+                
+                // Update display with appropriate label
+                if (response.fee_type === 'percentage' && response.percentage) {
+                    $('.state-fee h2').text('State Fee (' + response.percentage + '%)');
+                } else {
+                    $('.state-fee h2').text('State Fee');
+                }
+                
                 $('.state-fee-amount').text(stateFee > 0 ? '$' + stateFee.toFixed(2) : '$0.00');
                 $('#state_fee').val(stateFee);
                 updateOrderTotal();
             },
             error: function() {
                 stateFee = 0;
+                $('.state-fee h2').text('State Fee');
                 $('.state-fee-amount').text('$0.00');
                 $('#state_fee').val(0);
                 updateOrderTotal();
             }
         });
-    });
+    }
 
     // Call updateCreditCardFee after other fee updates
     updateShippingFee();

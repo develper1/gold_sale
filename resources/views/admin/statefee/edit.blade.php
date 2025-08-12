@@ -28,17 +28,30 @@
                 @csrf
                 @method('PUT')
                 <div class="row">
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label>Name</label>
                         <input type="text" disabled  name="name" class="form-control" value="{{ $stateFee->name }}">
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-3 mb-3">
                         <label>Code</label>
                         <input type="text" disabled name="code" class="form-control" value="{{ $stateFee->code }}">
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label>Amount</label>
-                        <input type="number" step="0.01" name="amount" class="form-control" value="{{ $stateFee->amount }}">
+                    <div class="col-md-3 mb-3">
+                        <label>Fee Type</label>
+                        <select name="fee_type" class="form-control" required>
+                            <option value="flat" {{ $stateFee->fee_type === 'flat' ? 'selected' : '' }}>Flat Amount</option>
+                            <option value="percentage" {{ $stateFee->fee_type === 'percentage' ? 'selected' : '' }}>Percentage</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label id="amount-label">
+                            @if($stateFee->fee_type === 'percentage')
+                                Percentage (%)
+                            @else
+                                Amount ($)
+                            @endif
+                        </label>
+                        <input type="number" step="0.01" name="amount" class="form-control" value="{{ $stateFee->amount }}" required>
                     </div>
                 </div>
                 <div class="row">
@@ -51,4 +64,16 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $('select[name="fee_type"]').on('change', function() {
+        var feeType = $(this).val();
+        var label = feeType === 'percentage' ? 'Percentage (%)' : 'Amount ($)';
+        $('#amount-label').text(label);
+    });
+});
+</script>
+@endpush 

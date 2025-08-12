@@ -23,6 +23,7 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Code</th>
+                            <th>Fee Type</th>
                             <th>Amount</th>
                             <th>Updated At</th>
                             <th>Actions</th>
@@ -34,7 +35,18 @@
                                 <td>{{ $stateFee->id }}</td>
                                 <td>{{ $stateFee->name }}</td>
                                 <td>{{ $stateFee->code }}</td>
-                                <td>${{ number_format($stateFee->amount, 2) }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $stateFee->fee_type === 'percentage' ? 'info' : 'primary' }}">
+                                        {{ ucfirst($stateFee->fee_type) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($stateFee->fee_type === 'percentage')
+                                        {{ number_format($stateFee->amount, 2) }}%
+                                    @else
+                                        ${{ number_format($stateFee->amount, 2) }}
+                                    @endif
+                                </td>
                                 <td>{{ $stateFee->updated_at ? $stateFee->updated_at->format('Y-m-d H:i:s') : 'N/A' }}</td>
                                 <td>
                                     <a href="{{ route('admin.statefee.edit', $stateFee) }}" class="btn btn-sm btn-primary">Edit</a>

@@ -186,8 +186,20 @@ Route::get('/admin/products/spot-price', function (\Illuminate\Http\Request $req
 })->name('admin.products.spot_price');
 
 Route::get('/state-fee/{code}', function ($code) {
-    $fee = \App\Models\StateFee::where('code', $code)->value('amount');
-    return response()->json(['amount' => $fee ?? 0]);
+    $stateFee = \App\Models\StateFee::where('code', $code)->first();
+    if (!$stateFee) {
+        return response()->json(['amount' => 0, 'fee_type' => 'flat']);
+    }
+    
+    // Get subtotal from request if available
+    $subtotal = request('subtotal', 0);
+    $calculatedAmount = $stateFee->calculateFee($subtotal);
+    
+    return response()->json([
+        'amount' => $calculatedAmount,
+        'fee_type' => $stateFee->fee_type,
+        'percentage' => $stateFee->fee_type === 'percentage' ? $stateFee->amount : null
+    ]);
 })->name('state.fee');
 
 // Add this route for shipping fee by subtotal

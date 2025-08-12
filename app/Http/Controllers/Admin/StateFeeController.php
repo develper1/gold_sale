@@ -22,7 +22,8 @@ class StateFeeController extends Controller
     public function update(Request $request, StateFee $stateFee)
     {
         $request->validate([
-            'amount' => 'nullable|numeric|min:0',
+            'fee_type' => 'required|in:flat,percentage',
+            'amount' => 'required|numeric|min:0',
         ]);
 
         $stateFee->update($request->all());
