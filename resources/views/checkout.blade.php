@@ -454,7 +454,7 @@ $(document).ready(function() {
                 shippingFee = response.amount ? parseFloat(response.amount) : 0;
                 $('.shipping-fee-amount').text(shippingFee > 0 ? '$' + shippingFee.toFixed(2) : '$0.00');
                 $('#shipping_fee').val(shippingFee);
-                updateOrderTotal();
+                updateCreditCardFee();
                 // Update state fee when shipping fee changes (in case subtotal affects state fee)
                 updateStateFee();
             },
@@ -462,7 +462,7 @@ $(document).ready(function() {
                 shippingFee = 0;
                 $('.shipping-fee-amount').text('$0.00');
                 $('#shipping_fee').val(0);
-                updateOrderTotal();
+                updateCreditCardFee();
                 updateStateFee();
             }
         });
@@ -477,7 +477,7 @@ $(document).ready(function() {
                 serviceFee = response.amount ? parseFloat(response.amount) : 0;
                 $('.service-fee-amount').text(serviceFee > 0 ? '$' + serviceFee.toFixed(2) : '$0.00');
                 $('#service_fee').val(serviceFee);
-                updateOrderTotal();
+                updateCreditCardFee();
                 // Update state fee when service fee changes (in case subtotal affects state fee)
                 updateStateFee();
             },
@@ -485,7 +485,7 @@ $(document).ready(function() {
                 serviceFee = 0;
                 $('.service-fee-amount').text('$0.00');
                 $('#service_fee').val(0);
-                updateOrderTotal();
+                updateCreditCardFee();
                 updateStateFee();
             }
         });
@@ -493,18 +493,15 @@ $(document).ready(function() {
 
     function updateCreditCardFee() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        creditCardFee = (baseTotal) * (creditCardPercentage / 100);
+        var totalBeforeCreditCardFee = baseTotal + shippingFee + stateFee + serviceFee;
+        creditCardFee = (totalBeforeCreditCardFee) * (creditCardPercentage / 100);
         $('.credit-card-fee-amount').text(creditCardFee > 0 ? '$' + creditCardFee.toFixed(2) : '$0.00');
         updateOrderTotal();
     }
 
     function updateOrderTotal() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        var total = baseTotal + shippingFee + stateFee + serviceFee;
-        var selected = $('input[name="payment_method"]:checked').val();
-        if (selected === 'credit_card' || selected === 'paypal') {
-            total += creditCardFee;
-        }
+        var total = baseTotal + shippingFee + stateFee + serviceFee + creditCardFee;
         $('.cart-total').text('$' + total.toFixed(2));
     }
 
@@ -547,7 +544,7 @@ $(document).ready(function() {
             stateFee = 0;
             $('.state-fee-amount').text('$0.00');
             $('#state_fee').val(0);
-            updateOrderTotal();
+            updateCreditCardFee();
             return;
         }
 
@@ -569,14 +566,14 @@ $(document).ready(function() {
                 
                 $('.state-fee-amount').text(stateFee > 0 ? '$' + stateFee.toFixed(2) : '$0.00');
                 $('#state_fee').val(stateFee);
-                updateOrderTotal();
+                updateCreditCardFee();
             },
             error: function() {
                 stateFee = 0;
                 $('.state-fee h2').text('State Fee');
                 $('.state-fee-amount').text('$0.00');
                 $('#state_fee').val(0);
-                updateOrderTotal();
+                updateCreditCardFee();
             }
         });
     }
@@ -845,10 +842,10 @@ $(document).ready(function() {
             }
         });
     });
-    // On form submit, ensure credit_card_fee is only submitted if payment method is credit_card
+    // On form submit, ensure credit_card_fee is only submitted if payment method is credit_card or paypal
     $('form.checkout').on('submit', function(e) {
         var selected = $('input[name="payment_method"]:checked').val();
-        if (selected !== 'credit_card' || selected !== 'paypal') {
+        if (selected !== 'credit_card' && selected !== 'paypal') {
             // Remove credit_card_fee input if it exists
             if ($('input[name="credit_card_fee"]').length) {
                 $('input[name="credit_card_fee"]').val(0);

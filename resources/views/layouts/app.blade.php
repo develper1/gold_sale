@@ -20,7 +20,7 @@
 					<div class="section-padding">
 						<div class="section-container">
 							<div class="block-widget-wrap">
-								<div class="row">
+								<div class="row"><!-- 
 									<div class="col-lg-3 col-md-6 column-1">
 										<div class="block block-menu">
 											<h2 class="block-title">Customer Services</h2>
@@ -47,10 +47,29 @@
 												</ul>
 											</div>
 										</div>
-									</div>
+									</div> -->
 									<div class="col-lg-3 col-md-6 column-2">
 										<div class="block block-menu">
-											<h2 class="block-title">About Us</h2>
+											<h2 class="block-title">Policies</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="{{ route('privacy-policy') }}">Sales Policy</a>
+													</li>
+													<li>
+														<a href="{{ route('user-agreement') }}">Returns & Exchanges Policy</a>
+													</li>
+													<li>
+														<a href="{{ route('return-market-policy') }}">Terms of Sale</a>
+													</li>													
+													
+												</ul>
+											</div>
+										</div>
+									</div><!-- 									
+									<div class="col-lg-3 col-md-6 column-2">
+										<div class="block block-menu">
+											<h2 class="block-title">Policies</h2>
 											<div class="block-content">
 												<ul>
 													<li>
@@ -93,7 +112,7 @@
 												</ul>
 											</div>
 										</div>
-									</div>
+									</div> -->
 									<div class="col-lg-3 col-md-6 column-4">
 										<div class="block block-newsletter">
 											<h2 class="block-title">Our Newsletter</h2>

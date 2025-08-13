@@ -19,11 +19,11 @@
         <section class="section section-padding">
             <div class="section-container small">
                 <!-- Block Contact Map -->
-                <div class="block block-contact-map">
+                <!-- <div class="block block-contact-map">
                     <div class="block-widget-wrap">
                         <iframe src="https://maps.google.com/maps?q=London%20Eye%2C%20London%2C%20United%20Kingdom&amp;t=m&amp;z=10&amp;output=embed&amp;iwloc=near" aria-label="London Eye, London, United Kingdom"></iframe>
                     </div>
-                </div>
+                </div> -->
             </div>
         </section>	
 
@@ -46,7 +46,7 @@
                                             <h2>Phone</h2>
                                         </div>
                                         <div class="item-content">
-                                            810.222.5439
+                                            212.629.7979
                                         </div>
                                     </div>
                                 </div>
@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="item-content">
                                             <p>Monday to Friday</p>
-                                            <p>8:00am – 4:00pm Sydney, NSW time (UTC +10)</p>
+                                            <p>9:00am - 5:00pm EST</p>
                                             <p>Saturday and Sunday closed</p>
                                         </div>
                                     </div>
@@ -65,10 +65,10 @@
                                 <div class="col-md-4">
                                     <div class="info-item">
                                         <div class="item-tilte">
-                                            <h2>Returns</h2>
+                                            <h2>Email</h2>
                                         </div>
                                         <div class="item-content small-width">
-                                            For information on Returns and Refunds, please click <a href="#">here.</a>
+                                            info@oasismint.com
                                         </div>
                                     </div>
                                 </div>

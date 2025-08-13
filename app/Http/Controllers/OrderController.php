@@ -75,9 +75,6 @@ class OrderController extends Controller
         $setting = \App\Models\Setting::first();
         $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
         $creditCardFee = 0;
-        if ($isCreditCard || $isPaypal) {
-            $creditCardFee = ($subtotal) * ($creditCardPercentage / 100);
-        }
 
         // Coupon logic
         $appliedCoupon = session('applied_coupon');
@@ -89,10 +86,16 @@ class OrderController extends Controller
                 $service_fee = 0;
             }
         }
-        $total = $subtotal + $shipping_fee + $state_fee + $service_fee;
+        
+        // Calculate total before credit card fee
+        $totalBeforeCreditCardFee = $subtotal + $shipping_fee + $state_fee + $service_fee;
+        
+        // Calculate credit card fee based on total including all fees
         if ($isCreditCard || $isPaypal) {
-            $total += $creditCardFee;
+            $creditCardFee = ($totalBeforeCreditCardFee) * ($creditCardPercentage / 100);
         }
+        
+        $total = $totalBeforeCreditCardFee + $creditCardFee;
 
         // Authorize.Net credit card payment via direct API
         $transactionId = null;

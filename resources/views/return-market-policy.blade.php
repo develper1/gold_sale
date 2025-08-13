@@ -5,11 +5,11 @@
     <div class="section-container">
         <div class="content-title-heading">
             <h1 class="text-title-heading">
-                Returns Policy
+                Terms of Sale
             </h1>
         </div>
         <div class="breadcrumbs">
-            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Returns Policy
+            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Terms of Sale
         </div>
     </div>
 </div>
@@ -22,38 +22,66 @@
                     <div class="col-md-12">
                         
 
-                        Thank you for considering OasisMint.com. for your precious metal needs. We want to ensure you are 100% satisfied with your purchase. If you are not completely satisfied, we are here to help.<p>
-
-                        We offer the option for a refund, return, or exchange on your purchase. You must contact us within 5 days from the delivery date of your order to be eligible. If you would like to return an item, please contact us within 5 days of the delivery date for a return authorization number by email at info@oasismint.com or by phone at 212.629.7979. Returns will not be accepted without a return authorization number.<p>
-
-                        OasisMint.com. has the right to charge a restocking fee of $35 as well as a market loss fee at our discretion. The product must be in its original condition to be eligible for a return. Shipping and handling costs are non-refundable and return shipping charges are the responsibility of the customer. We recommend using a trackable shipping service or purchasing shipping insurance. We have the right to reject any return that does not follow these requirements.<p>
-
-                        Refunds are processed once the returned items have been received and verified. For Cryptocurrency refunds, these will be issued by BitPay at the USD exchange rate at the time of the refund. At our discretion, we have the option to issue store credit instead of a cash refund.<p>
-
-
-
-                        <h3>Market Loss Policy</h3>
-
-                        After you have confirmed your Order, you are responsible for any market exposure associated with that Order.  If we can cancel your Order in accordance with this User Agreement, including, without limitation, as a result of your non-payment for an Order, you must pay us any market loss associated with that Order and a cancellation fee of $35.  The market loss is the difference, if any, between the spot price of the precious metal at the time when an Order is cancelled less than the spot price of the subject precious metal at the time when the Order was confirmed. You must make such payment within 5 business days after the cancellation of the Order and, if you do not make such make such payment, we have all of the rights and the remedies available to us at law or otherwise. <p>
-
-                        Any market gain associated with a cancelled Order will belong to us and not to you. <p>
-
-                        <h5>DEFINITIONS </h5>
-
-                        <b>Market Loss/Market Gain: </b><br>
-                        The term "Market Loss" is when the difference between the metal spot price on a Sales Order when the order is confirmed, and when the order is cancelled is greater than the original confirmed order. This also applies to a Purchase Order, when the cancelled order metal spot price is greater than the original confirmed purchase order price. The term "Market Gain" is when the opposite(s) occur. <p>
-
-                        <b>Order:</b><br>
-                        The term "Order" applies to a confirmed Sales or Purchase Order with OasisMint.com, whether online or by telephone. <p>
-
-                        <b>Purchase Order:</b><br>
-                        The term "Purchase Order" applies to a confirmed order of a customer selling products to OasisMint.com. <p>
-
-                        <b>User Agreement:</b><br>
-                        "User Agreement" applies to our Terms and Conditions located here. <p>
-
-                        <b>Sales Order:</b><br>
-                        The term "Sales Order" applies to a confirmed order of a customer buying a product from Bullion.com, Inc. whether online or by telephone.<p>
+                      <p><strong>Terms of Sale</strong></p>
+<p>Welcome to <strong>Oasis Mint</strong>. By placing an order through our website, phone, or any other platform, you agree to the following <strong>Terms of Sale</strong>, which govern all transactions with Oasis Mint. Please read them carefully before proceeding.</p>
+<ol>
+<li><strong> Binding Agreement</strong></li>
+</ol>
+<p>Once you place an order with Oasis Mint, whether online or by phone, you are entering into a <strong>legally binding agreement</strong> to purchase the items at the agreed-upon price. Orders <strong>cannot be canceled or modified</strong> once confirmed.</p>
+<ol start="2">
+<li><strong> Market Fluctuation Acknowledgment</strong></li>
+</ol>
+<p>Precious metals are subject to continuous price changes driven by global markets. By purchasing from Oasis Mint, you acknowledge that:</p>
+<ul>
+<li><strong>Prices are based on real-time spot market activity</strong></li>
+<li>Your order <strong>locks in the price</strong> at the time of checkout or confirmation</li>
+<li><strong>You assume the risk</strong> of market fluctuations, whether prices rise or fall after the transaction</li>
+<li><strong>Cancellations are not permitted</strong> based on market changes</li>
+</ul>
+<p>In the event of non-payment or attempted cancellation, <strong>Oasis Mint reserves the right to recover market losses</strong>, administrative fees, and any associated costs.</p>
+<ol start="3">
+<li><strong> Payment Obligations</strong></li>
+</ol>
+<p>Full payment is required within <strong>[typically 24&ndash;48 hours]</strong> of order confirmation. Accepted payment methods include:</p>
+<ul>
+<li>Bank wire</li>
+<li>ACH transfer</li>
+<li>Check (may be subject to a holding period)</li>
+<li>Credit card (for qualifying orders)</li>
+</ul>
+<p>Failure to remit payment within the required window may result in order cancellation and enforcement of our <strong>Market Loss Policy</strong> (see Section 5).</p>
+<ol start="4">
+<li><strong> Sales Finality</strong></li>
+</ol>
+<p><strong>All sales are final.</strong> Due to the nature of precious metals pricing, Oasis Mint does not accept returns, exchanges, or cancellations once an order is confirmed. This policy applies regardless of subsequent market activity or price movement.</p>
+<ol start="5">
+<li><strong> Market Loss Policy</strong></li>
+</ol>
+<p>If an order is canceled by the client (or due to non-payment), and the current market price is lower than the locked-in price, Oasis Mint reserves the right to charge the customer the <strong>difference in market value ("market loss")</strong>, plus a <strong>restocking and administrative fee</strong>.<br /> If market prices have increased, Oasis Mint will retain any market gain and is under no obligation to share or refund the difference.</p>
+<ol start="6">
+<li><strong> Shipping, Risk of Loss &amp; Insurance</strong></li>
+</ol>
+<p>Oasis Mint ships all orders fully insured with signature confirmation. Risk of loss transfers to the customer <strong>upon confirmed delivery</strong>. We are not responsible for packages lost or stolen <strong>after delivery is confirmed by the carrier</strong>.</p>
+<ol start="7">
+<li><strong> Taxes &amp; Legal Compliance</strong></li>
+</ol>
+<p>You are responsible for any applicable <strong>state and local sales tax</strong>. We comply with all relevant U.S. laws, including <strong>AML (Anti-Money Laundering)</strong> and <strong>KYC (Know Your Customer)</strong> regulations. Certain orders may require identification verification.</p>
+<ol start="8">
+<li><strong> Right to Refuse or Cancel Orders</strong></li>
+</ol>
+<p>We reserve the right to <strong>refuse or cancel any order</strong> at our sole discretion, including but not limited to:</p>
+<ul>
+<li>Pricing errors</li>
+<li>Suspected fraud</li>
+<li>Incomplete payment</li>
+<li>Unverifiable identity</li>
+</ul>
+<p>In such cases, you will be notified, and if applicable, a refund will be issued via the original payment method.</p>
+<ol start="9">
+<li><strong> Contact Us</strong></li>
+</ol>
+<p>For questions about these terms or your transaction, please contact us:<br /> <strong>Email:</strong> info@oasismint.com<br /> <strong>Phone:</strong> 212.629.7979<br /> <strong>Address:</strong> 172 Empire Blvd., 3rd Floor. Brooklyn, NY 11225<br /> <b>Business Hours:</b> 9-5 pm - Monday thru Friday</p>
+<p>By proceeding with a purchase from Oasis Mint, you agree to all terms outlined above.</p>
 
 
 
