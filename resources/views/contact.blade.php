@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/contact-form.css') }}">
+@endpush
+
 @section('content')
 <div id="title" class="page-title">
     <div class="section-container">
@@ -89,19 +93,22 @@
                             <div class="sub-title">We’ll get back to you within two days.</div>
                         </div>
                         <div class="block-content">
-                            <form action="" method="post" class="contact-form" novalidate="novalidate">
+                            <div id="contact-form-message" style="display: none; margin-bottom: 20px; padding: 15px; border-radius: 5px;"></div>
+                            
+                            <form id="contact-form" action="{{ route('contact.submit') }}" method="post" class="contact-form" novalidate="novalidate">
+                                @csrf
                                 <div class="contact-us-form">
                                     <div class="row">
                                         <div class="col-sm-12 col-md-6">
                                             <label class="required">Name</label><br>
                                             <span class="form-control-wrap">
-                                                <input type="text" name="name" value="" size="40" class="form-control" aria-required="true">
+                                                <input type="text" name="name" value="" size="40" class="form-control" aria-required="true" required>
                                             </span>
                                         </div>
                                         <div class="col-sm-12 col-md-6">
                                             <label class="required">Email</label><br>
                                             <span class="form-control-wrap">
-                                                <input type="email" name="email" value="" size="40" class="form-control" aria-required="true">
+                                                <input type="email" name="email" value="" size="40" class="form-control" aria-required="true" required>
                                             </span>
                                         </div>
                                     </div>
@@ -109,12 +116,17 @@
                                         <div class="col-sm-12">
                                             <label class="required">Message</label><br>
                                             <span class="form-control-wrap">
-                                                <textarea name="message" cols="40" rows="10" class="form-control" aria-required="true"></textarea>
+                                                <textarea name="message" cols="40" rows="10" class="form-control" aria-required="true" required></textarea>
                                             </span>
                                         </div>
                                     </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                        </div>
+                                    </div>
                                     <div class="form-button">
-                                          <input type="submit" value="Submit" class="button"></span>
+                                        <button type="submit" class="button" id="submit-btn">Submit</button>
                                     </div>
                                 </div>
                             </form>
@@ -127,3 +139,94 @@
 </div><!-- #content -->
 
 @endsection
+
+@push('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contact-form');
+    const messageDiv = document.getElementById('contact-form-message');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+        
+        // Hide any previous messages
+        messageDiv.style.display = 'none';
+        
+        // Get form data
+        const formData = new FormData(form);
+        
+        // Add reCAPTCHA response
+        const recaptchaResponse = grecaptcha.getResponse();
+        if (!recaptchaResponse) {
+            showMessage('Please complete the reCAPTCHA verification.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+            return;
+        }
+        formData.append('g-recaptcha-response', recaptchaResponse);
+        
+        // Send AJAX request
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showMessage(data.message, 'success');
+                form.reset();
+                grecaptcha.reset();
+            } else {
+                showMessage(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('An error occurred. Please try again.', 'error');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit';
+        });
+    });
+    
+    function showMessage(message, type) {
+        messageDiv.textContent = message;
+        messageDiv.className = type === 'success' ? 'alert alert-success' : 'alert alert-danger';
+        messageDiv.style.display = 'block';
+        
+        // Add specific styling for error messages
+        if (type === 'error') {
+            messageDiv.style.color = '#721c24';
+            messageDiv.style.backgroundColor = '#f8d7da';
+            messageDiv.style.borderColor = '#f5c6cb';
+            messageDiv.style.border = '1px solid #f5c6cb';
+        } else {
+            messageDiv.style.color = '#155724';
+            messageDiv.style.backgroundColor = '#d4edda';
+            messageDiv.style.borderColor = '#c3e6cb';
+            messageDiv.style.border = '1px solid #c3e6cb';
+        }
+        
+        // Scroll to message
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Auto-hide success messages after 5 seconds
+        if (type === 'success') {
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    }
+});
+</script>
+@endpush

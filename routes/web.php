@@ -73,9 +73,8 @@ Route::get('/return-market-policy', function () {
     return view('return-market-policy');
 })->name('return-market-policy');
 
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
+Route::get('/contact', [App\Http\Controllers\ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit');
 
 
 // Route::get('/thumbs', function () {

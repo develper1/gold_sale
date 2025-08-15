@@ -1,0 +1,70 @@
+/* Contact Form Styles */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.alert-danger {
+    color: #721c24 !important;
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    border: 1px solid #f5c6cb !important;
+}
+
+.alert-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+}
+
+/* reCAPTCHA styling */
+.g-recaptcha {
+    margin: 15px 0;
+}
+
+/* Form button loading state */
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Form validation styles */
+.form-control.error {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control.success {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+/* Message animation */
+#contact-form-message {
+    transition: all 0.3s ease;
+    font-weight: 500;
+    padding: 15px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#contact-form-message.show {
+    display: block !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .g-recaptcha {
+        transform: scale(0.9);
+        transform-origin: left center;
+    }
+}
