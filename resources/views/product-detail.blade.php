@@ -85,11 +85,9 @@
                                 @endif
                             </span> --}}
                             @if($product->use_tier_pricing)
-                                <p class="mt-2">
-                                    <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
-                                        View All Tier Prices
-                                    </a>
-                                </p>
+                                <div class="mt-2">
+                                    @include('_tier_price_table', ['product' => $product, 'credit_card_percentage' => $credit_card_percentage])
+                                </div>
                             @endif
                             <p class="stock out-of-stock">Availability: <span>In stock</span></p>
                             <div class="description">

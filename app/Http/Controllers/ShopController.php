@@ -41,7 +41,9 @@ class ShopController extends Controller
         } elseif ($sort === 'price_desc') {
             $products = $products->sortByDesc(function($product) { return $product->current_price; })->values();
         }
-        return view('thumbs', compact('categories', 'products'));
+        $setting = \App\Models\Setting::first();
+        $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
+        return view('thumbs', compact('categories', 'products', 'credit_card_percentage'));
     }
 
     public function subcategory(Request $request, $slug)
@@ -79,7 +81,9 @@ class ShopController extends Controller
             $products = $products->sortByDesc(function($product) { return $product->current_price; })->values();
         }
         
-        return view('thumbs', compact('categories', 'subcategory', 'products'));
+        $setting = \App\Models\Setting::first();
+        $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
+        return view('thumbs', compact('categories', 'subcategory', 'products', 'credit_card_percentage'));
     }
 
     public function category(Request $request, $slug)
@@ -123,7 +127,9 @@ class ShopController extends Controller
             $products = $products->groupBy('sub_category_id');
         }
         
-        return view('thumbs', compact('categories', 'category', 'products'));
+        $setting = \App\Models\Setting::first();
+        $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
+        return view('thumbs', compact('categories', 'category', 'products', 'credit_card_percentage'));
     }
 
     public function product($slug)

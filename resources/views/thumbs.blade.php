@@ -157,13 +157,9 @@
                                                                         Starting from {{ $product->formatted_price }}
                                                                     @endif
                                                                 </span>
-                                                                @if($product->use_tier_pricing)
-                                                                    <p>
-                                                                        <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
-                                                                            View All Tier Prices
-                                                                        </a>
-                                                                    </p>
-                                                                @endif
+                                                            @if($product->use_tier_pricing)
+                                                                
+                                                            @endif
                                                             </div>
                                                         </div>
                                                     </div>
@@ -222,11 +218,7 @@
                                                                 @endif
                                                             </span>
                                                             @if($product->use_tier_pricing)
-                                                                <p>
-                                                                    <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
-                                                                        View All Tier Prices
-                                                                    </a>
-                                                                </p>
+                                                                
                                                             @endif
                                                         </div>
                                                     </div>
@@ -295,13 +287,9 @@
                                                                     @endif
                                                                 </span>
                                                                 @if($product->use_tier_pricing)
-                                                                    <p>
-                                                                        <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
-                                                                            View All Tier Prices
-                                                                        </a>
-                                                                    </p>
+                                                                    
                                                                 @endif
-                                                                <div class="description">{!! $product->description !!}</div>
+                                                                
                                                                 {{-- <div class="rating">
                                                                     <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5">
                                                                         <span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5</span>
@@ -371,13 +359,24 @@
                                                                 @endif
                                                             </span>
                                                             @if($product->use_tier_pricing)
-                                                                <p>
-                                                                    <a href="#" class="view-tier-prices-link" data-product-id="{{ $product->id }}">
-                                                                        View All Tier Prices
-                                                                    </a>
-                                                                </p>
+                                                                <div class="mt-2">
+                                                                    @include('_tier_price_table', ['product' => $product, 'credit_card_percentage' => $credit_card_percentage ?? 0])
+                                                                </div>
                                                             @endif
-                                                            <div class="description">{!! $product->description !!}</div>
+                                                            
+                                                            <div class="description">
+                                                                @php
+                                                                    $plainDesc = strip_tags($product->description);
+                                                                    $limit = 180;
+                                                                    $isLong = mb_strlen($plainDesc) > $limit;
+                                                                @endphp
+                                                                <span class="desc-short">{!! \Illuminate\Support\Str::limit($plainDesc, $limit) !!}</span>
+                                                                @if($isLong)
+                                                                    <span class="desc-ellipsis">...</span>
+                                                                    <a href="#" class="desc-toggle" data-product-id="{{ $product->id }}">See more</a>
+                                                                    <div class="desc-full" style="display:none; visibility:hidden; height:0; overflow:hidden;">{!! $product->description !!}</div>
+                                                                @endif
+                                                            </div>
                                                             {{-- <div class="rating">
                                                                 <div class="star-rating" role="img" aria-label="Rated 5.00 out of 5">
                                                                     <span style="width:100%">Rated <strong class="rating">5.00</strong> out of 5</span>
@@ -546,6 +545,26 @@ $(document).ready(function() {
                 alert('Error loading product details. Please try again.');
             }
         });
+    });
+
+    // Toggle long descriptions in list/grid
+    $(document).on('click', '.desc-toggle', function(e) {
+        e.preventDefault();
+        var $container = $(this).closest('.description');
+        var expanded = $container.data('expanded') === true;
+        if (!expanded) {
+            $container.find('.desc-short, .desc-ellipsis').hide();
+            var $full = $container.find('.desc-full');
+            $full.css({ display: 'block', visibility: 'visible', height: 'auto', overflow: 'visible' });
+            $(this).text('See less');
+            $container.data('expanded', true);
+        } else {
+            var $full = $container.find('.desc-full');
+            $full.css({ display: 'none', visibility: 'hidden', height: 0, overflow: 'hidden' });
+            $container.find('.desc-short, .desc-ellipsis').show();
+            $(this).text('See more');
+            $container.data('expanded', false);
+        }
     });
 
     // Close quick view
