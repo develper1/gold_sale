@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Mail\OrderConfirmation;
+use App\Mail\LowInventoryNotification;
 use GuzzleHttp\Client;
 
 class OrderController extends Controller
@@ -65,6 +68,19 @@ class OrderController extends Controller
         ]);
 
         $cart = session('cart', []);
+        
+        // Validate inventory before processing order
+        foreach ($cart as $item) {
+            $product = Product::find($item['id']);
+            if ($product && $product->inventory_type === 'limited' && $product->quantity_available !== null) {
+                if ($item['quantity'] > $product->quantity_available) {
+                    return response()->json([
+                        'error' => 'Insufficient stock for ' . $product->name . '. Only ' . $product->quantity_available . ' items available.'
+                    ], 422);
+                }
+            }
+        }
+        
         $subtotal = 0;
         foreach ($cart as $item) {
             $subtotal += $item['price'] * $item['quantity'];
@@ -89,13 +105,16 @@ class OrderController extends Controller
         
         // Calculate total before credit card fee
         $totalBeforeCreditCardFee = $subtotal + $shipping_fee + $state_fee + $service_fee;
+        $totalBeforeCreditCardFee = round($totalBeforeCreditCardFee, 2);
         
         // Calculate credit card fee based on total including all fees
         if ($isCreditCard || $isPaypal) {
             $creditCardFee = ($totalBeforeCreditCardFee) * ($creditCardPercentage / 100);
+            $creditCardFee = round($creditCardFee, 2);
         }
         
         $total = $totalBeforeCreditCardFee + $creditCardFee;
+        $total = round($total, 2);
 
         // Authorize.Net credit card payment via direct API
         $transactionId = null;
@@ -228,6 +247,38 @@ class OrderController extends Controller
                 'quantity' => $item['quantity'],
                 'image' => $item['image'] ?? null,
             ]);
+
+            // Decrement inventory for limited inventory products
+            $product = Product::find($item['id']);
+            if ($product && $product->inventory_type === 'limited' && $product->quantity_available !== null) {
+                $product->quantity_available = max(0, $product->quantity_available - $item['quantity']);
+                $product->save();
+                
+                // Reload product to get fresh data
+                $product->refresh();
+
+                // Check if inventory is at or below threshold and send notification
+                if ($product->low_inventory_threshold !== null && 
+                    $product->quantity_available <= $product->low_inventory_threshold) {
+                    try {
+                        $adminEmail = config('mail.admin_email', env('MAIL_ADMIN_EMAIL', 'info@oasismint.com'));
+                        if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+                            \Mail::to($adminEmail)->send(new LowInventoryNotification(
+                                $product,
+                                $product->quantity_available,
+                                $product->low_inventory_threshold
+                            ));
+                            Log::info('Low Inventory Notification sent for product ID: ' . $product->id . ' (Qty: ' . $product->quantity_available . ', Threshold: ' . $product->low_inventory_threshold . ') to ' . $adminEmail);
+                        } else {
+                            Log::warning('Low Inventory Notification not sent: Invalid admin email configured: ' . ($adminEmail ?? 'null'));
+                        }
+                    } catch (\Exception $e) {
+                        // Log error but don't fail the order
+                        Log::error('Low Inventory Notification Error for product ID ' . $product->id . ': ' . $e->getMessage());
+                        Log::error('Low Inventory Notification Error Trace: ' . $e->getTraceAsString());
+                    }
+                }
+            }
         }
 
         // Send order confirmation email

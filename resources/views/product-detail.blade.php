@@ -57,7 +57,8 @@
                             <h1 class="title">{{ $product->name }}</h1>
                             @php
                                 $basePrice = (float) $product->current_price; // or whatever your price variable is
-                               
+                                // Round base price to 2 decimal places for consistency
+                                $basePrice = round($basePrice, 2);
                                 
                                 $percentageToAdd = (float) ($credit_card_percentage ?? 0);
                                 $creditCardPrice = round($basePrice * (1 + ($percentageToAdd / 100)), 2);
@@ -84,12 +85,29 @@
                                     Starting from {{ $product->formatted_price }}
                                 @endif
                             </span> --}}
-                            @if($product->use_tier_pricing)
+                            @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
                                 <div class="mt-2">
                                     @include('_tier_price_table', ['product' => $product, 'credit_card_percentage' => $credit_card_percentage])
                                 </div>
                             @endif
-                            <p class="stock out-of-stock">Availability: <span>In stock</span></p>
+                            @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
+                                @php
+                                    $availableQty = $product->quantity_available;
+                                    $isInStock = $availableQty > 0;
+                                @endphp
+                                <p class="stock {{ $isInStock ? 'in-stock' : 'out-of-stock' }}">
+                                    Availability: 
+                                    <span>
+                                        @if($isInStock)
+                                            In stock ({{ $availableQty }} available)
+                                        @else
+                                            Out of stock
+                                        @endif
+                                    </span>
+                                </p>
+                            @else
+                                <p class="stock in-stock">Availability: <span>In stock</span></p>
+                            @endif
                             <div class="description">
                                 {!! $product->description !!}
                             </div>
@@ -97,7 +115,7 @@
                                 <div class="add-to-cart-wrap">
                                     <div class="quantity">
                                         <button type="button" class="plus">+</button>
-                                        <input type="number" class="qty quantity-input" step="1" min="1" max="" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off">
+                                        <input type="number" class="qty quantity-input" step="1" min="1" max="{{ $product->inventory_type === 'limited' && $product->quantity_available !== null ? $product->quantity_available : '' }}" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off" data-max-quantity="{{ $product->inventory_type === 'limited' && $product->quantity_available !== null ? $product->quantity_available : '' }}" data-inventory-type="{{ $product->inventory_type }}">
                                         <button type="button" class="minus">-</button>	
                                     </div>
                                     <div class="btn-add-to-cart">
@@ -217,13 +235,25 @@ $(document).ready(function() {
     // Quantity buttons
     $('.plus').click(function() {
         var input = $(this).siblings('.qty');
-        var value = parseInt(input.val());
-        input.val(value + 1);
+        var value = parseInt(input.val()) || 1;
+        var maxQty = input.data('max-quantity');
+        var inventoryType = input.data('inventory-type');
+        
+        // Check if limited inventory and max quantity is set
+        if (inventoryType === 'limited' && maxQty) {
+            if (value < maxQty) {
+                input.val(value + 1);
+            } else {
+                alert('Maximum available quantity is ' + maxQty);
+            }
+        } else {
+            input.val(value + 1);
+        }
     });
 
     $('.minus').click(function() {
         var input = $(this).siblings('.qty');
-        var value = parseInt(input.val());
+        var value = parseInt(input.val()) || 1;
         if (value > 1) {
             input.val(value - 1);
         }
@@ -234,7 +264,22 @@ $(document).ready(function() {
         e.preventDefault();
         var btn_atc = $(this);
         var productId = btn_atc.data('product-id');
-        var quantity = $('.qty').val();
+        var quantity = parseInt($('.qty').val()) || 1;
+        var maxQty = $('.qty').data('max-quantity');
+        var inventoryType = $('.qty').data('inventory-type');
+        
+        // Validate quantity for limited inventory
+        if (inventoryType === 'limited' && maxQty) {
+            if (quantity > maxQty) {
+                alert('You cannot order more than ' + maxQty + ' items. Only ' + maxQty + ' available in stock.');
+                return false;
+            }
+            if (quantity <= 0) {
+                alert('Please enter a valid quantity.');
+                return false;
+            }
+        }
+        
         btn_atc.addClass('loading');
         
         $.ajax({
@@ -263,8 +308,12 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr) {
-                alert('Error adding product to cart');
                 btn_atc.removeClass('loading');
+                var errorMsg = 'Error adding product to cart';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                }
+                alert(errorMsg);
             }
         });
     });

@@ -83,4 +83,30 @@
     padding: 20px 0;
 }
 
+/* Quick view layout adjustments for tier pricing table */
+.quickview-popup .quickview-container .img-quickview {
+    width: 40% !important;
+}
+
+.quickview-popup .quickview-container .quickview-single-info {
+    width: 60% !important;
+    padding: 0 30px !important;
+}
+
+.quickview-popup .quickview-container .quickview-single-info .product-content-detail {
+    overflow-x: visible !important;
+    overflow-y: auto;
+}
+
+.quickview-popup .quickview-tier-pricing {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.quickview-popup .quickview-tier-pricing table {
+    width: 100%;
+    min-width: 100%;
+    table-layout: auto;
+}
+
 

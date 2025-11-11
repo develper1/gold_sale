@@ -51,14 +51,17 @@
                                                 
                                             </td> --}}
                                             <td class="product-price">
-                                                <span class="price item-price">
+                                                <span class="price item-price" data-original-price="{{ $item['price'] }}">
                                                     @if($item['pricing_type'] === 'fixed')
                                                         ${{ number_format($item['price'], 2) }}
                                                     @else
                                                         ${{ number_format($item['price'], 2) }}
                                                     @endif
                                                 </span>
-                                                @if(isset($item['use_tier_pricing']) && $item['use_tier_pricing'])
+                                                @if(
+                                                    (isset($item['use_tier_pricing']) && $item['use_tier_pricing']) ||
+                                                    (isset($item['use_spot_tier_pricing']) && $item['use_spot_tier_pricing'])
+                                                )
                                                     <p>
                                                         <a href="#" class="view-tier-prices-link" data-product-id="{{ $item['id'] }}">
                                                             View Tier Prices
@@ -69,9 +72,14 @@
                                             <td class="product-quantity">
                                                 <div class="quantity">
                                                     <button type="button" class="quantity-button minus">-</button>	
-                                                    <input type="number" class="qty" step="1" min="1" max="" name="quantity" value="{{ $item['quantity'] }}" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off" data-product-id="{{ $item['id'] }}">
+                                                    <input type="number" class="qty" step="1" min="1" max="{{ isset($item['inventory_type']) && $item['inventory_type'] === 'limited' && isset($item['quantity_available']) ? $item['quantity_available'] : '' }}" name="quantity" value="{{ $item['quantity'] }}" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off" data-product-id="{{ $item['id'] }}" data-max-quantity="{{ isset($item['inventory_type']) && $item['inventory_type'] === 'limited' && isset($item['quantity_available']) ? $item['quantity_available'] : '' }}" data-inventory-type="{{ $item['inventory_type'] ?? 'unlimited' }}">
                                                     <button type="button" class="quantity-button plus">+</button>
                                                 </div>
+                                                @if(isset($item['inventory_type']) && $item['inventory_type'] === 'limited' && isset($item['quantity_available']))
+                                                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                                                        Available: {{ $item['quantity_available'] }}
+                                                    </p>
+                                                @endif
                                             </td>
                                             <td class="product-subtotal">
                                                 <span class="price item-total">${{ number_format($item['price'] * $item['quantity'], 2) }}</span>
@@ -162,27 +170,48 @@ $(document).ready(function() {
     $('.quantity-button').on('click', function(e) {
         e.preventDefault();
         var input = $(this).siblings('input.qty');
-        var currentVal = parseInt(input.val());
+        var currentVal = parseInt(input.val()) || 1;
         var productId = $(this).closest('tr').data('product-id');
+        var maxQty = input.data('max-quantity');
+        var inventoryType = input.data('inventory-type');
         
         if ($(this).hasClass('plus')) {
-            input.val(currentVal + 1);
+            // Check if limited inventory and max quantity is set
+            if (inventoryType === 'limited' && maxQty) {
+                if (currentVal < maxQty) {
+                    input.val(currentVal + 1);
+                    updateCart(productId, input.val());
+                }
+                // Don't show alert, just don't increment if at max
+            } else {
+                input.val(currentVal + 1);
+                updateCart(productId, input.val());
+            }
         } else if ($(this).hasClass('minus') && currentVal > 1) {
             input.val(currentVal - 1);
+            updateCart(productId, input.val());
         }
-        
-        // Update cart after quantity change
-        updateCart(productId, input.val());
     });
 
     // Handle direct quantity input
     $('.qty').on('change', function() {
         var productId = $(this).closest('tr').data('product-id');
-        var quantity = $(this).val();
+        var quantity = parseInt($(this).val()) || 1;
+        var maxQty = $(this).data('max-quantity');
+        var inventoryType = $(this).data('inventory-type');
         
         if (quantity < 1) {
             quantity = 1;
             $(this).val(1);
+        }
+        
+        // Validate quantity for limited inventory - no alert, just correct the value
+        if (inventoryType === 'limited' && maxQty) {
+            if (quantity > maxQty) {
+                // Don't show alert, just limit the input to max quantity
+                $(this).val(maxQty);
+                quantity = maxQty;
+            }
         }
         
         updateCart(productId, quantity);
@@ -205,14 +234,27 @@ $(document).ready(function() {
                     
                     // Update item price and total
                     var itemElement = $('tr[data-product-id="' + productId + '"]');
-                    var itemPrice = parseFloat(response.item_price);
-                    itemElement.find('.item-price').text('$' + itemPrice.toFixed(2));
-                    var itemTotal = itemPrice * quantity;
+                    var newPrice = parseFloat(response.item_price);
+                    
+                    // Round price to 2 decimal places consistently
+                    newPrice = Math.round(newPrice * 100) / 100;
+                    
+                    // Update the displayed price (handles tier pricing changes)
+                    // Backend calculates the correct price based on quantity and tier pricing
+                    itemElement.find('.item-price').text('$' + newPrice.toFixed(2));
+                    // Update the data attribute with the new price
+                    itemElement.find('.item-price').data('original-price', newPrice);
+                    
+                    // Calculate subtotal using the price from backend (which includes tier pricing)
+                    var itemTotal = newPrice * quantity;
+                    itemTotal = Math.round(itemTotal * 100) / 100;
                     itemElement.find('.item-total').text('$' + itemTotal.toFixed(2));
                     
-                    // Update cart totals
-                    $('.sub-total-price').text('$' + parseFloat(response.subtotal).toFixed(2));
-                    $('.cart-total').text('$' + parseFloat(response.total).toFixed(2));
+                    // Update cart totals from backend response (round for consistency)
+                    var subtotal = Math.round(parseFloat(response.subtotal) * 100) / 100;
+                    var total = Math.round(parseFloat(response.total) * 100) / 100;
+                    $('.sub-total-price').text('$' + subtotal.toFixed(2));
+                    $('.cart-total').text('$' + total.toFixed(2));
                 }
             },
             error: function(xhr) {
@@ -222,9 +264,17 @@ $(document).ready(function() {
     }
 
     // Handle remove item
-    $('.remove-item').on('click', function(e) {
+    $(document).on('click', '.remove-item', function(e) {
         e.preventDefault();
         var productId = $(this).data('product-id');
+        
+        // Ensure productId is treated as integer
+        productId = parseInt(productId);
+        
+        if (!productId) {
+            alert('Invalid product ID');
+            return;
+        }
         
         $.ajax({
             url: '{{ route("cart.remove") }}',
@@ -238,19 +288,30 @@ $(document).ready(function() {
                     // Remove item row
                     $('tr[data-product-id="' + productId + '"]').remove();
                     
-                    // Update cart totals
-                    $('.sub-total-price').text('$' + response.subtotal.toFixed(2));
-                    $('.cart-total').text('$' + response.total.toFixed(2));
+                    // Update cart totals (round for consistency)
+                    var subtotal = Math.round(parseFloat(response.subtotal) * 100) / 100;
+                    var total = Math.round(parseFloat(response.total) * 100) / 100;
+                    $('.sub-total-price').text('$' + subtotal.toFixed(2));
+                    $('.cart-total').text('$' + total.toFixed(2));
                     $('.cart-count').text(response.cart_count);
                     
                     // Show empty cart if no items left
                     if (response.cart_count === 0) {
-                        $('.cart-items').html('<tr><td colspan="6" class="text-center">Your cart is empty</td></tr>');
+                        location.reload(); // Reload to show empty cart message properly
                     }
+                } else {
+                    alert(response.message || 'Error removing item from cart');
                 }
             },
             error: function(xhr) {
-                alert('Error removing item from cart');
+                var errorMsg = 'Error removing item from cart';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                } else if (xhr.status === 404) {
+                    errorMsg = 'Item not found in cart. Please refresh the page.';
+                }
+                alert(errorMsg);
+                console.error('Error removing item:', xhr);
             }
         });
     });

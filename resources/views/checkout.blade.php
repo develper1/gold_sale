@@ -452,6 +452,8 @@ $(document).ready(function() {
             method: 'GET',
             success: function(response) {
                 shippingFee = response.amount ? parseFloat(response.amount) : 0;
+                // Round to 2 decimal places consistently
+                shippingFee = Math.round(shippingFee * 100) / 100;
                 $('.shipping-fee-amount').text(shippingFee > 0 ? '$' + shippingFee.toFixed(2) : '$0.00');
                 $('#shipping_fee').val(shippingFee);
                 updateCreditCardFee();
@@ -475,6 +477,8 @@ $(document).ready(function() {
             method: 'GET',
             success: function(response) {
                 serviceFee = response.amount ? parseFloat(response.amount) : 0;
+                // Round to 2 decimal places consistently
+                serviceFee = Math.round(serviceFee * 100) / 100;
                 $('.service-fee-amount').text(serviceFee > 0 ? '$' + serviceFee.toFixed(2) : '$0.00');
                 $('#service_fee').val(serviceFee);
                 updateCreditCardFee();
@@ -492,9 +496,19 @@ $(document).ready(function() {
     }
 
     function updateCreditCardFee() {
+        var selected = $('input[name="payment_method"]:checked').val();
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
         var totalBeforeCreditCardFee = baseTotal + shippingFee + stateFee + serviceFee;
-        creditCardFee = (totalBeforeCreditCardFee) * (creditCardPercentage / 100);
+        
+        // Only calculate credit card fee if payment method is credit_card or paypal
+        if (selected === 'credit_card' || selected === 'paypal') {
+            creditCardFee = (totalBeforeCreditCardFee) * (creditCardPercentage / 100);
+            // Round to 2 decimal places consistently
+            creditCardFee = Math.round(creditCardFee * 100) / 100;
+        } else {
+            creditCardFee = 0;
+        }
+        
         $('.credit-card-fee-amount').text(creditCardFee > 0 ? '$' + creditCardFee.toFixed(2) : '$0.00');
         updateOrderTotal();
     }
@@ -502,6 +516,8 @@ $(document).ready(function() {
     function updateOrderTotal() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
         var total = baseTotal + shippingFee + stateFee + serviceFee + creditCardFee;
+        // Round to 2 decimal places consistently
+        total = Math.round(total * 100) / 100;
         $('.cart-total').text('$' + total.toFixed(2));
     }
 
@@ -556,6 +572,8 @@ $(document).ready(function() {
             data: { subtotal: baseTotal },
             success: function(response) {
                 stateFee = response.amount ? parseFloat(response.amount) : 0;
+                // Round to 2 decimal places consistently
+                stateFee = Math.round(stateFee * 100) / 100;
                 
                 // Update display with appropriate label
                 if (response.fee_type === 'percentage' && response.percentage) {
@@ -592,27 +610,23 @@ $(document).ready(function() {
             $('#credit-card-fields').hide();
         }
     }
-    // Initial toggle
-    toggleCreditCardFields();
-    $('input[name="payment_method"]').on('change', function() {
-        toggleCreditCardFields();
-        togglePaymentButtons(); // keep existing logic
-    });
 
     function handleCreditCardFeeDisplay() {
         var selected = $('input[name="payment_method"]:checked').val();
         if (selected === 'credit_card' || selected === 'paypal') {
             $('.credit-card-fee').show();
-            updateCreditCardFee();
         } else {
             $('.credit-card-fee').hide();
-            creditCardFee = 0;
-            updateOrderTotal();
         }
+        // updateCreditCardFee will handle the calculation based on payment method
+        updateCreditCardFee();
     }
-    // Initial call
+    
+    // Initial setup
+    toggleCreditCardFields();
     handleCreditCardFeeDisplay();
-    // Update payment method change handler
+    
+    // Single consolidated payment method change handler
     $('input[name="payment_method"]').on('change', function() {
         toggleCreditCardFields();
         togglePaymentButtons();

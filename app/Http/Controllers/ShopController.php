@@ -29,7 +29,7 @@ class ShopController extends Controller
         }
         
         $sort = $request->input('sort', 'default');
-        $productsQuery = Product::where('is_active', true)->with(['images', 'subCategory']);
+        $productsQuery = Product::where('is_active', true)->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
         if ($sort === 'latest') {
             $productsQuery->orderBy('id', 'desc');
         } else {
@@ -68,7 +68,7 @@ class ShopController extends Controller
         $sort = $request->input('sort', 'default');
         $productsQuery = Product::where('sub_category_id', $subcategory->id)
             ->where('is_active', true)
-            ->with('images');
+            ->with(['images', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
         if ($sort === 'latest') {
             $productsQuery->orderBy('id', 'desc');
         } else {
@@ -111,7 +111,7 @@ class ShopController extends Controller
             $query->where('category_id', $category->id);
         })
         ->where('is_active', true)
-        ->with(['images', 'subCategory']);
+        ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
         if ($sort === 'latest') {
             $productsQuery->orderBy('id', 'desc');
         } else {
@@ -152,11 +152,60 @@ class ShopController extends Controller
         
         $product = Product::where('slug', $slug)
                         ->where('is_active', true)
-                        ->with(['images', 'subCategory'])
+                        ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
                         ->firstOrFail();
         $setting = \App\Models\Setting::first();
         $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
         return view('product-detail', compact('categories', 'product', 'credit_card_percentage'));
+    }
+
+    /**
+     * Calculate product price based on quantity and tier pricing
+     */
+    private function calculatePriceForQuantity(Product $product, $quantity)
+    {
+        // Handle regular tier pricing
+        if ($product->use_tier_pricing) {
+            return $product->getTierPriceForQuantity($quantity);
+        }
+        
+        // Handle spot tier pricing
+        if ($product->use_spot_tier_pricing && $product->pricing_type === 'spot') {
+            $tier = $product->getSpotTierPriceForQuantity($quantity);
+            $metalPriceService = app(\App\Services\MetalPriceService::class);
+            $rawSpotPrice = $metalPriceService->getSpotPrice($product->product_type);
+            
+            if ($rawSpotPrice === null) {
+                return $product->fixed_price;
+            }
+            
+            // Apply spot_percentage to get base spot price
+            $baseSpotPrice = $rawSpotPrice * ($product->spot_percentage ?? 1);
+            
+            if ($tier) {
+                // Tier pricing overrides blanket markup
+                if ($tier->type === 'percentage') {
+                    // Percentage type: replaces blanket markup percentage for this quantity
+                    // Use the tier percentage instead of blanket markup
+                    $price = $baseSpotPrice * (1 + ($tier->value / 100));
+                    return round($price, 2);
+                } else { // fixed
+                    // Fixed type: overrides spot price completely with fixed amount
+                    return round($tier->value, 2);
+                }
+            } else {
+                // Fallback to blanket markup if no tier found for this quantity
+                $markupPercentage = $product->blanket_markup_percentage;
+                $price = $baseSpotPrice;
+                if ($markupPercentage) {
+                    $price = $baseSpotPrice * (1 + ($markupPercentage / 100));
+                }
+                return round($price, 2);
+            }
+        }
+        
+        // For non-tier pricing, use current price (already rounded in getCurrentPriceAttribute)
+        return $product->current_price;
     }
 
     public function addToCart(Request $request)
@@ -164,22 +213,52 @@ class ShopController extends Controller
         $productId = $request->input('product_id');
         $quantity = $request->input('quantity', 1);
         
+        // Convert productId to integer for consistent cart key storage
+        $productId = (int) $productId;
+        
         $product = Product::with('images')->findOrFail($productId);
+        
+        // Check inventory for limited products
+        if ($product->inventory_type === 'limited' && $product->quantity_available !== null) {
+            $cart = session()->get('cart', []);
+            $currentCartQuantity = isset($cart[$productId]) ? $cart[$productId]['quantity'] : 0;
+            $requestedQuantity = $currentCartQuantity + $quantity;
+            
+            if ($requestedQuantity > $product->quantity_available) {
+                $message = 'Insufficient stock. Only ' . $product->quantity_available . ' items available.';
+                if ($currentCartQuantity > 0) {
+                    $message .= ' You already have ' . $currentCartQuantity . ' in your cart.';
+                }
+                return response()->json([
+                    'success' => false,
+                    'message' => $message
+                ], 422);
+            }
+        }
         
         $cart = session()->get('cart', []);
         
         if(isset($cart[$productId])) {
-            $cart[$productId]['quantity'] += $quantity;
+            // Product already in cart - update quantity and recalculate price
+            $newQuantity = $cart[$productId]['quantity'] + $quantity;
+            $cart[$productId]['quantity'] = $newQuantity;
+            // Recalculate price based on new total quantity (tier pricing)
+            $cart[$productId]['price'] = $this->calculatePriceForQuantity($product, $newQuantity);
         } else {
+            // New product - calculate price based on quantity
+            $price = $this->calculatePriceForQuantity($product, $quantity);
             $cart[$productId] = [
                 'id' => $product->id,
                 'name' => $product->name,
-                'price' => $product->current_price,
+                'price' => $price,
                 'pricing_type' => $product->pricing_type,
                 'quantity' => $quantity,
                 'image' => $product->images->first() ? $product->images->first()->image_path : null,
                 'slug' => $product->slug,
-                'use_tier_pricing' => $product->use_tier_pricing
+                'use_tier_pricing' => $product->use_tier_pricing,
+                'use_spot_tier_pricing' => $product->use_spot_tier_pricing,
+                'inventory_type' => $product->inventory_type,
+                'quantity_available' => $product->quantity_available
             ];
         }
         
@@ -195,11 +274,31 @@ class ShopController extends Controller
     public function viewCart()
     {
         $cart = session()->get('cart', []);
+        // Ensure each cart item has up-to-date price and flags on every page load
         $total = 0;
-        
-        foreach($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        foreach ($cart as $key => $item) {
+            try {
+                $product = Product::find($item['id']);
+                if ($product) {
+                    // Recalculate price based on current product settings and item quantity
+                    $quantity = (int) ($item['quantity'] ?? 1);
+                    $currentPrice = $this->calculatePriceForQuantity($product, $quantity);
+                    // Update cart item with latest price and flags
+                    $cart[$key]['price'] = $currentPrice;
+                    $cart[$key]['pricing_type'] = $product->pricing_type;
+                    $cart[$key]['use_tier_pricing'] = $product->use_tier_pricing;
+                    $cart[$key]['use_spot_tier_pricing'] = $product->use_spot_tier_pricing;
+                    $cart[$key]['inventory_type'] = $product->inventory_type;
+                    $cart[$key]['quantity_available'] = $product->quantity_available;
+                }
+            } catch (\Throwable $e) {
+                // Ignore per-item failures and keep existing values
+            }
+            $total += ($cart[$key]['price'] ?? 0) * ($cart[$key]['quantity'] ?? 1);
         }
+        $total = round($total, 2);
+        // Persist any updates back to the session
+        session()->put('cart', $cart);
         
         return view('cart', compact('cart', 'total'));
     }
@@ -210,37 +309,32 @@ class ShopController extends Controller
         $quantity = $request->input('quantity');
         $cart = session()->get('cart', []);
 
+        // Convert productId to integer to match cart keys
+        $productId = (int) $productId;
+
         if(isset($cart[$productId])) {
             $product = Product::findOrFail($productId);
             
-            // Get the correct price based on quantity
-            if ($product->use_tier_pricing) {
-                $price = $product->getTierPriceForQuantity($quantity);
-            } else if ($product->use_spot_tier_pricing && $product->pricing_type === 'spot') {
-                $tier = $product->getSpotTierPriceForQuantity($quantity);
-                $metalPriceService = app(\App\Services\MetalPriceService::class);
-                $spotPrice = $metalPriceService->getSpotPrice($product->product_type);
-                if ($tier) {
-                    if ($tier->type === 'percentage') {
-                        $price = $spotPrice + ($spotPrice * ($tier->value / 100));
-                    } else { // fixed
-                        $price = $spotPrice + $tier->value;
-                    }
-                } else {
-                    // fallback to blanket markup if no tier found
-                    $markupPercentage = $product->blanket_markup_percentage;
-                    $price = $spotPrice;
-                    if ($markupPercentage) {
-                        $price = $spotPrice * (1 + ($markupPercentage / 100));
-                    }
+            // Check inventory for limited products
+            if ($product->inventory_type === 'limited' && $product->quantity_available !== null) {
+                if ($quantity > $product->quantity_available) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Insufficient stock. Only ' . $product->quantity_available . ' items available.'
+                    ], 422);
                 }
-            } else {
-                $price = $product->current_price;
             }
+            
+            // Calculate price based on quantity using the helper method
+            // This handles both regular tier pricing and spot tier pricing correctly
+            $price = $this->calculatePriceForQuantity($product, $quantity);
             
             $cart[$productId]['quantity'] = $quantity;
             $cart[$productId]['price'] = $price;
             $cart[$productId]['use_tier_pricing'] = $product->use_tier_pricing;
+            $cart[$productId]['use_spot_tier_pricing'] = $product->use_spot_tier_pricing;
+            $cart[$productId]['inventory_type'] = $product->inventory_type;
+            $cart[$productId]['quantity_available'] = $product->quantity_available;
             session()->put('cart', $cart);
             
             // Calculate new totals
@@ -248,6 +342,7 @@ class ShopController extends Controller
             foreach($cart as $item) {
                 $total += $item['price'] * $item['quantity'];
             }
+            $total = round($total, 2);
 
             return response()->json([
                 'success' => true,
@@ -270,6 +365,10 @@ class ShopController extends Controller
         $productId = $request->input('product_id');
         $cart = session()->get('cart', []);
 
+        // Convert productId to integer to match cart keys (cart keys are stored as integers from addToCart)
+        $productId = (int) $productId;
+        
+        // Also check if it exists as a string key (for backward compatibility)
         if(isset($cart[$productId])) {
             unset($cart[$productId]);
             session()->put('cart', $cart);
@@ -279,6 +378,7 @@ class ShopController extends Controller
             foreach($cart as $item) {
                 $total += $item['price'] * $item['quantity'];
             }
+            $total = round($total, 2);
 
             return response()->json([
                 'success' => true,
@@ -305,12 +405,27 @@ class ShopController extends Controller
 
     public function quickView($id)
     {
-        $product = Product::with(['images', 'subCategory'])
+        $product = Product::with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
                          ->findOrFail($id);
+        
+        $setting = \App\Models\Setting::first();
+        $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
+        
+        // Get current spot price if product uses spot pricing
+        $spotPrice = null;
+        if ($product->pricing_type === 'spot') {
+            $metalPriceService = app(\App\Services\MetalPriceService::class);
+            $rawSpotPrice = $metalPriceService->getSpotPrice($product->product_type);
+            if ($rawSpotPrice !== null) {
+                $spotPrice = $rawSpotPrice * ($product->spot_percentage ?? 1);
+            }
+        }
         
         return response()->json([
             'success' => true,
-            'product' => $product
+            'product' => $product,
+            'credit_card_percentage' => $credit_card_percentage,
+            'spot_price' => $spotPrice
         ]);
     }
 

@@ -94,9 +94,13 @@ class Product extends Model
             $tier = $this->getSpotTierPriceForQuantity(1); // Default to 1, should be replaced with actual quantity in context
             if ($tier) {
                 if ($tier->type === 'percentage') {
-                    return $spotPrice + ($spotPrice * ($tier->value / 100));
+                    // Percentage type: replaces blanket markup percentage
+                    // Formula: baseSpotPrice * (1 + tierPercentage / 100)
+                    $price = $spotPrice * (1 + ($tier->value / 100));
+                    return round($price, 2);
                 } else { // fixed
-                    return $spotPrice + $tier->value;
+                    // Fixed type: overrides spot price completely with fixed amount
+                    return round($tier->value, 2);
                 }
             }
         }
@@ -106,7 +110,7 @@ class Product extends Model
             $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));
         }
       
-        return $spotPrice;
+        return round($spotPrice, 2);
     }
 
     public function getFormattedPriceAttribute()

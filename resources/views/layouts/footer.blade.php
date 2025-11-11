@@ -270,6 +270,7 @@
 												<span>$100.00</span>
 											</div>
 										</div>
+										<div class="quickview-tier-pricing" style="display: none; margin-top: 12px;"></div>
 										{{-- <div class="product-rating"> 
 											<div class="star-rating" role="img" aria-label="Rated 4.00 out of 5">
 												<span style="width:80%">Rated <strong class="rating">4.00</strong> out of 5 based on <span class="rating">1</span> customer rating</span>

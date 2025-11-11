@@ -22,9 +22,10 @@ class StateFee extends Model
     public function calculateFee($subtotal)
     {
         if ($this->fee_type === 'percentage') {
-            return ($subtotal * $this->amount) / 100;
+            $fee = ($subtotal * $this->amount) / 100;
+            return round($fee, 2);
         }
         
-        return $this->amount;
+        return round($this->amount, 2);
     }
 } 
