@@ -163,6 +163,34 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+    /* Ensure remove button and icon are clickable */
+    .remove-item {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+    }
+    .remove-item i {
+        pointer-events: none; /* Allow clicks to pass through icon to parent link */
+    }
+    .remove-item:hover {
+        opacity: 0.7;
+    }
+    .remove-item:active {
+        opacity: 0.5;
+    }
+    
+    /* Fix quickview popup blocking clicks when hidden */
+    .quickview-popup {
+        pointer-events: none; /* Allow clicks to pass through when hidden */
+    }
+    .quickview-popup.show {
+        pointer-events: auto; /* Enable clicks when shown */
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 $(document).ready(function() {
@@ -263,18 +291,31 @@ $(document).ready(function() {
         });
     }
 
-    // Handle remove item
-    $(document).on('click', '.remove-item', function(e) {
+    // Handle remove item - handle clicks on both the link and the icon
+    $(document).on('click', '.remove-item, .remove-item i', function(e) {
         e.preventDefault();
-        var productId = $(this).data('product-id');
+        e.stopPropagation();
+        
+        // Get productId from the closest .remove-item element (in case icon was clicked)
+        var $removeLink = $(this).closest('.remove-item').length ? $(this).closest('.remove-item') : $(this);
+        var productId = $removeLink.data('product-id');
+        
+        // If still no productId, try getting it from the table row
+        if (!productId) {
+            productId = $removeLink.closest('tr').data('product-id');
+        }
         
         // Ensure productId is treated as integer
         productId = parseInt(productId);
         
-        if (!productId) {
-            alert('Invalid product ID');
-            return;
+        if (!productId || isNaN(productId)) {
+            console.error('Invalid product ID:', productId);
+            alert('Invalid product ID. Please refresh the page and try again.');
+            return false;
         }
+        
+        // Disable the button to prevent multiple clicks
+        $removeLink.css('pointer-events', 'none').css('opacity', '0.5');
         
         $.ajax({
             url: '{{ route("cart.remove") }}',
@@ -286,34 +327,48 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     // Remove item row
-                    $('tr[data-product-id="' + productId + '"]').remove();
-                    
-                    // Update cart totals (round for consistency)
-                    var subtotal = Math.round(parseFloat(response.subtotal) * 100) / 100;
-                    var total = Math.round(parseFloat(response.total) * 100) / 100;
-                    $('.sub-total-price').text('$' + subtotal.toFixed(2));
-                    $('.cart-total').text('$' + total.toFixed(2));
-                    $('.cart-count').text(response.cart_count);
-                    
-                    // Show empty cart if no items left
-                    if (response.cart_count === 0) {
-                        location.reload(); // Reload to show empty cart message properly
-                    }
+                    var $itemRow = $('tr[data-product-id="' + productId + '"]');
+                    $itemRow.fadeOut(300, function() {
+                        $(this).remove();
+                        
+                        // Update cart totals (round for consistency)
+                        var subtotal = Math.round(parseFloat(response.subtotal) * 100) / 100;
+                        var total = Math.round(parseFloat(response.total) * 100) / 100;
+                        $('.sub-total-price').text('$' + subtotal.toFixed(2));
+                        $('.cart-total').text('$' + total.toFixed(2));
+                        $('.cart-count').text(response.cart_count);
+                        
+                        // Show empty cart if no items left
+                        if (response.cart_count === 0) {
+                            setTimeout(function() {
+                                location.reload(); // Reload to show empty cart message properly
+                            }, 300);
+                        }
+                    });
                 } else {
+                    // Re-enable the button on error
+                    $removeLink.css('pointer-events', 'auto').css('opacity', '1');
                     alert(response.message || 'Error removing item from cart');
                 }
             },
             error: function(xhr) {
+                // Re-enable the button on error
+                $removeLink.css('pointer-events', 'auto').css('opacity', '1');
+                
                 var errorMsg = 'Error removing item from cart';
                 if (xhr.responseJSON && xhr.responseJSON.message) {
                     errorMsg = xhr.responseJSON.message;
                 } else if (xhr.status === 404) {
                     errorMsg = 'Item not found in cart. Please refresh the page.';
+                } else if (xhr.status === 500) {
+                    errorMsg = 'Server error. Please try again or refresh the page.';
                 }
                 alert(errorMsg);
                 console.error('Error removing item:', xhr);
             }
         });
+        
+        return false;
     });
 
 

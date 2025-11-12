@@ -34,7 +34,7 @@
                 <div class="wishlist-popup-content">
                     <div class="wishlist-popup-content-top">
                         <span class="wishlist-name">Price Tier Range</span>
-						{{-- <span class="wishlist-count-wrapper"><span class="wishlist-count">2</span></span>                                 --}}
+						
 						<span class="wishlist-popup-close"></span>
                     </div>
                     <div class="wishlist-popup-content-mid">
@@ -98,17 +98,7 @@
 							</tbody>
 						</table>
 					</div>
-                    {{-- <div class="wishlist-popup-content-bot">
-                        <div class="wishlist-popup-content-bot-inner">
-                            <a class="wishlist-page" href="shop-wishlist.html">
-								Open wishlist page                                    
-							</a>
-                            <span class="wishlist-continue" data-url="">
-                                Continue shopping                                        
-                            </span>
-                        </div>
-                        <div class="wishlist-notice wishlist-notice-show">Added to the wishlist!</div>
-                    </div> --}}
+                    
                 </div>
             </div>
 		</div>
@@ -271,12 +261,7 @@
 											</div>
 										</div>
 										<div class="quickview-tier-pricing" style="display: none; margin-top: 12px;"></div>
-										{{-- <div class="product-rating"> 
-											<div class="star-rating" role="img" aria-label="Rated 4.00 out of 5">
-												<span style="width:80%">Rated <strong class="rating">4.00</strong> out of 5 based on <span class="rating">1</span> customer rating</span>
-											</div> 
-											<a href="#" class="review-link">(<span class="count">1</span> customer review)</a> 
-										</div> --}}
+
 										<div class="description"> 
 											<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis…</p> 
 										</div>
@@ -289,7 +274,6 @@
 												</div> 
 												<button type="submit" class="single-add-to-cart-button button alt">Add to cart</button> 
 											</div> 
-											{{-- <button class="button quick-buy">Buy It Now</button> --}}
 										</form> 
 									</div> 
 								</div> 
@@ -302,49 +286,8 @@
 		</div>
 
 
-		{{-- <div class="modal fade" id="tierPriceModal" tabindex="-1" role="dialog" aria-labelledby="tierPriceModalLabel" aria-hidden="true">
-			<div class="modal-dialog" role="document">
-			  <div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="tierPriceModalLabel">Price Tier Range</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				  </div>
-				<div class="modal-body">
-				  <div class="tierContent">
 
-				  </div>
-				</div>
-				<div class="modal-footer">
-				  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-				  {{-- <button type="button" class="btn btn-primary">Save changes</button> --}}
-				</div>
-			  </div>
-			</div>
-		  </div> --}}
 
-		<!-- Newsletter Popup -->
-		{{-- <div class="popup-shadow"></div> --}}
-		{{-- <div class="newsletter-popup">
-			<a href="#" class="newsletter-close"></a>
-			<div class="newsletter-container"> 
-				<div class="newsletter-img">
-					<img src="{{ asset('assets/media/banner/newsletter-popup.jpg') }}" alt="">
-				</div> 
-				<div class="newsletter-form">
-					<form action="" method="post">
-						<div class="newsletter-title">
-							<div class="title">Get<br> free shipping</div>
-							<div class="sub-title">on your first order. Offer ends soon.</div>
-						</div>
-						<div class="newsletter-input clearfix">
-							<input type="email" name="your-email" size="40" class="form-control" placeholder="Enter Your Email ...">
-							<input type="submit" value="Subscribe" class="form-control">
-			     		</div>
-			     		<div class="newsletter-no">no thanks !</div>
-					</form>
-				</div> 
-			</div>
-		</div> --}}
 
 		<!-- Page Loader -->
 		<div class="page-preloader">
@@ -356,8 +299,7 @@
 
 		<!-- Dependency Scripts -->
 		<script src="{{ asset('assets/vendor/libs/popper/js/popper.min.js') }}"></script>
-		{{-- <script src="{{ asset('assets/vendor/libs/jquery/js/jquery.min.js') }}"></script> --}}
-		{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.7/js/bootstrap.min.js"></script> --}}
+		
 		<script src="{{ asset('assets/vendor/libs/bootstrap/js/bootstrap.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/slick/js/slick.min.js') }}"></script>
 		<script src="{{ asset('assets/vendor/libs/mmenu/js/jquery.mmenu.all.min.js') }}"></script>
