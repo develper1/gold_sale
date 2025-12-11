@@ -1,5 +1,7 @@
 @php
-    $ccPercent = isset($credit_card_percentage) ? (float) $credit_card_percentage : 0;
+    // Only apply credit card fee for gold and silver products
+    $isGoldOrSilver = in_array($product->product_type, ['gold', 'silver']);
+    $ccPercent = $isGoldOrSilver && isset($credit_card_percentage) ? (float) $credit_card_percentage : 0;
     $spotPrice = null;
     if ($product->pricing_type === 'spot') {
         $metalPriceService = app(\App\Services\MetalPriceService::class);

@@ -104,10 +104,13 @@ class Product extends Model
                 }
             }
         }
-        // Default: use blanket markup
-        $markupPercentage = $this->blanket_markup_percentage;
-        if ($markupPercentage) {
-            $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));
+        // Default: use blanket markup (only for gold and silver products)
+        $isGoldOrSilver = in_array($this->product_type, ['gold', 'silver']);
+        if ($isGoldOrSilver) {
+            $markupPercentage = $this->blanket_markup_percentage;
+            if ($markupPercentage) {
+                $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));
+            }
         }
       
         return round($spotPrice, 2);

@@ -403,6 +403,43 @@ $(document).ready(function() {
     const baseCurrency = 'USD';
     const metals = ['XAU', 'XAG', 'XPT', 'XPD']; // XAU = Gold, XAG = Silver, XPT = platinum, XPD = palladium
 
+    // Cookie expiration times
+    const SECOND = 1000;
+    const MINUTE = 60 * SECOND;
+    const HOUR   = 60 * MINUTE;
+    const DAY    = 24 * HOUR;
+    const LATEST_PRICE_CACHE_TIME = 15 * MINUTE; // 15 minutes
+    const YESTERDAY_PRICE_CACHE_TIME = 1 * DAY; // 1 day
+
+    // Cookie helper functions
+    function setCookie(name, value, expirationTime) {
+        const date = new Date();
+        date.setTime(date.getTime() + expirationTime);
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = name + "=" + JSON.stringify(value) + ";" + expires + ";path=/";
+    }
+
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) {
+                try {
+                    return JSON.parse(c.substring(nameEQ.length, c.length));
+                } catch (e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    function deleteCookie(name) {
+        document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
+
     // Helper to format price
     function formatPrice(price) {
         return parseFloat(price).toFixed(2);
@@ -448,51 +485,142 @@ $(document).ready(function() {
 
         // Only run if tab is visible
         if (document.hidden) {
-            // Define your time variables (in milliseconds)
-            const SECOND = 1000;
-            const MINUTE = 60 * SECOND;
-            const HOUR   = 60 * MINUTE;
-            const DAY    = 24 * HOUR;
-
-            // Set your desired interval here
-            let updateInterval = 1 * DAY; // Change this to 5 * MINUTE, 2 * HOUR, etc.
-
-            // Try again in 1 minute
-            // priceUpdateTimeout = setTimeout(updatePrices, updateInterval);
             return;
         }
 
-        // Fetch latest prices
-        currentAjax = $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(latestData) {
-            if (!latestData.success) {
-                scheduleNext();
-                return;
-            }
+        // Check for cached latest prices
+        const cachedLatest = getCookie('metalPricesLatest');
+        let latestData = null;
+        let needLatestApiCall = true;
 
-            // Fetch yesterday's prices
-            currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(yesterdayData) {
-                if (!yesterdayData.success) {
-                    scheduleNext();
-                    return;
+        if (cachedLatest && cachedLatest.data && cachedLatest.timestamp) {
+            const cacheAge = Date.now() - cachedLatest.timestamp;
+            if (cacheAge < LATEST_PRICE_CACHE_TIME) {
+                latestData = cachedLatest.data;
+                needLatestApiCall = false;
+                console.log('Using cached latest prices');
+            }
+        }
+
+        // Check for cached yesterday prices
+        const cachedYesterday = getCookie('metalPricesYesterday');
+        let yesterdayData = null;
+        let needYesterdayApiCall = true;
+
+        if (cachedYesterday && cachedYesterday.data && cachedYesterday.timestamp) {
+            const cacheAge = Date.now() - cachedYesterday.timestamp;
+            if (cacheAge < YESTERDAY_PRICE_CACHE_TIME) {
+                yesterdayData = cachedYesterday.data;
+                needYesterdayApiCall = false;
+                console.log('Using cached yesterday prices');
+            }
+        }
+
+        // If we have both cached, use them and skip API calls
+        if (!needLatestApiCall && !needYesterdayApiCall) {
+            processPrices(latestData, yesterdayData);
+            scheduleNext();
+            return;
+        }
+
+        // Fetch latest prices if needed
+        if (needLatestApiCall) {
+            currentAjax = $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(data) {
+                if (data.success) {
+                    // Store in cookie with timestamp
+                    setCookie('metalPricesLatest', {
+                        data: data,
+                        timestamp: Date.now()
+                    }, LATEST_PRICE_CACHE_TIME);
+                    latestData = data;
                 }
 
-                metals.forEach(metal => {
-                    const latestPrice = latestData.rates[baseCurrency + metal];
-                    const yesterdayPrice = yesterdayData.rates[baseCurrency + metal];
-                    if(metal === 'XAU') {
-                        var element = 'gold';
-                    }else if(metal === 'XAG'){
-                        var element = 'silver';
-                    }else if(metal === 'XPT'){
-                        var element = 'platinum';
-                    }else{
-                        var element = 'palladium';
-                    }
-                    setPriceAndChange(element, latestPrice, yesterdayPrice);
-                });
+                // Fetch yesterday's prices if needed
+                if (needYesterdayApiCall) {
+                    currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(yData) {
+                        if (yData.success) {
+                            // Store in cookie with timestamp
+                            setCookie('metalPricesYesterday', {
+                                data: yData,
+                                timestamp: Date.now()
+                            }, YESTERDAY_PRICE_CACHE_TIME);
+                            yesterdayData = yData;
+                        }
 
-                scheduleNext();
+                        // Use cached latest if API call failed
+                        if (!latestData && cachedLatest) {
+                            latestData = cachedLatest.data;
+                        }
+
+                        // Use cached yesterday if API call failed
+                        if (!yesterdayData && cachedYesterday) {
+                            yesterdayData = cachedYesterday.data;
+                        }
+
+                        if (latestData && yesterdayData) {
+                            processPrices(latestData, yesterdayData);
+                        }
+                        scheduleNext();
+                    });
+                } else {
+                    // We have yesterday from cache, just use latest from API
+                    if (latestData && yesterdayData) {
+                        processPrices(latestData, yesterdayData);
+                    }
+                    scheduleNext();
+                }
             });
+        } else {
+            // We have latest from cache, fetch yesterday if needed
+            if (needYesterdayApiCall) {
+                currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(yData) {
+                    if (yData.success) {
+                        // Store in cookie with timestamp
+                        setCookie('metalPricesYesterday', {
+                            data: yData,
+                            timestamp: Date.now()
+                        }, YESTERDAY_PRICE_CACHE_TIME);
+                        yesterdayData = yData;
+                    }
+
+                    // Use cached yesterday if API call failed
+                    if (!yesterdayData && cachedYesterday) {
+                        yesterdayData = cachedYesterday.data;
+                    }
+
+                    if (latestData && yesterdayData) {
+                        processPrices(latestData, yesterdayData);
+                    }
+                    scheduleNext();
+                });
+            } else {
+                // Both are cached, process them
+                if (latestData && yesterdayData) {
+                    processPrices(latestData, yesterdayData);
+                }
+                scheduleNext();
+            }
+        }
+    }
+
+    function processPrices(latestData, yesterdayData) {
+        if (!latestData || !latestData.success || !yesterdayData || !yesterdayData.success) {
+            return;
+        }
+
+        metals.forEach(metal => {
+            const latestPrice = latestData.rates[baseCurrency + metal];
+            const yesterdayPrice = yesterdayData.rates[baseCurrency + metal];
+            if(metal === 'XAU') {
+                var element = 'gold';
+            }else if(metal === 'XAG'){
+                var element = 'silver';
+            }else if(metal === 'XPT'){
+                var element = 'platinum';
+            }else{
+                var element = 'palladium';
+            }
+            setPriceAndChange(element, latestPrice, yesterdayPrice);
         });
     }
 

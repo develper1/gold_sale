@@ -60,7 +60,9 @@
                                 // Round base price to 2 decimal places for consistency
                                 $basePrice = round($basePrice, 2);
                                 
-                                $percentageToAdd = (float) ($credit_card_percentage ?? 0);
+                                // Only apply credit card fee for gold and silver products
+                                $isGoldOrSilver = in_array($product->product_type, ['gold', 'silver']);
+                                $percentageToAdd = $isGoldOrSilver ? (float) ($credit_card_percentage ?? 0) : 0;
                                 $creditCardPrice = round($basePrice * (1 + ($percentageToAdd / 100)), 2);
                             @endphp
 

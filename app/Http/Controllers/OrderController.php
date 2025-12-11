@@ -103,17 +103,27 @@ class OrderController extends Controller
             }
         }
         
-        // Calculate total before credit card fee
-        $totalBeforeCreditCardFee = $subtotal + $shipping_fee + $state_fee + $service_fee;
+        // Calculate subtotal for gold/silver products only (for credit card fee calculation)
+        $goldSilverSubtotal = 0;
+        foreach ($cart as $item) {
+            $productType = $item['product_type'] ?? null;
+            if (in_array($productType, ['gold', 'silver'])) {
+                $goldSilverSubtotal += $item['price'] * $item['quantity'];
+            }
+        }
+        
+        // Calculate total before credit card fee (for gold/silver products only)
+        $totalBeforeCreditCardFee = $goldSilverSubtotal + $shipping_fee + $state_fee + $service_fee;
         $totalBeforeCreditCardFee = round($totalBeforeCreditCardFee, 2);
         
-        // Calculate credit card fee based on total including all fees
+        // Calculate credit card fee based on gold/silver products total including all fees
         if ($isCreditCard || $isPaypal) {
             $creditCardFee = ($totalBeforeCreditCardFee) * ($creditCardPercentage / 100);
             $creditCardFee = round($creditCardFee, 2);
         }
         
-        $total = $totalBeforeCreditCardFee + $creditCardFee;
+        // Total is full subtotal + fees + credit card fee
+        $total = $subtotal + $shipping_fee + $state_fee + $service_fee + $creditCardFee;
         $total = round($total, 2);
 
         // Authorize.Net credit card payment via direct API

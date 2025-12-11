@@ -194,6 +194,52 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Cookie helper functions
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) {
+                try {
+                    return JSON.parse(c.substring(nameEQ.length, c.length));
+                } catch (e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Function to get spot prices from cookies
+    function getSpotPricesFromCookies() {
+        const cachedLatest = getCookie('metalPricesLatest');
+        const spotPrices = {};
+        
+        if (cachedLatest && cachedLatest.data && cachedLatest.data.rates) {
+            const rates = cachedLatest.data.rates;
+            const baseCurrency = 'USD';
+            
+            // Map metal codes to product types
+            // XAU = Gold, XAG = Silver, XPT = Platinum, XPD = Palladium
+            if (rates[baseCurrency + 'XAU']) {
+                spotPrices['gold'] = rates[baseCurrency + 'XAU'];
+            }
+            if (rates[baseCurrency + 'XAG']) {
+                spotPrices['silver'] = rates[baseCurrency + 'XAG'];
+            }
+            if (rates[baseCurrency + 'XPT']) {
+                spotPrices['platinum'] = rates[baseCurrency + 'XPT'];
+            }
+            if (rates[baseCurrency + 'XPD']) {
+                spotPrices['palladium'] = rates[baseCurrency + 'XPD'];
+            }
+        }
+        
+        return Object.keys(spotPrices).length > 0 ? spotPrices : null;
+    }
+
     // Handle quantity changes
     $('.quantity-button').on('click', function(e) {
         e.preventDefault();
@@ -247,14 +293,24 @@ $(document).ready(function() {
 
     // Function to update cart
     function updateCart(productId, quantity) {
+        // Get spot prices from cookies
+        var spotPrices = getSpotPricesFromCookies();
+        
+        var requestData = {
+            _token: '{{ csrf_token() }}',
+            product_id: productId,
+            quantity: quantity
+        };
+        
+        // Add spot prices if available from cookies
+        if (spotPrices) {
+            requestData.spot_prices = spotPrices;
+        }
+        
         $.ajax({
             url: '{{ route("cart.update") }}',
             method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                product_id: productId,
-                quantity: quantity
-            },
+            data: requestData,
             success: function(response) {
                 if (response.success) {
                     // Update cart count

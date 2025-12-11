@@ -162,7 +162,7 @@ class ShopController extends Controller
     /**
      * Calculate product price based on quantity and tier pricing
      */
-    private function calculatePriceForQuantity(Product $product, $quantity)
+    private function calculatePriceForQuantity(Product $product, $quantity, $spotPrices = null)
     {
         // Handle regular tier pricing
         if ($product->use_tier_pricing) {
@@ -172,8 +172,15 @@ class ShopController extends Controller
         // Handle spot tier pricing
         if ($product->use_spot_tier_pricing && $product->pricing_type === 'spot') {
             $tier = $product->getSpotTierPriceForQuantity($quantity);
-            $metalPriceService = app(\App\Services\MetalPriceService::class);
-            $rawSpotPrice = $metalPriceService->getSpotPrice($product->product_type);
+            
+            // Use provided spot prices from cookies if available, otherwise fetch from API
+            $rawSpotPrice = null;
+            if ($spotPrices !== null && isset($spotPrices[$product->product_type])) {
+                $rawSpotPrice = $spotPrices[$product->product_type];
+            } else {
+                $metalPriceService = app(\App\Services\MetalPriceService::class);
+                $rawSpotPrice = $metalPriceService->getSpotPrice($product->product_type);
+            }
             
             if ($rawSpotPrice === null) {
                 return $product->fixed_price;
@@ -194,11 +201,14 @@ class ShopController extends Controller
                     return round($tier->value, 2);
                 }
             } else {
-                // Fallback to blanket markup if no tier found for this quantity
-                $markupPercentage = $product->blanket_markup_percentage;
+                // Fallback to blanket markup if no tier found for this quantity (only for gold/silver)
+                $isGoldOrSilver = in_array($product->product_type, ['gold', 'silver']);
                 $price = $baseSpotPrice;
-                if ($markupPercentage) {
-                    $price = $baseSpotPrice * (1 + ($markupPercentage / 100));
+                if ($isGoldOrSilver) {
+                    $markupPercentage = $product->blanket_markup_percentage;
+                    if ($markupPercentage) {
+                        $price = $baseSpotPrice * (1 + ($markupPercentage / 100));
+                    }
                 }
                 return round($price, 2);
             }
@@ -252,6 +262,7 @@ class ShopController extends Controller
                 'name' => $product->name,
                 'price' => $price,
                 'pricing_type' => $product->pricing_type,
+                'product_type' => $product->product_type,
                 'quantity' => $quantity,
                 'image' => $product->images->first() ? $product->images->first()->image_path : null,
                 'slug' => $product->slug,
@@ -286,6 +297,7 @@ class ShopController extends Controller
                     // Update cart item with latest price and flags
                     $cart[$key]['price'] = $currentPrice;
                     $cart[$key]['pricing_type'] = $product->pricing_type;
+                    $cart[$key]['product_type'] = $product->product_type;
                     $cart[$key]['use_tier_pricing'] = $product->use_tier_pricing;
                     $cart[$key]['use_spot_tier_pricing'] = $product->use_spot_tier_pricing;
                     $cart[$key]['inventory_type'] = $product->inventory_type;
@@ -307,6 +319,7 @@ class ShopController extends Controller
     {
         $productId = $request->input('product_id');
         $quantity = $request->input('quantity');
+        $spotPrices = $request->input('spot_prices'); // Get spot prices from frontend cookies
         $cart = session()->get('cart', []);
 
         // Convert productId to integer to match cart keys
@@ -327,10 +340,12 @@ class ShopController extends Controller
             
             // Calculate price based on quantity using the helper method
             // This handles both regular tier pricing and spot tier pricing correctly
-            $price = $this->calculatePriceForQuantity($product, $quantity);
+            // Pass spot prices from cookies to avoid API calls
+            $price = $this->calculatePriceForQuantity($product, $quantity, $spotPrices);
             
             $cart[$productId]['quantity'] = $quantity;
             $cart[$productId]['price'] = $price;
+            $cart[$productId]['product_type'] = $product->product_type;
             $cart[$productId]['use_tier_pricing'] = $product->use_tier_pricing;
             $cart[$productId]['use_spot_tier_pricing'] = $product->use_spot_tier_pricing;
             $cart[$productId]['inventory_type'] = $product->inventory_type;

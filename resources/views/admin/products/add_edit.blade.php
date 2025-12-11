@@ -124,16 +124,19 @@
                                 @php 
                                     $product_type = $product->product_type ?? 'gold';
                                 @endphp
-                                <select name="product_type"  class="selectpicker w-100" data-style="btn-default" required>
+                                <select name="product_type" id="product_type" class="selectpicker w-100" data-style="btn-default" required>
                                     <option value="">--select type--</option>
                                     <option value="gold" {{ $product_type == 'gold' ? 'selected' : '' }}>Gold</option>
                                     <option value="silver" {{ $product_type == 'silver' ? 'selected' : '' }}>Silver</option>
+                                    <option value="gift_items" {{ $product_type == 'gift_items' ? 'selected' : '' }}>Gift Items</option>
+                                    <option value="collectables" {{ $product_type == 'collectables' ? 'selected' : '' }}>Collectables</option>
+                                    <option value="other" {{ $product_type == 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
                             
                             </div>
                         
                             <!-- Pricing Type (triggers fixed price visibility) -->
-                            <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="col-lg-6 col-md-6 col-sm-12 pricing-type-field" style="display: {{ (isset($product) && !in_array($product->product_type ?? '', ['gold', 'silver'])) ? 'none' : 'block' }};">
                                 <label class="form-label" for="label">Pricing Type<span class="text-danger">*</span></label>
                                 @php 
                                     $pricing_type = $product->pricing_type ?? 'spot';
@@ -152,7 +155,7 @@
                             </div>
 
                             <!-- Spot Percentage (conditionally shown) -->
-                            <div class="col-lg-6 col-md-6 col-sm-12 spot-price-field" style="display: {{ $pricing_type == 'spot' ? 'block' : 'none' }};">
+                            <div class="col-lg-6 col-md-6 col-sm-12 spot-price-field" style="display: {{ ($pricing_type == 'spot' && isset($product) && in_array($product->product_type, ['gold', 'silver'])) ? 'block' : 'none' }};">
                                 <label class="form-label" for="label">Spot Percentage <span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" value="{{ $product->spot_percentage ?? '' }}" class="form-control" id="spot_percentage" name="spot_percentage">
                             </div>
@@ -184,7 +187,7 @@
                             </div>
                         
                             <!-- Blanket Markup Percentage -->
-                            <div class="col-lg-6 col-md-6 col-sm-12">
+                            <div class="col-lg-6 col-md-6 col-sm-12 blanket-markup-field" style="display: {{ (isset($product) && in_array($product->product_type, ['gold', 'silver'])) ? 'block' : 'none' }};">
                                 <label class="form-label" for="label">Blanket Markup Percentage<span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" value="{{ $product->blanket_markup_percentage ?? '' }}" class="form-control" id="blanket_markup_percentage" name="blanket_markup_percentage">
                             </div>
@@ -390,8 +393,69 @@
     @endif
 
     $(document).ready(function() {
+    // Product Type - Show/hide blanket markup and spot percentage fields, and pricing type
+    function toggleProductTypeFields() {
+        var productType = $('#product_type').val();
+        var isGoldOrSilver = (productType === 'gold' || productType === 'silver');
+        var pricingTypeSelect = $('#pricing_type');
+        
+        if (isGoldOrSilver) {
+            // Show pricing type field
+            $('.pricing-type-field').show();
+            
+            $('.blanket-markup-field').show();
+            $('#blanket_markup_percentage').attr('required', true);
+            
+            // Show spot percentage only if pricing type is also 'spot'
+            if (pricingTypeSelect.val() === 'spot') {
+                $('.spot-price-field').show();
+                $('#spot_percentage').attr('required', true);
+            }
+        } else {
+            // Hide pricing type field and set to fixed
+            $('.pricing-type-field').hide();
+            
+            // Set pricing type to fixed programmatically
+            var currentVal = pricingTypeSelect.val();
+            if (currentVal !== 'fixed') {
+                if (pricingTypeSelect.next('.bootstrap-select').length > 0) {
+                    // Selectpicker is initialized
+                    try {
+                        pricingTypeSelect.selectpicker('val', 'fixed');
+                        pricingTypeSelect.selectpicker('refresh');
+                    } catch(e) {
+                        pricingTypeSelect.val('fixed');
+                    }
+                } else {
+                    pricingTypeSelect.val('fixed');
+                }
+                
+                // Trigger change to show fixed price fields
+                setTimeout(function() {
+                    pricingTypeSelect.trigger('change');
+                }, 50);
+            } else {
+                // Already fixed, just trigger change
+                pricingTypeSelect.trigger('change');
+            }
+            
+            $('.blanket-markup-field').hide();
+            $('#blanket_markup_percentage').removeAttr('required');
+            $('.spot-price-field').hide();
+            $('#spot_percentage').removeAttr('required');
+        }
+    }
+    
+    $('#product_type').change(function() {
+        toggleProductTypeFields();
+        updateSpotPriceDisplay();
+    });
+
     // Pricing Type - Fixed Price toggle
     $('#pricing_type').change(function() {
+        var productType = $('#product_type').val();
+        var isGoldOrSilver = (productType === 'gold' || productType === 'silver');
+        
         if ($(this).val() === 'fixed') {
             $('.fixed-price-field').show();
             $('.tier-pricing-section').show();
@@ -404,8 +468,15 @@
             $('#tier_pricing_section').hide();
             $('#use_tier_pricing').prop('checked', false);
             $('#fixed_price').removeAttr('required');
-            $('.spot-price-field').show();
-            $('#spot_percentage').attr('required', true);
+            
+            // Show spot price field only if product type is gold or silver
+            if (isGoldOrSilver) {
+                $('.spot-price-field').show();
+                $('#spot_percentage').attr('required', true);
+            } else {
+                $('.spot-price-field').hide();
+                $('#spot_percentage').removeAttr('required');
+            }
         }
     });
 
@@ -423,7 +494,11 @@
 
 
     // Trigger change events on page load to set initial state
-    $('#pricing_type, #inventory_type').trigger('change');
+    // Wait a bit for selectpicker to initialize
+    setTimeout(function() {
+        toggleProductTypeFields();
+        $('#pricing_type, #inventory_type').trigger('change');
+    }, 100);
 
 
     $('#category_id').change(function() {
@@ -494,25 +569,75 @@
         toggleSpotTierPricing();
     }
 
+    // Cookie helper function
+    function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+            if (c.indexOf(nameEQ) === 0) {
+                try {
+                    return JSON.parse(c.substring(nameEQ.length, c.length));
+                } catch (e) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Function to get spot price from cookies
+    function getSpotPriceFromCookies(productType) {
+        const cachedLatest = getCookie('metalPricesLatest');
+        if (cachedLatest && cachedLatest.data && cachedLatest.data.rates) {
+            const rates = cachedLatest.data.rates;
+            const baseCurrency = 'USD';
+            
+            // Map product types to metal codes
+            const metalMap = {
+                'gold': 'XAU',
+                'silver': 'XAG',
+                'platinum': 'XPT',
+                'palladium': 'XPD'
+            };
+            
+            const metalCode = metalMap[productType.toLowerCase()];
+            if (metalCode && rates[baseCurrency + metalCode]) {
+                return rates[baseCurrency + metalCode];
+            }
+        }
+        return null;
+    }
+
     function updateSpotPriceDisplay() {
         var productType = $('select[name="product_type"]').val();
         var pricingType = $('#pricing_type').val();
         if (pricingType === 'spot' && productType) {
-            $.ajax({
-                url: '{{ route('admin.products.spot_price') }}',
-                method: 'GET',
-                data: { type: productType },
-                success: function(response) {
-                    if (response.success && response.spot_price) {
-                        $('#spot-price-display').html('<span style="color: #888;">(Spot Price: $' + parseFloat(response.spot_price).toFixed(2) + ')</span>');
-                    } else {
+            // First, try to get spot price from cookies
+            var spotPrice = getSpotPriceFromCookies(productType);
+            
+            if (spotPrice !== null) {
+                // Use cached price from cookies
+                $('#spot-price-display').html('<span style="color: #888;">(Spot Price: $' + parseFloat(spotPrice).toFixed(2) + ')</span>');
+            } else {
+                // Fallback to API call if cookies not available
+                $.ajax({
+                    url: '{{ route('admin.products.spot_price') }}',
+                    method: 'GET',
+                    data: { type: productType },
+                    success: function(response) {
+                        if (response.success && response.spot_price) {
+                            $('#spot-price-display').html('<span style="color: #888;">(Spot Price: $' + parseFloat(response.spot_price).toFixed(2) + ')</span>');
+                        } else {
+                            $('#spot-price-display').html('');
+                        }
+                    },
+                    error: function() {
                         $('#spot-price-display').html('');
                     }
-                },
-                error: function() {
-                    $('#spot-price-display').html('');
-                }
-            });
+                });
+            }
         } else {
             $('#spot-price-display').html('');
         }

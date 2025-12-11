@@ -497,11 +497,21 @@ $(document).ready(function() {
 
     function updateCreditCardFee() {
         var selected = $('input[name="payment_method"]:checked').val();
-        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        var totalBeforeCreditCardFee = baseTotal + shippingFee + stateFee + serviceFee;
+        
+        // Calculate credit card fee only for gold/silver products subtotal + fees
+        var goldSilverSubtotal = 0;
+        @if(isset($cart))
+            @foreach($cart as $item)
+                @if(isset($item['product_type']) && in_array($item['product_type'], ['gold', 'silver']))
+                    goldSilverSubtotal += parseFloat({{ ($item['price'] ?? 0) * ($item['quantity'] ?? 1) }});
+                @endif
+            @endforeach
+        @endif
         
         // Only calculate credit card fee if payment method is credit_card or paypal
+        // Apply fee to gold/silver subtotal + all fees (shipping, state, service)
         if (selected === 'credit_card' || selected === 'paypal') {
+            var totalBeforeCreditCardFee = goldSilverSubtotal + shippingFee + stateFee + serviceFee;
             creditCardFee = (totalBeforeCreditCardFee) * (creditCardPercentage / 100);
             // Round to 2 decimal places consistently
             creditCardFee = Math.round(creditCardFee * 100) / 100;
