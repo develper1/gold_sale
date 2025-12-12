@@ -61,17 +61,21 @@ Route::get('/faq', function () {
     return view('faq');
 })->name('faq');
 
-Route::get('/privacy-policy', function () {
+Route::get('/sales-policy', function () {
     return view('privacy-policy');
-})->name('privacy-policy');
+})->name('sales-policy');
 
-Route::get('/user-agreement', function () {
+Route::get('/returns-exchanges-policy', function () {
     return view('user-agreement');
-})->name('user-agreement');
+})->name('returns-exchanges-policy');
 
-Route::get('/return-market-policy', function () {
+Route::get('/terms-of-sale', function () {
     return view('return-market-policy');
-})->name('return-market-policy');
+})->name('terms-of-sale');
+
+Route::get('/anti-money-laundering-policy', function () {
+    return view('anti-money-laundering-policy');
+})->name('anti-money-laundering-policy');
 
 Route::get('/contact', [App\Http\Controllers\ContactController::class, 'show'])->name('contact');
 Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'])->name('contact.submit');

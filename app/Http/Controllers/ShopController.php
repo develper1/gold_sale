@@ -29,11 +29,22 @@ class ShopController extends Controller
         }
         
         $sort = $request->input('sort', 'default');
-        $productsQuery = Product::where('is_active', true)->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
+        $productsQuery = Product::where('is_active', true)
+            ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
+            ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
+            ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id')
+            ->select('products.*');
+        
         if ($sort === 'latest') {
-            $productsQuery->orderBy('id', 'desc');
+            $productsQuery->orderBy('products.id', 'desc');
+        } elseif ($sort === 'default') {
+            // Default: Sort by category, then subcategory, then product ID
+            $productsQuery->orderBy('categories.name', 'asc')
+                ->orderBy('sub_categories.name', 'asc')
+                ->orderBy('products.id', 'asc');
         } else {
-            $productsQuery->orderBy('id', 'asc');
+            // For other sorts, keep original ID ordering
+            $productsQuery->orderBy('products.id', 'asc');
         }
         $products = $productsQuery->get();
         if ($sort === 'price_asc') {
@@ -72,6 +83,7 @@ class ShopController extends Controller
         if ($sort === 'latest') {
             $productsQuery->orderBy('id', 'desc');
         } else {
+            // Default: Sort by product ID (all products are in same subcategory)
             $productsQuery->orderBy('id', 'asc');
         }
         $products = $productsQuery->get();
@@ -111,11 +123,18 @@ class ShopController extends Controller
             $query->where('category_id', $category->id);
         })
         ->where('is_active', true)
-        ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
+        ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
+        ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
+        ->select('products.*');
+        
         if ($sort === 'latest') {
-            $productsQuery->orderBy('id', 'desc');
+            $productsQuery->orderBy('products.id', 'desc');
+        } elseif ($sort === 'default') {
+            // Default: Sort by subcategory, then product ID (all products are in same category)
+            $productsQuery->orderBy('sub_categories.name', 'asc')
+                ->orderBy('products.id', 'asc');
         } else {
-            $productsQuery->orderBy('id', 'asc');
+            $productsQuery->orderBy('products.id', 'asc');
         }
         $products = $productsQuery->get();
         if ($sort === 'price_asc' || $sort === 'price_desc') {

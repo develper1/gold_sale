@@ -54,13 +54,16 @@
 											<div class="block-content">
 												<ul>
 													<li>
-														<a href="{{ route('privacy-policy') }}">Sales Policy</a>
+														<a href="{{ route('sales-policy') }}">Sales Policy</a>
 													</li>
 													<li>
-														<a href="{{ route('user-agreement') }}">Returns & Exchanges Policy</a>
+														<a href="{{ route('returns-exchanges-policy') }}">Returns & Exchanges Policy</a>
 													</li>
 													<li>
-														<a href="{{ route('return-market-policy') }}">Terms of Sale</a>
+														<a href="{{ route('terms-of-sale') }}">Terms of Sale</a>
+													</li>
+													<li>
+														<a href="{{ route('anti-money-laundering-policy') }}">Anti-Money Laundering Policy</a>
 													</li>													
 													
 												</ul>
@@ -73,13 +76,13 @@
 											<div class="block-content">
 												<ul>
 													<li>
-														<a href="{{ route('privacy-policy') }}">Privacy Policy</a>
+														<a href="{{ route('sales-policy') }}">Privacy Policy</a>
 													</li>
 													<li>
-														<a href="{{ route('user-agreement') }}">User Agreement</a>
+														<a href="{{ route('returns-exchanges-policy') }}">User Agreement</a>
 													</li>
 													<li>
-														<a href="{{ route('return-market-policy') }}">Return & Market Policy</a>
+														<a href="{{ route('terms-of-sale') }}">Return & Market Policy</a>
 													</li>
 													
 												</ul>
@@ -117,7 +120,7 @@
 										<div class="block block-newsletter">
 											<h2 class="block-title">Our Newsletter</h2>
 											<div class="block-content">
-												<div class="newsletter-text">Sign up for the latest Ice offers and exclusives.</div>
+												<div class="newsletter-text">Sign up for the latest offers and exclusives.</div>
 												<form action="" method="post" class="newsletter-form">
 													<input type="email" name="your-email" value="" size="40" placeholder="Email address">
 													<span class="btn-submit">

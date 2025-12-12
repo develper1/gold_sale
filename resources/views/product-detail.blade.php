@@ -110,9 +110,6 @@
                             @else
                                 <p class="stock in-stock">Availability: <span>In stock</span></p>
                             @endif
-                            <div class="description">
-                                {!! $product->description !!}
-                            </div>
                             <div class="buttons">
                                 <div class="add-to-cart-wrap">
                                     <div class="quantity">
@@ -124,16 +121,26 @@
                                         <a href="#" class="add-to-cart-btn" data-product-id="{{ $product->id }}" tabindex="0">Add to cart</a>
                                     </div>
                                 </div>
-                                {{-- <div class="btn-quick-buy" data-title="Wishlist">
-                                    <button class="product-btn">Buy It Now</button>
-                                </div> --}}
-                                {{-- <div class="btn-wishlist" data-title="Wishlist">
-                                    <button class="product-btn">Add to wishlist</button>
-                                </div>
-                                <div class="btn-compare" data-title="Compare">
-                                    <button class="product-btn">Compare</button>
-                                </div> --}}
+                                
                             </div>
+                            <div class="description">
+                                {!! $product->description !!}
+                            </div>
+                            @if($product->description && $product->description != '')
+                            <div class="buttons">
+                                <div class="add-to-cart-wrap">
+                                    <div class="quantity">
+                                        <button type="button" class="plus">+</button>
+                                        <input type="number" class="qty quantity-input" step="1" min="1" max="{{ $product->inventory_type === 'limited' && $product->quantity_available !== null ? $product->quantity_available : '' }}" name="quantity" value="1" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off" data-max-quantity="{{ $product->inventory_type === 'limited' && $product->quantity_available !== null ? $product->quantity_available : '' }}" data-inventory-type="{{ $product->inventory_type }}">
+                                        <button type="button" class="minus">-</button>	
+                                    </div>
+                                    <div class="btn-add-to-cart">
+                                        <a href="#" class="add-to-cart-btn" data-product-id="{{ $product->id }}" tabindex="0">Add to cart</a>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            @endif
                             <div class="product-meta">
                                 <span class="posted-in">Category: <a href="{{ route('shop.category', $product->subCategory->category->slug) }}" rel="tag">{{ $product->subCategory->category->name }}</a></span>
                                 <span class="tagged-as">Subcategory: <a href="{{ route('shop.subcategory', $product->subCategory->slug) }}" rel="tag">{{ $product->subCategory->name }}</a></span>

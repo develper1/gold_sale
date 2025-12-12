@@ -21,6 +21,24 @@
             </div>
         </div>
         
+        <!-- Filter Section -->
+        <div class="card-body" style="padding: 1rem 1.5rem 0.5rem;">
+            <form method="GET" action="{{ route('admin.products.index') }}" class="d-flex align-items-center gap-2 mb-2">
+                <label for="sub_category_id" class="form-label mb-0" style="margin-right: 0.5rem; white-space: nowrap;">Filter by Subcategory:</label>
+                <select name="sub_category_id" id="sub_category_id" class="form-select" style="width: auto; max-width: 300px;" onchange="this.form.submit()">
+                    <option value="">All Subcategories</option>
+                    @foreach($subCategories as $subCategory)
+                        <option value="{{ $subCategory->id }}" {{ request('sub_category_id') == $subCategory->id ? 'selected' : '' }}>
+                            {{ $subCategory->category->name ?? 'N/A' }} - {{ $subCategory->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @if(request('sub_category_id'))
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm">Clear</a>
+                @endif
+            </form>
+        </div>
+        
         <div class="table-responsive text-nowrap">
             <table class="table">
                 <thead>

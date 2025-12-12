@@ -17,12 +17,25 @@ use App\Models\ProductSpotTierPrice;
 
 class ProductController extends Controller
 {
-    public function index(){
-        $products = Product::latest()
-            ->with(['images', 'subCategory.category'])
+    public function index(Request $request){
+        $query = Product::with(['images', 'subCategory.category'])
+            ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
+            ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id')
+            ->select('products.*');
+
+        // Apply subcategory filter if provided
+        if ($request->has('sub_category_id') && $request->sub_category_id != '') {
+            $query->where('products.sub_category_id', $request->sub_category_id);
+        }
+
+        $products = $query->orderBy('categories.name', 'asc')
+            ->orderBy('sub_categories.name', 'asc')
+            ->orderBy('products.id', 'asc')
             ->get();
 
-        return view('admin.products.index')->with('products', $products);
+        $subCategories = SubCategory::with('category')->orderBy('name', 'asc')->get();
+
+        return view('admin.products.index', compact('products', 'subCategories'));
     }
 
     /**

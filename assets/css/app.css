@@ -86,7 +86,7 @@ a (active)  : #000
 [Typography]
 
 Body   : 1rem "Lato";
-Other  : "Cormorant Garamond";
+Other  : "Times New Roman";
 -------------------------------------------------------------------*/
 
 
@@ -117,7 +117,7 @@ h4,
 h5, 
 h6 {
   margin-bottom: .5rem;
-  font-family: Cormorant Garamond, serif;
+  font-family: Times New Roman, serif;
   font-weight: 500;
   line-height: 1.2;
   color: #000;
@@ -1586,7 +1586,7 @@ ul.slick-dots li.slick-active button {
   margin-bottom: 5px;
   color: #000;
   line-height: 40px;
-  font-family: Cormorant Garamond,serif;
+  font-family: Times New Roman,serif;
 }
 .newsletter-popup .newsletter-container .newsletter-form .newsletter-title .sub-title {
   font-size: 16px;
@@ -3687,14 +3687,14 @@ body:not(.home) .site-navigation ul > li.level-0 > .sub-menu {
   margin-bottom: 0;
 }
 .block-sliders.layout-4 .item-content .item-info .subtitle-slider {
-  font-family: "Cormorant Garamond", Sans-serif;
+  font-family: "Times New Roman", Sans-serif;
   font-size: 80px;
   font-weight: 600;
   line-height: 80px;
   margin-bottom: 15px;
 }
 .block-sliders.layout-5 .item-content .item-info .subtitle-slider {
-  font-family: "Cormorant Garamond", Sans-serif;
+  font-family: "Times New Roman", Sans-serif;
   font-size: 80px;
   font-weight: 600;
   line-height: 80px;
@@ -4429,7 +4429,7 @@ body:not(.home) .site-navigation ul > li.level-0 > .sub-menu {
   padding: 0px 0px 30px 0px;
 }
 .block-product-cats.layout-5 .item-product-cat-content .product-cat-content-info .item-title {
-  font-family: Cormorant Garamond,serif;
+  font-family: Times New Roman,serif;
   font-size: 20px;
   font-weight: 600;
   text-transform: uppercase;
@@ -4961,7 +4961,7 @@ body:not(.home) .site-navigation ul > li.level-0 > .sub-menu {
 }
 .block-testimonial .testimonial-content .item .testimonial-excerpt {
   color: #434343;
-  font-family: "Cormorant Garamond", Sans-serif;
+  font-family: "Times New Roman", Sans-serif;
   font-size: 36px;
   line-height: 44px;
   font-weight: 500;
@@ -5136,7 +5136,7 @@ body:not(.home) .site-navigation ul > li.level-0 > .sub-menu {
   margin-bottom: 15px;
 }
 .block-intro.layout-2 .intro-text {
-  font-family: Cormorant Garamond,serif;
+  font-family: Times New Roman,serif;
   color: #cb8161;
   font-size: 40px;
   font-weight: 600;
@@ -5183,7 +5183,7 @@ body:not(.home) .site-navigation ul > li.level-0 > .sub-menu {
   padding: 0 25px;
 }
 .block-intro.layout-4 .nav-tabs .nav-item a {
-  font-family: "Cormorant Garamond", Sans-serif;
+  font-family: "Times New Roman", Sans-serif;
   font-size: 20px;
   font-weight: 600;
   text-transform: uppercase;
@@ -8708,7 +8708,7 @@ body.home.title-6 .block-newsletter .newsletter-title {
   margin: 5px 20px;
 }
 .shop-details .product-tabs .nav-tabs .nav-item a {
-  font-family: Cormorant Garamond, serif;
+  font-family: Times New Roman, serif;
   border: none;
   font-size: 24px;
   font-weight: 600;
