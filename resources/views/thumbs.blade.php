@@ -232,10 +232,11 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                           </div>
                                         @empty
-                                            <div class="col-12">
-                                                <p class="text-center">No products found.</p>
+                                            <div class="col-12 text-center">
+                                                <p class="text-center">Coming Soon.</p><br>
+                                                <a  href="{{ route('contact') }}">Can't find what you are looking for? Contact us today!</a>
                                             </div>
                                         @endforelse
                                     </div>
@@ -425,8 +426,9 @@
                                             </div>
                                         </div>
                                     @empty
-                                        <div class="col-12">
-                                            <p class="text-center">No products found.</p>
+                                        <div class="col-12 text-center">
+                                            <p class="text-center">Coming Soon.</p><br>
+                                            <a  href="{{ route('contact') }}">Can't find what you are looking for? Contact us today!</a>
                                         </div>
                                     @endforelse
                                 @endif

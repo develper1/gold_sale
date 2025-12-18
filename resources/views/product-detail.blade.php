@@ -67,6 +67,7 @@
                             @endphp
 
                             <div style="display: flex; gap: 10px;">
+                                @if($isGoldOrSilver)
                                 <div style="background: #cb8161; color: #fff; padding: 4px 10px; text-align: center;">
                                     <div style="font-weight: bold; letter-spacing: 1px;">CHECK / WIRE</div>
                                     <div style="background: #f3f3f3; color: #222; font-size: 1.5rem;">
@@ -79,6 +80,10 @@
                                         ${{ number_format($creditCardPrice, 2) }}
                                     </div>
                                 </div>
+                                @else 
+                                <span style="color: #cb8161; font-size: 1.5rem;">${{ number_format($basePrice, 2) }}</span>
+                                
+                                @endif
                             </div>
                             {{-- <span class="price">
                                 @if($product->pricing_type === 'fixed')
@@ -87,6 +92,7 @@
                                     Starting from {{ $product->formatted_price }}
                                 @endif
                             </span> --}}
+                            
                             @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
                                 <div class="mt-2">
                                     @include('_tier_price_table', ['product' => $product, 'credit_card_percentage' => $credit_card_percentage])

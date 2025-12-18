@@ -17,8 +17,16 @@
         <thead>
             <tr>
                 <th>Qty</th>
-                <th>Wire/Check</th>
-                <th>CC/Paypal</th>
+                <th>
+                    @if($isGoldOrSilver)
+                        Wire/Check
+                    @else
+                        Price
+                    @endif
+                </th>
+                @if($isGoldOrSilver)
+                    <th>CC/Paypal</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -34,7 +42,9 @@
                 <tr>
                     <td>{{ $qtyLabel }}</td>
                     <td>${{ number_format($wirePrice, 2) }}</td>
+                    @if($isGoldOrSilver)
                     <td>${{ number_format($ccPrice, 2) }}</td>
+                    @endif
                 </tr>
             @endforeach
         </tbody>
