@@ -50,7 +50,7 @@
                                             <h2>Phone</h2>
                                         </div>
                                         <div class="item-content">
-                                            212.629.7979
+                                            (212) 470-7540
                                         </div>
                                     </div>
                                 </div>

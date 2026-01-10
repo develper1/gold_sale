@@ -38,7 +38,7 @@ class Product extends Model
         'spot_percentage'
     ];
 
-    protected $appends = ['current_price', 'formatted_price'];
+    protected $appends = ['current_price', 'formatted_price', 'lowest_price', 'formatted_lowest_price'];
 
     public function images()
     {
@@ -174,5 +174,59 @@ class Product extends Model
             ->select('product_spot_tier_prices.type', 'product_spot_tier_prices.value')
             ->first();
         return $tier;
+    }
+
+    public function getLowestPriceAttribute()
+    {
+        if ($this->use_tier_pricing) {
+            // Tier prices are absolute values. The lowest price is usually the value for highest quantity
+            // But we can just take the minimum price record.
+            // Using collection to avoid N+1 if eager loaded
+            $minPrice = $this->tierPrices->min('price');
+            return $minPrice ? $minPrice : $this->fixed_price;
+        }
+
+        if ($this->use_spot_tier_pricing) {
+             $metalPriceService = app(MetalPriceService::class);
+             $spotPrice = $metalPriceService->getSpotPrice($this->product_type);
+             
+             if ($spotPrice === null) {
+                 return $this->fixed_price; 
+             }
+             
+             // Base spot price with product's spot percentage
+             $baseSpotPrice = $spotPrice * $this->spot_percentage;
+             
+             $minPrice = null;
+             
+             // Iterate all spot tier definitions for this product
+             foreach ($this->spotTierPrices as $tier) {
+                 $price = 0;
+                 if ($tier->type === 'percentage') {
+                     // Percentage type: replaces blanket markup percentage
+                     $price = $baseSpotPrice * (1 + ($tier->value / 100));
+                 } else { 
+                     // Fixed type: overrides spot price
+                     $price = $tier->value;
+                 }
+                 
+                 if ($minPrice === null || $price < $minPrice) {
+                     $minPrice = $price;
+                 }
+             }
+             
+             if ($minPrice === null) {
+                 return $this->current_price;
+             }
+             
+             return round($minPrice, 2);
+        }
+
+        return $this->current_price;
+    }
+
+    public function getFormattedLowestPriceAttribute()
+    {
+        return '$' . number_format($this->lowest_price, 2);
     }
 }

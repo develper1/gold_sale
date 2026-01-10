@@ -151,10 +151,12 @@
                                                                     </a>
                                                                 </h3>
                                                                 <span class="price">
-                                                                    @if($product->pricing_type === 'fixed')
+                                                                    @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
+                                                                        As low as {{ $product->formatted_lowest_price }}
+                                                                    @elseif($product->pricing_type === 'fixed')
                                                                         {{ $product->formatted_price }}
                                                                     @else
-                                                                        Starting from {{ $product->formatted_price }}
+                                                                        {{ $product->formatted_price }}
                                                                     @endif
                                                                 </span>
                                                             @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
@@ -220,10 +222,12 @@
                                                                 </a>
                                                             </h3>
                                                             <span class="price">
-                                                                @if($product->pricing_type === 'fixed')
+                                                                @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
+                                                                    As low as {{ $product->formatted_lowest_price }}
+                                                                @elseif($product->pricing_type === 'fixed')
                                                                     {{ $product->formatted_price }}
                                                                 @else
-                                                                    Starting from {{ $product->formatted_price }}
+                                                                    {{ $product->formatted_price }}
                                                                 @endif
                                                             </span>
                                                             @if($product->use_tier_pricing)
@@ -290,10 +294,12 @@
                                                                     </a>
                                                                 </h3>
                                                                 <span class="price">
-                                                                    @if($product->pricing_type === 'fixed')
+                                                                    @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
+                                                                        As low as {{ $product->formatted_lowest_price }}
+                                                                    @elseif($product->pricing_type === 'fixed')
                                                                         {{ $product->formatted_price }}
                                                                     @else
-                                                                        Starting from {{ $product->formatted_price }}
+                                                                        {{ $product->formatted_price }}
                                                                     @endif
                                                                 </span>
                                                                 @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
@@ -371,10 +377,12 @@
                                                                 </a>
                                                             </h3>
                                                             <span class="price">
-                                                                @if($product->pricing_type === 'fixed')
+                                                                @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
+                                                                    As low as {{ $product->formatted_lowest_price }}
+                                                                @elseif($product->pricing_type === 'fixed')
                                                                     {{ $product->formatted_price }}
                                                                 @else
-                                                                    Starting from {{ $product->formatted_price }}
+                                                                    {{ $product->formatted_price }}
                                                                 @endif
                                                             </span>
                                                             @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
@@ -545,15 +553,12 @@ $(document).ready(function() {
                     // Update product details
                     $('.quickview-popup .product-title').text(product.name);
                     var price = '';
-                     if (product.use_tier_pricing) {
-                        // For quick view, display the first tier price if tier pricing is enabled
-                        // The logic for fetching the *actual* first tier price should be in the backend
-                        // Here, we just display the current_price which is already configured to give the first tier price.
-                        price = '$' + parseFloat(product.current_price).toFixed(2);
-                    }else if (product.pricing_type === 'fixed') {
-                        price = '$' + parseFloat(product.fixed_price).toFixed(2);
+                     if (product.use_tier_pricing || product.use_spot_tier_pricing) {
+                        price = 'As low as ' + product.formatted_lowest_price;
+                    } else if (product.pricing_type === 'fixed') {
+                        price = product.formatted_price;
                     } else {
-                        price = 'Starting from $' + parseFloat(product.current_price).toFixed(2);
+                        price = product.formatted_price;
                     }
                     $('.quickview-popup .price').html(`<span>${price}</span>`);
                     

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	@include('layouts.header')
+	
+	<body class="home home-4 title-4">
+		<div id="page" class="hfeed page-wrapper">
+			@include('layouts.nav')
+
+			<div id="site-main" class="site-main">
+				<div id="main-content" class="main-content">
+					<div id="primary" class="content-area">
+                        @yield('content')
+						<!-- #content -->
+					</div><!-- #primary -->
+				</div><!-- #main-content -->
+			</div>
+
+			<footer id="site-footer" class="site-footer four-columns no-border-top">
+				<div class="footer">
+					<div class="section-padding">
+						<div class="section-container">
+							<div class="block-widget-wrap">
+								<div class="row">
+									<div class="col-lg-3 col-md-6 column-1">
+										<div class="block block-menu">
+											<h2 class="block-title">Customer Services</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="shop-grid-left.html">Contact Us</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Track Your Order</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Product Care & Repair</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Book an Appointment</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Frequently Asked Questions</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Shipping & Returns</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 column-2">
+										<div class="block block-menu">
+											<h2 class="block-title">About Us</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="{{ route('privacy-policy') }}">Privacy Policy</a>
+													</li>
+													<li>
+														<a href="{{ route('user-agreement') }}">User Agreement</a>
+													</li>
+													<li>
+														<a href="{{ route('return-market-policy') }}">Return & Market Policy</a>
+													</li>
+													
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 column-3">
+										<div class="block block-menu">
+											<h2 class="block-title">Catalog</h2>
+											<div class="block-content">
+												<ul>
+													<li>
+														<a href="shop-grid-left.html">Earrings</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Necklaces</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Bracelets</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Rings</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Jewelry Box</a>
+													</li>
+													<li>
+														<a href="shop-grid-left.html">Studs</a>
+													</li>
+												</ul>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-3 col-md-6 column-4">
+										<div class="block block-newsletter">
+											<h2 class="block-title">Our Newsletter</h2>
+											<div class="block-content">
+												<div class="newsletter-text">Sign up for the latest Ice offers and exclusives.</div>
+												<form action="" method="post" class="newsletter-form">
+													<input type="email" name="your-email" value="" size="40" placeholder="Email address">
+													<span class="btn-submit">
+														<input type="submit" value="Subscribe">
+													</span>
+												</form>
+											</div>
+										</div>
+
+										<div class="block block-social">
+											<ul class="social-link">
+												<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+												<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+												<li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+												<li><a href="#"><i class="fa fa-behance"></i></a></li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<div class="section-padding">
+						<div class="section-container">
+							<div class="block-widget-wrap">
+								<div class="row">
+									<div class="col-md-6">
+										<div class="footer-left">
+											<p class="copyright">Copyright © 2023. All Right Reserved</p>
+										</div>
+									</div>
+									<div class="col-md-6">
+										<div class="footer-right">
+											<div class="block block-image">
+												<img width="309" height="32" src="{{ asset('assets/media/payments.png') }}" alt="">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</footer>
+		</div>
+
+        @include('layouts.footer')
+
+
+
+		
+	</body>
+</html>

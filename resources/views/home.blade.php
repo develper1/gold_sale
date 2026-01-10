@@ -168,9 +168,23 @@
             </div>
         </div>
     </section>
-
-    <section class="section m-b-70">
-        <!-- Block Video -->
+	
+								<section class="section section-padding background-img bg-img-5 p-t-120 p-b-120 m-b-70">
+								<div class="section-container">
+									<!-- Block Info -->
+									<div class="block block-info">
+										<div class="block-widget-wrap">
+											<div class="info-wrap">
+                <h2 class="caption-title">Stand Out In Style</h2>
+                <p class="caption-subtitle">Unique Jewelry and Great Gift Ideas</p>
+                <a class="button button-white animation-horizontal" href="/thumbs/category/great_gifts/">DISCOVER NOW</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</section>
+<!-- Block Video -->
+<!--     <section class="section m-b-70">
         <div class="block block-video">
             <div class="video-container">
                 <div id="player"></div>
@@ -181,7 +195,7 @@
                 <a class="button button-white animation-horizontal" href="{{ route('coming-soon') }}">DISCOVER NOW</a>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <section class="section section-padding m-b-70">
         <div class="section-container large">
@@ -260,10 +274,10 @@
                                 </div>
                                 <div class="box-title-wrap">
                                     <h3 class="box-title">
-                                          Ships USA Nationwide
+                                          Ships Nationwide
                                     </h3>
                                     <p class="box-description">
-                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit 
+                                         We provide secured direct-to-home shipping designed to protect your purchase from dispatch to delivery. With careful packaging and dependable carriers, your order arrives safely and confidentially.
                                     </p>
                                 </div>
                             </div>
@@ -280,7 +294,7 @@
                                           Dedicated Customer Support
                                     </h3>
                                     <p class="box-description">
-                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit 
+                                         Our knowledgeable support team is here to help every step of the way. Whether you have questions before or after your purchase, we're committed to providing prompt, friendly, and reliable assistance.
                                     </p>
                                 </div>
                             </div>
@@ -297,7 +311,7 @@
                                           Secure Payments 
                                     </h3>
                                     <p class="box-description">
-                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit 
+                                         Your security is our priority. We support multiple secured payment methods, including direct Bank ACH or Wire, Zelle, PayPal, Credit Card, and additional options, all handled through reliable and protected payment channels.
                                     </p>
                                 </div>
                             </div>
