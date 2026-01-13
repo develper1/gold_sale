@@ -32,6 +32,13 @@
     });
     </script>
     @endpush
+    <style>
+        .block-sliders.layout-4 .item-content .content-image img {
+            height: 60vh;
+            object-fit: cover;
+            width: 100%;
+        }
+    </style>
     <section class="section m-b-0">
         <!-- Block Sliders (Layout 4) -->
         <div class="block block-sliders layout-4 auto-height color-white nav-center">
@@ -117,7 +124,7 @@
                     </div>
                     <div class="block-content">
                         <div class="content-product-list slick-wrap">
-                            <div class="slick-sliders products-list grid" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
+                            <div class="slick-sliders products-list grid" data-autoplay="true" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
                                 @foreach($featuredProducts as $product)
                                     <div class="item-product slick-slide">
                                         <div class="items">
@@ -208,7 +215,7 @@
                     </div>
                     <div class="block-content">
                         <div class="content-product-list slick-wrap">
-                            <div class="slick-sliders products-list grid" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
+                            <div class="slick-sliders products-list grid" data-autoplay="true" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
                                 @foreach($bestSellerProducts as $product)
                                     <div class="item-product slick-slide">
                                         <div class="items">

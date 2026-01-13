@@ -12,7 +12,7 @@
                         <img id="goldArrow" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
                       </span>
                       <span id="goldChange" style="color: rgb(255, 0, 0);">$0.00</span>
-                      <span id="goldPer" style="margin-left: 6px;">0.00</span>%
+                      <span class="mobile-hidden-percent"><span id="goldPer" style="margin-left: 6px;">0.00</span>%</span>
                     </div>
                   </div>
                   <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="silver">
@@ -24,7 +24,7 @@
                         <img id="silverArrow" src=" https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
                       </span>
                       <span id="silverChange" style="color: rgb(255, 0, 0);">$0.00</span>
-                      <span id="silverPer" style="margin-left: 6px;">0.00</span>%
+                      <span class="mobile-hidden-percent"><span id="silverPer" style="margin-left: 6px;">0.00</span>%</span>
                     </div>
                   </div>
                   <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="platinum">
@@ -36,7 +36,7 @@
                         <img id="platinumArrow" src=" https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
                       </span>
                       <span id="platinumChange" style="color: rgb(255, 0, 0);">$0.00</span>
-                      <span id="platinumPer" style="margin-left: 6px;">0.00</span>%
+                      <span class="mobile-hidden-percent"><span id="platinumPer" style="margin-left: 6px;">0.00</span>%</span>
                     </div>
                   </div>
                   <div class="homepage-collection-grid-item col-xs-6 col-md-3 currency-box mt-2" id="palladium">
@@ -48,7 +48,7 @@
                         <img id="palladiumArrow" src=" https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
                       </span>
                       <span id="palladiumChange" style="color: rgb(255, 0, 0);">$0.00</span>
-                      <span id="palladiumPer" style="margin-left: 6px;">0.00</span>%
+                      <span class="mobile-hidden-percent"><span id="palladiumPer" style="margin-left: 6px;">0.00</span>%</span>
                     </div>
                   </div>
             </div>
@@ -337,8 +337,58 @@
 </header>
 
 @push('scripts')
+<style>
+    @media (max-width: 767px) {
+        .mobile-hidden-percent {
+            display: none;
+        }
+    }
+</style>
 <script>
 $(document).ready(function() {
+    function initTickerSlick() {
+        if ($(window).width() < 768) {
+            if (!$('.ticker-collection').hasClass('slick-initialized')) {
+                $('.ticker-collection').slick({
+                    dots: false,
+                    infinite: true,
+                    speed: 700,
+                    slidesToShow: 3, 
+                    slidesToScroll: 1,
+                    autoplay: true,
+                    autoplaySpeed: 5000,
+                    arrows: false,
+                    responsive: [
+                        {
+                            breakpoint: 600,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 480,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1
+                            }
+                        }
+                    ]
+                });
+            }
+        } else {
+            if ($('.ticker-collection').hasClass('slick-initialized')) {
+                $('.ticker-collection').slick('unslick');
+            }
+        }
+    }
+
+    initTickerSlick();
+
+    $(window).resize(function() {
+        initTickerSlick();
+    });
+
     // Load initial cart count
     $.get('{{ route("cart.count") }}', function(response) {
         $('.cart-count').text(response.count);
