@@ -68,52 +68,8 @@
         </div>
     </section>
 
-    <section class="section section-padding background-img bg-img-2 p-t-70 p-b-50 m-b-70" style="margin-bottom: 0px;">
-        <div class="section-container">
-            <!-- Block Product Categories (Layout 3) -->
-            <div class="block block-product-cats slider layout-3">
-                <div class="block-widget-wrap">
-                    <div class="block-title">
-                        <div class="sub-title">We've Got You Covered</div>
-                        <h2>Explore the Range</h2>
-                    </div>
-                    <div class="block-content">
-                        <div class="product-cats-list slick-wrap">
-                            <div class="slick-sliders content-category" data-dots="0" data-slidestoscroll="true" data-nav="0" data-columns4="1" data-columns3="3" data-columns2="4" data-columns1="4" data-columns1440="5" data-columns="5">
-                                @foreach($categoriesWithProduct as $category)
-                                    @php
-                                        $product = $category->products->first();
-                                        $image = $product && $product->images->count() > 0 ? $product->images->first()->image_path : null;
-                                    @endphp
-                                    <div class="item item-product-cat slick-slide">
-                                        <div class="item-product-cat-content">
-                                            <a href="{{ route('shop.category', $category->slug) }}">
-                                                <div class="item-image animation-horizontal">
-                                                    @if($image)
-                                                        <img width="273" src="{{ asset('storage/app/public/' . $image) }}" alt="{{ $category->name }}">
-                                                    @else
-                                                        <img width="273"  src="{{ asset('assets/media/product/cat-placeholder.jpg') }}" alt="No Image">
-                                                    @endif
-                                                </div>
-                                            </a>
-                                            <div class="product-cat-content-info">
-                                                <h2 class="item-title">
-                                                    <a href="{{ route('shop.category', $category->slug) }}">{{ $category->name }}</a>
-                                                </h2>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-
-    <section class="section section-padding  p-t-70 m-b-70">
+        <section class="section section-padding  p-t-70  m-b-70" style="margin-bottom: 0px;">
         <div class="section-container large">
             <!-- Block Products -->
             <div class="block block-products slider">
@@ -124,7 +80,7 @@
                     </div>
                     <div class="block-content">
                         <div class="content-product-list slick-wrap">
-                            <div class="slick-sliders products-list grid" data-autoplay="true" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
+                            <div class="slick-sliders products-list grid" data-autoplay="true" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="2" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
                                 @foreach($featuredProducts as $product)
                                     <div class="item-product slick-slide">
                                         <div class="items">
@@ -175,6 +131,53 @@
             </div>
         </div>
     </section>
+
+    <section class="section section-padding background-img bg-img-2 p-t-70 p-b-50 m-b-70" >
+        <div class="section-container">
+            <!-- Block Product Categories (Layout 3) -->
+            <div class="block block-product-cats slider layout-3">
+                <div class="block-widget-wrap">
+                    <div class="block-title">
+                        <div class="sub-title">We've Got You Covered</div>
+                        <h2>Explore the Range</h2>
+                    </div>
+                    <div class="block-content">
+                        <div class="product-cats-list slick-wrap">
+                            <div class="slick-sliders  products-list grid" data-dots="false" data-autoplay="true" data-slidestoscroll="true" data-nav="0" data-columns4="2" data-columns3="3" data-columns2="4" data-columns1="4" data-columns1440="5" data-columns="5">
+                                @foreach($categoriesWithProduct as $category)
+                                    @php
+                                        $product = $category->products->first();
+                                        $image = $product && $product->images->count() > 0 ? $product->images->first()->image_path : null;
+                                    @endphp
+                                    <div class="item item-product-cat slick-slide">
+                                        <div class="item-product-cat-content">
+                                            <a href="{{ route('shop.category', $category->slug) }}">
+                                                <div class="item-image animation-horizontal">
+                                                    @if($image)
+                                                        <img width="273" src="{{ asset('storage/app/public/' . $image) }}" alt="{{ $category->name }}">
+                                                    @else
+                                                        <img width="273"  src="{{ asset('assets/media/product/cat-placeholder.jpg') }}" alt="No Image">
+                                                    @endif
+                                                </div>
+                                            </a>
+                                            <div class="product-cat-content-info">
+                                                <h2 class="item-title">
+                                                    <a href="{{ route('shop.category', $category->slug) }}">{{ $category->name }}</a>
+                                                </h2>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
 	
 								<section class="section section-padding background-img bg-img-5 p-t-120 p-b-120 m-b-70">
 								<div class="section-container">
@@ -215,7 +218,7 @@
                     </div>
                     <div class="block-content">
                         <div class="content-product-list slick-wrap">
-                            <div class="slick-sliders products-list grid" data-autoplay="true" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="1" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
+                            <div class="slick-sliders products-list grid" data-autoplay="true" data-slidestoscroll="true" data-dots="false" data-nav="1" data-columns4="2" data-columns3="2" data-columns2="2" data-columns1="3" data-columns1440="4" data-columns="6">
                                 @foreach($bestSellerProducts as $product)
                                     <div class="item-product slick-slide">
                                         <div class="items">

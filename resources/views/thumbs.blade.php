@@ -117,7 +117,7 @@
                                         <h3 class="subcategory-title">{{ $subCategory->name }}</h3>
                                         <div class="row">
                                             @foreach($subCategoryProducts as $product)
-                                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-6">
                                                     <div class="products-entry clearfix product-wapper">
                                                         <div class="products-thumb">
                                                             @if($product->images->count() > 0)
