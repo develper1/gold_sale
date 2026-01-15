@@ -45,15 +45,16 @@
                                         </div>
                                         <div class="rememberme-lost">
                                             <div class="remember-me">
-                                                <input name="rememberme" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                                <label class="inline">Remember me</label>
+                                                <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                                <label for="remember" class="inline">Remember me</label>
                                             </div>
+
                                             <div class="lost-password">
                                                 <a href="{{ route('forget-password') }}">Lost your password?</a>
                                             </div>
                                         </div>
                                         <div class="button-login">
-                                            <input type="submit" class="button" name="login" value="Login"> 
+                                            <input type="submit" class="button" name="login" value="Login">
                                         </div>
                                     </form>
                                 </div>
@@ -66,7 +67,7 @@
                             <div class="box-content">
                                 <div class="alert alert-info mb-3" role="alert">
                                     <strong>Note:</strong> For anti-money laundering compliance, you must register an account to place orders. Guest checkout is not available.
-                                    
+
                                 </div>
                                 <div class="form-register">
                                     <form method="post" class="register" action="{{ route('register') }}">
@@ -101,7 +102,7 @@
                                         <div class="password">
                                             <label>{{ __('Confirm Password') }} <span class="required">*</span></label>
                                             <input type="password" class="input-text" name="password_confirmation" required autocomplete="new-password">
-                                            
+
                                         </div>
                                         <div class="button-register">
                                             <input type="submit" class="button" name="register" value="Register">
