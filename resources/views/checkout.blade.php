@@ -279,13 +279,13 @@
                                                 <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
                                             </div> --}}
                                         </li>
-                                        <li class="payment-method">
+                                        {{-- <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="cod" id="payment_method_cod">
                                             <label for="payment_method_cod">Cash on delivery</label>
-                                            {{-- <div class="payment-box">
+                                             <div class="payment-box">
                                                 <p>Pay with cash upon delivery.</p>
-                                            </div> --}}
-                                        </li>
+                                            </div>
+                                        </li> --}}
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="credit_card" id="payment_method_credit_card">
                                             <label for="payment_method_credit_card">Credit Card</label>
@@ -850,19 +850,14 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.log('Status:', status); // e.g., "error"
-                console.log('HTTP Status:', xhr.status); // e.g., 500
-                console.log('Error Thrown:', error); // e.g., "Internal Server Error"
-                console.log('Response Text:', xhr.responseText); // full HTML / JSON from Laravel
+                // console.log('Status:', status); // e.g., "error"
+                // console.log('HTTP Status:', xhr.status); // e.g., 500
+                // console.log('Error Thrown:', error); // e.g., "Internal Server Error"
+                // console.log('Response Text:', xhr.responseText); // full HTML / JSON from Laravel
                 $('#checkout-loading').hide();
                 $('#place-order-btn').prop('disabled', false);
                 var msg = 'An error occurred. Please try again.';
-                if(xhr.responseJSON) {
-                    console.error('Error Message:', xhr.responseJSON.message);
-                    console.error('File:', xhr.responseJSON.file);
-                    console.error('Line:', xhr.responseJSON.line);
-                    console.error('Trace:', xhr.responseJSON.trace);
-                }
+
                 if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
                     var errors = xhr.responseJSON.errors;
                     var html = '<div class="alert alert-danger text-danger"><ul>';
