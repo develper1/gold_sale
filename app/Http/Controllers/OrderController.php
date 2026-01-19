@@ -68,6 +68,9 @@ class OrderController extends Controller
         ]);
 
         $cart = session('cart', []);
+        $productIds = collect($cart)->pluck('id')->unique();
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
+
         
         // Validate inventory before processing order
         foreach ($cart as $item) {
@@ -82,8 +85,21 @@ class OrderController extends Controller
         }
         
         $subtotal = 0;
+        $shippableSubtotal = 0; // Only physical / shippable items
         foreach ($cart as $item) {
             $subtotal += $item['price'] * $item['quantity'];
+
+            $product = $products[$item['id']] ?? null;
+            $isShippable = false;
+            if ($product) {
+                // Prefer explicit is_physical flag; fallback to existing is_non_physical
+                $isShippable = isset($product->is_physical)
+                    ? (bool)$product->is_physical
+                    : !$product->is_non_physical;
+            }
+            if ($isShippable) {
+                $shippableSubtotal += $item['price'] * $item['quantity'];
+            }
         }
         $shipping_fee = $request->input('shipping_fee', 0);
         $state_fee = $request->input('state_fee', 0);
@@ -91,6 +107,32 @@ class OrderController extends Controller
         $setting = \App\Models\Setting::first();
         $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
         $creditCardFee = 0;
+
+        // If cart has ONLY non-physical products, no shipping
+        $hasShippableProduct = false;
+
+        foreach ($cart as $item) {
+            if (
+                isset($products[$item['id']]) &&
+                (
+                    (isset($products[$item['id']]->is_physical) && $products[$item['id']]->is_physical) ||
+                    (!isset($products[$item['id']]->is_physical) && !$products[$item['id']]->is_non_physical)
+                )
+            ) {
+                $hasShippableProduct = true;
+                break;
+            }
+        }
+
+        if (!$hasShippableProduct) {
+            $shipping_fee = 0;
+        } else {
+            // Prorate shipping so only shippable items contribute
+            $shippingRatio = $subtotal > 0 ? $shippableSubtotal / $subtotal : 0;
+            $shipping_fee = round($shipping_fee * $shippingRatio, 2);
+        }
+
+    
 
         // Coupon logic
         $appliedCoupon = session('applied_coupon');

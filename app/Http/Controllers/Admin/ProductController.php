@@ -62,6 +62,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             "name" => "required|string",
             "slug" => "required|string",
@@ -106,6 +107,7 @@ class ProductController extends Controller
             "is_active"=>1,
             "is_featured" => $request->has('is_featured'),
             "is_best_seller" => $request->has('is_best_seller'),
+            "is_non_physical" => $request->has('is_non_physical'),
             "image_path"=>$firstImagePath,
             "category_id" => $request->category_id,
             "sub_category_id" => $request->sub_category_id,
@@ -240,6 +242,7 @@ class ProductController extends Controller
                 "is_active"=>1,
                 "is_featured" => $request->has('is_featured'),
                 "is_best_seller" => $request->has('is_best_seller'),
+                "is_non_physical" => $request->has('is_non_physical'),
                 "category_id" => $request->category_id,
                 "sub_category_id" => $request->sub_category_id,
                 "use_tier_pricing" => $request->use_tier_pricing ?? false,

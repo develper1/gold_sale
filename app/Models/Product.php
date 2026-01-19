@@ -29,6 +29,7 @@ class Product extends Model
         'is_active',
         'is_featured',
         'is_best_seller',
+        'is_non_physical',
         'image_path',
         'category_id',
         'sub_category_id',

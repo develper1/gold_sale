@@ -288,7 +288,8 @@ class ShopController extends Controller
                 'use_tier_pricing' => $product->use_tier_pricing,
                 'use_spot_tier_pricing' => $product->use_spot_tier_pricing,
                 'inventory_type' => $product->inventory_type,
-                'quantity_available' => $product->quantity_available
+                'quantity_available' => $product->quantity_available,
+                'is_non_physical' => $product->is_non_physical,
             ];
         }
         
@@ -321,6 +322,7 @@ class ShopController extends Controller
                     $cart[$key]['use_spot_tier_pricing'] = $product->use_spot_tier_pricing;
                     $cart[$key]['inventory_type'] = $product->inventory_type;
                     $cart[$key]['quantity_available'] = $product->quantity_available;
+                    $cart[$key]['is_non_physical'] = $product->is_non_physical;
                 }
             } catch (\Throwable $e) {
                 // Ignore per-item failures and keep existing values
@@ -369,6 +371,7 @@ class ShopController extends Controller
             $cart[$productId]['use_spot_tier_pricing'] = $product->use_spot_tier_pricing;
             $cart[$productId]['inventory_type'] = $product->inventory_type;
             $cart[$productId]['quantity_available'] = $product->quantity_available;
+            $cart[$productId]['is_non_physical'] = $product->is_non_physical;
             session()->put('cart', $cart);
             
             // Calculate new totals

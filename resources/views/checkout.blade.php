@@ -453,6 +453,28 @@ $(document).ready(function() {
     let creditCardFee = 0;
 
     function updateShippingFee() {
+        // Check if cart has any non-physical items
+        var hasNonPhysicalOnly = true;
+        @if(isset($cart))
+            @foreach($cart as $item)
+                @if(!($item['is_non_physical'] ?? false))
+                    hasNonPhysicalOnly = false;
+                    @break
+                @endif
+            @endforeach
+        @endif
+        
+        // If all items are non-physical, shipping is 0
+        if (hasNonPhysicalOnly) {
+            shippingFee = 0;
+            $('.shipping-fee-amount').text('$0.00');
+            $('#shipping_fee').val(0);
+            updateCreditCardFee();
+            updateStateFee();
+            return;
+        }
+        
+        // Otherwise, calculate shipping normally
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
         $.ajax({
             url: 'shipping-fee/' + baseTotal,

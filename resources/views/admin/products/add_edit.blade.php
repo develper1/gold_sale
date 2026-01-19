@@ -213,6 +213,13 @@
                                     <label class="custom-control-label" for="use_tier_pricing">Use Tier Pricing</label>
                                 </div>
                             </div>
+
+                            <div class="form-group mt-2 ">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="is_non_physical" name="is_non_physical" value="1" {{ old('is_non_physical', $product->is_non_physical ?? false) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="is_non_physical">Non-physical item (no shipping charges applied)</label>
+                                </div>
+                            </div>
     
                             <div id="tier_pricing_section" style="display: none;">
                                 <h4>Tier Pricing</h4>
