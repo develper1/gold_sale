@@ -8,6 +8,9 @@
         <h1 style="margin:16px 0 8px;font-size:24px;line-height:32px;color:#111111;">Order Confirmation</h1>
         <p style="margin:0 0 8px;font-size:14px;line-height:20px;color:#555555;">Thank you for your order! Your order ID is <strong>{{ $order->id }}</strong>.</p>
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>Payment must be received within 48 hours of order placed or the order will be automatically canceled.</strong></p>
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
+            To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong> with your order number to make payment.
+        </p>
       </td>
     </tr>
     <tr>

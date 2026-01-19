@@ -28,15 +28,15 @@ class UserLoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-
             'email' => 'required|email',
-            'password' => 'required'
-           ]);
-
-           
+            'password' => 'required',
+        ]);
         $credentials = $request->only('email', 'password');
+        $remember = $request->has('remember');
 
-        if (Auth::guard('web')->attempt($credentials)) {
+        if (Auth::guard('web')->attempt($credentials, $remember)) {
+            $request->session()->regenerate();
+
             if (!Auth::guard('web')->user()->is_admin) {
                 return redirect()->intended(route('cart.view'));
             } else {
@@ -44,8 +44,7 @@ class UserLoginController extends Controller
                 return back()->withErrors(['email' => 'Unauthorized.']);
             }
         }
-
-        return back()->withErrors(['email' => 'Invalid credentials.']);
+        return back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
     }
 
     public function logout()

@@ -108,7 +108,7 @@
                                 {{-- <div class="account-fields">
                                     <p class="form-row form-row-wide">
                                         <label class="checkbox">
-                                            <input class="input-checkbox" type="checkbox" name="createaccount" value="1"> 
+                                            <input class="input-checkbox" type="checkbox" name="createaccount" value="1">
                                             <span>Create an account?</span>
                                         </label>
                                     </p>
@@ -119,7 +119,7 @@
                                                 <input type="password" class="input-text" name="account_password" value="" autocomplete="off">
                                                 <span class="show-password-input"></span>
                                             </span>
-                                        </p>								
+                                        </p>
                                         <div class="clear"></div>
                                     </div>
                                 </div> --}}
@@ -127,7 +127,7 @@
                             <div class="shipping-fields">
                                 <p class="form-row form-row-wide ship-to-different-address">
                                     <label class="checkbox">
-                                        <input class="input-checkbox" type="checkbox" name="ship_to_different_address" value="1"> 
+                                        <input class="input-checkbox" type="checkbox" name="ship_to_different_address" value="1">
                                         <span>Ship to a different address?</span>
                                     </label>
                                 </p>
@@ -196,7 +196,7 @@
                             </div>
                         </div>
                         <div class="col-xl-4 col-lg-5 col-md-12 col-12">
-                          
+
                             <div class="checkout-review-order">
                                 <div class="checkout-review-order-table">
                                     <h3 class="review-order-title">Product</h3>
@@ -230,7 +230,7 @@
                                             <span>${{ number_format($total, 2) }}</span>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="shipping-totals shipping">
                                         <h2>Shipping</h2>
                                         <div class="shipping-fee-amount">$0.00</div>
@@ -251,7 +251,7 @@
                                     <div class="coupon-code">
                                         <label for="checkout-coupon-code">Have a coupon?</label>
                                         <div class="coupon" id="coupon-input-group">
-                                            <input type="text" name="coupon_code" class="input-text" id="checkout-coupon-code" value="" placeholder="Coupon code"> 
+                                            <input type="text" name="coupon_code" class="input-text" id="checkout-coupon-code" value="" placeholder="Coupon code">
                                             <button type="button" name="apply_coupon" id="apply-coupon-btn" class="coupon-button" value="Apply coupon">Apply coupon</button>
                                         </div>
                                         <div id="coupon-applied-group" style="display:none;">
@@ -265,13 +265,13 @@
                                         <div class="total-price">
                                             <strong>
                                                 <span class="cart-total">${{ number_format($total, 2) }}</span>
-                                            </strong> 
+                                            </strong>
                                         </div>
                                     </div>
                                 </div>
                                 <div id="payment" class="checkout-payment">
                                     <ul class="payment-methods methods custom-radio">
-                                        
+
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="cheque" id="payment_method_cheque" checked>
                                             <label for="payment_method_cheque">Check payments</label>
@@ -279,13 +279,13 @@
                                                 <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
                                             </div> --}}
                                         </li>
-                                        <li class="payment-method">
+                                        {{-- <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="cod" id="payment_method_cod">
                                             <label for="payment_method_cod">Cash on delivery</label>
-                                            {{-- <div class="payment-box">
+                                             <div class="payment-box">
                                                 <p>Pay with cash upon delivery.</p>
-                                            </div> --}}
-                                        </li>
+                                            </div>
+                                        </li> --}}
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="credit_card" id="payment_method_credit_card">
                                             <label for="payment_method_credit_card">Credit Card</label>
@@ -303,7 +303,11 @@
                                          </li>
                                          <li class="payment-method">
                                              <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
-                                             <label for="payment_method_ach">ACH</label>
+                                             <label for="payment_method_ach">ACH/Echeck</label>
+                                         </li>
+                                         <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="zelle" id="payment_method_zelle">
+                                            <label for="payment_method_zelle">Zelle</label>
                                          </li>
                                     </ul>
                                     <div id="credit-card-fields" style="display:none; margin-top: 20px;">
@@ -346,12 +350,15 @@
                                                         placeholder="CVV" value="">
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                     <div class="form-row place-order">
                                         <div class="terms-and-conditions-wrapper">
                                             <div class="privacy-policy-text"></div>
+                                        </div>
+                                        <div id="manual-payment-message" class="manual-payment-message">
+                                            To complete payment for your order, please call our office within 2 business days with your order number to make payment.
                                         </div>
                                         <div id="checkout-errors" style="display:none;"></div>
                                         <button type="submit" name="checkout_place_order" id="place-order-btn" class="button alt">Place Order</button>
@@ -385,16 +392,16 @@
     $(document).ready(function() {
         // Format card number
         $('#cc_no').payment('formatCardNumber');
-        
+
         // Format CVV
         $('#cvv').payment('formatCardCVC');
-        
+
         // Detect card type and show icon
         $('#cc_no').on('input', function() {
             var cardNumber = $(this).val().replace(/\s+/g, '');
             var paymentCardType  = $.payment.cardType(cardNumber);
             var $cardBrand = $('.card-brand-icons');
-            
+
             // Validate card number length
             if ($.payment.validateCardNumber(cardNumber)) {
                 $(this).removeClass('is-invalid').addClass('is-valid');
@@ -402,12 +409,12 @@
                 $(this).removeClass('is-valid').addClass('is-invalid');
             }
         });
-        
+
         // Validate expiry date
         $('#cc_month, #cc_year').on('change', function() {
             var month = $('#cc_month').val();
             var year = $('#cc_year').val();
-            
+
             if (month && year) {
                 if ($.payment.cardExpiryVal(month, year)) {
                     $('#cc_month, #cc_year').removeClass('is-invalid').addClass('is-valid');
@@ -416,13 +423,13 @@
                 }
             }
         });
-        
+
         // Validate CVV
         $('#cvv').on('input', function() {
             var cvv = $(this).val();
             var cardNumber = $('#cc_no').val().replace(/\s+/g, '');
             var cardType = $.payment.cardType(cardNumber);
-            
+
             if ($.payment.validateCardCVC(cvv, cardType)) {
                 $(this).removeClass('is-invalid').addClass('is-valid');
             } else {
@@ -430,7 +437,7 @@
             }
         });
     });
-    
+
     function popop_cvv() {
         // Your existing CVV popup function
         alert("The CVV is the 3-digit code on the back of your card (4 digits for American Express).");
@@ -497,7 +504,7 @@ $(document).ready(function() {
 
     function updateCreditCardFee() {
         var selected = $('input[name="payment_method"]:checked').val();
-        
+
         // Calculate credit card fee only for gold/silver products subtotal + fees
         var goldSilverSubtotal = 0;
         @if(isset($cart))
@@ -507,7 +514,7 @@ $(document).ready(function() {
                 @endif
             @endforeach
         @endif
-        
+
         // Only calculate credit card fee if payment method is credit_card or paypal
         // Apply fee to gold/silver subtotal + all fees (shipping, state, service)
         if (selected === 'credit_card' || selected === 'paypal') {
@@ -518,7 +525,7 @@ $(document).ready(function() {
         } else {
             creditCardFee = 0;
         }
-        
+
         $('.credit-card-fee-amount').text(creditCardFee > 0 ? '$' + creditCardFee.toFixed(2) : '$0.00');
         updateOrderTotal();
     }
@@ -575,7 +582,7 @@ $(document).ready(function() {
         }
 
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        
+
         $.ajax({
             url: '{{ url('/state-fee') }}/' + stateCode,
             method: 'GET',
@@ -584,14 +591,14 @@ $(document).ready(function() {
                 stateFee = response.amount ? parseFloat(response.amount) : 0;
                 // Round to 2 decimal places consistently
                 stateFee = Math.round(stateFee * 100) / 100;
-                
+
                 // Update display with appropriate label
                 if (response.fee_type === 'percentage' && response.percentage) {
                     $('.state-fee h2').text('State Fee (' + response.percentage + '%)');
                 } else {
                     $('.state-fee h2').text('State Fee');
                 }
-                
+
                 $('.state-fee-amount').text(stateFee > 0 ? '$' + stateFee.toFixed(2) : '$0.00');
                 $('#state_fee').val(stateFee);
                 updateCreditCardFee();
@@ -631,11 +638,11 @@ $(document).ready(function() {
         // updateCreditCardFee will handle the calculation based on payment method
         updateCreditCardFee();
     }
-    
+
     // Initial setup
     toggleCreditCardFields();
     handleCreditCardFeeDisplay();
-    
+
     // Single consolidated payment method change handler
     $('input[name="payment_method"]').on('change', function() {
         toggleCreditCardFields();
@@ -667,7 +674,7 @@ $(document).ready(function() {
                 $field.removeClass('is-invalid');
             }
         });
-    
+
         return valid;
     }
 
@@ -840,12 +847,17 @@ $(document).ready(function() {
                 $('#place-order-btn').prop('disabled', false);
                 if (response.redirect_url) {
                     window.location.href = response.redirect_url;
-                } 
+                }
             },
-            error: function(xhr) {
+            error: function(xhr, status, error) {
+                // console.log('Status:', status); // e.g., "error"
+                // console.log('HTTP Status:', xhr.status); // e.g., 500
+                // console.log('Error Thrown:', error); // e.g., "Internal Server Error"
+                // console.log('Response Text:', xhr.responseText); // full HTML / JSON from Laravel
                 $('#checkout-loading').hide();
                 $('#place-order-btn').prop('disabled', false);
                 var msg = 'An error occurred. Please try again.';
+
                 if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
                     var errors = xhr.responseJSON.errors;
                     var html = '<div class="alert alert-danger text-danger"><ul>';
@@ -893,5 +905,33 @@ $(document).ready(function() {
     /* border: 1px solid red !important; */
 }
 .spinner-border { vertical-align: middle; }
+.manual-payment-message {
+    background-color: #fff3cd; /* light yellow */
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+}
 </style>
+<script>
+    $(document).ready(function(){
+        function toggleManualPaymentMessage() {
+            var selected = $('input[name="payment_method"]:checked').val();
+            var manualMethods = ['bank_wire', 'ach', 'zelle'];
+
+            if (manualMethods.includes(selected)) {
+                $('#manual-payment-message').show();
+            } else {
+                $('#manual-payment-message').hide();
+            }
+        }
+        toggleManualPaymentMessage();
+        // Run whenever user selects a payment method
+        $('input[name="payment_method"]').change(function(){
+            toggleManualPaymentMessage();
+        });
+    });
+</script>
 @endpush
