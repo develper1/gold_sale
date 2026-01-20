@@ -7,6 +7,27 @@
     <p><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
         with your order number to make payment. Payment must be received within 48 hours of order placement
         or the order will be automatically canceled.</strong></p>
+
+    <hr>
+    <p>
+        If your chosen method of payment is via ACH or Bank Wire, you MUST email the accounts department at 
+        <a href="mailto:Payments@OasisMint.com">
+            Payments@OasisMint.com
+        </a>
+        to request account and routing information within 2 business days of order confirmation to obtain details.
+    </p>
+
+    <p>
+        Payment being made via Zelle must be sent to 
+        <a href="mailto:Zelle@OasisMint.com">
+            Zelle@OasisMint.com
+        </a>
+        and within 24 hours of Order Confirmation.
+    </p>
+    <p>PayPal and Credit Card payments are required at time of order.</p>
+    <p>If any form of payment is returned unpaid or returned, the office or authorized agent may debit my account for the full amount with a service fee of $50 plus any actual charges assessed by this office and from your financial institution as a result of the dishonored check or chargeback.</p>
+    
+
     <h3>Order Details</h3>
     <ul>
         <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>

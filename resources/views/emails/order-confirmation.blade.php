@@ -7,10 +7,38 @@
         </a>
         <h1 style="margin:16px 0 8px;font-size:24px;line-height:32px;color:#111111;">Order Confirmation</h1>
         <p style="margin:0 0 8px;font-size:14px;line-height:20px;color:#555555;">Thank you for your order! Your order ID is <strong>{{ $order->id }}</strong>.</p>
-        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>Payment must be received within 48 hours of order placed or the order will be automatically canceled.</strong></p>
-        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
-            To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong> with your order number to make payment.
+        <!-- <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>Payment must be received within 48 hours of order placed or the order will be automatically canceled.</strong></p> -->
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
+        with your order number to make payment. Payment must be received within 48 hours of order placement
+        or the order will be automatically canceled.</strong></p>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;">
+
+        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
+            If your chosen method of payment is via ACH or Bank Wire, you MUST email the accounts department at 
+            <a href="mailto:Payments@OasisMint.com" style="color:#2563eb;text-decoration:none;">
+                Payments@OasisMint.com
+            </a>
+            to request account and routing information within 2 business days of order confirmation to obtain details.
         </p>
+
+        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
+            Payment being made via Zelle must be sent to 
+            <a href="mailto:Zelle@OasisMint.com" style="color:#2563eb;text-decoration:none;">
+                Zelle@OasisMint.com
+            </a>
+            and within 24 hours of Order Confirmation.
+        </p>
+
+        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
+            PayPal and Credit Card payments are required at time of order.
+        </p>
+
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
+            If any form of payment is returned unpaid or returned, the office or authorized agent may debit my account for the full amount with a service fee of $50 plus any actual charges assessed by this office and from your financial institution as a result of the dishonored check or chargeback.
+        </p>
+        <!-- <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
+            To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong> with your order number to make payment.
+        </p> -->
       </td>
     </tr>
     <tr>
