@@ -1,7 +1,7 @@
 @php
-    // Only apply credit card fee for gold and silver products
-    $isGoldOrSilver = in_array($product->product_type, ['gold', 'silver']);
-    $ccPercent = $isGoldOrSilver && isset($credit_card_percentage) ? (float) $credit_card_percentage : 0;
+    // Only apply credit card fee for gold, silver, and platinum products
+    $isGoldSilverOrPlatinum = in_array($product->product_type, ['gold', 'silver', 'platinum']);
+    $ccPercent = $isGoldSilverOrPlatinum && isset($credit_card_percentage) ? (float) $credit_card_percentage : 0;
     $spotPrice = null;
     if ($product->pricing_type === 'spot') {
         $metalPriceService = app(\App\Services\MetalPriceService::class);
@@ -18,13 +18,13 @@
             <tr>
                 <th>Qty</th>
                 <th>
-                    @if($isGoldOrSilver)
+                    @if($isGoldSilverOrPlatinum)
                         Wire/Check
                     @else
                         Price
                     @endif
                 </th>
-                @if($isGoldOrSilver)
+                @if($isGoldSilverOrPlatinum)
                     <th>CC/Paypal</th>
                 @endif
             </tr>
@@ -42,7 +42,7 @@
                 <tr>
                     <td>{{ $qtyLabel }}</td>
                     <td>${{ number_format($wirePrice, 2) }}</td>
-                    @if($isGoldOrSilver)
+                    @if($isGoldSilverOrPlatinum)
                     <td>${{ number_format($ccPrice, 2) }}</td>
                     @endif
                 </tr>

@@ -145,20 +145,20 @@ class OrderController extends Controller
             }
         }
         
-        // Calculate subtotal for gold/silver products only (for credit card fee calculation)
+        // Calculate subtotal for gold/silver/platinum products only (for credit card fee calculation)
         $goldSilverSubtotal = 0;
         foreach ($cart as $item) {
             $productType = $item['product_type'] ?? null;
-            if (in_array($productType, ['gold', 'silver'])) {
+            if (in_array($productType, ['gold', 'silver', 'platinum'])) {
                 $goldSilverSubtotal += $item['price'] * $item['quantity'];
             }
         }
         
-        // Calculate total before credit card fee (for gold/silver products only)
+        // Calculate total before credit card fee (for gold/silver/platinum products only)
         $totalBeforeCreditCardFee = $goldSilverSubtotal + $shipping_fee + $state_fee + $service_fee;
         $totalBeforeCreditCardFee = round($totalBeforeCreditCardFee, 2);
         
-        // Calculate credit card fee based on gold/silver products total including all fees
+        // Calculate credit card fee based on gold/silver/platinum products total including all fees
         if ($isCreditCard || $isPaypal) {
             $creditCardFee = ($totalBeforeCreditCardFee) * ($creditCardPercentage / 100);
             $creditCardFee = round($creditCardFee, 2);

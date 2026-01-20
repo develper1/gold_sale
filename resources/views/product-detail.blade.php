@@ -60,14 +60,14 @@
                                 // Round base price to 2 decimal places for consistency
                                 $basePrice = round($basePrice, 2);
                                 
-                                // Only apply credit card fee for gold and silver products
-                                $isGoldOrSilver = in_array($product->product_type, ['gold', 'silver']);
-                                $percentageToAdd = $isGoldOrSilver ? (float) ($credit_card_percentage ?? 0) : 0;
+                                // Only apply credit card fee for gold, silver, and platinum products
+                                $isGoldSilverOrPlatinum = in_array($product->product_type, ['gold', 'silver', 'platinum']);
+                                $percentageToAdd = $isGoldSilverOrPlatinum ? (float) ($credit_card_percentage ?? 0) : 0;
                                 $creditCardPrice = round($basePrice * (1 + ($percentageToAdd / 100)), 2);
                             @endphp
 
                             <div style="display: flex; gap: 10px;">
-                                @if($isGoldOrSilver)
+                                @if($isGoldSilverOrPlatinum)
                                 <div style="background: #cb8161; color: #fff; padding: 4px 10px; text-align: center;">
                                     <div style="font-weight: bold; letter-spacing: 1px;">CHECK / WIRE</div>
                                     <div style="background: #f3f3f3; color: #222; font-size: 1.5rem;">

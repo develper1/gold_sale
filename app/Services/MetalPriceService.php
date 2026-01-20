@@ -18,7 +18,18 @@ class MetalPriceService
 
     public function getSpotPrice($productType)
     {
-        $currency = strtolower($productType) === 'gold' ? 'XAU' : 'XAG';
+        $currencyMap = [
+            'gold' => 'XAU',
+            'silver' => 'XAG',
+            'platinum' => 'XPT'
+        ];
+        
+        $productTypeLower = strtolower($productType);
+        $currency = $currencyMap[$productTypeLower] ?? null;
+        
+        if (!$currency) {
+            return null;
+        }
         
         $response = Http::get($this->baseUrl, [
             'api_key' => $this->apiKey,

@@ -564,9 +564,9 @@ $(document).ready(function() {
                     
                     // Handle tier pricing table (both fixed and spot tier pricing)
                     var tierPricingContainer = $('.quickview-popup .quickview-tier-pricing');
-                    // Only apply credit card fee for gold and silver products
-                    var isGoldOrSilver = product.product_type === 'gold' || product.product_type === 'silver';
-                    var creditCardPercentage = (isGoldOrSilver ? (response.credit_card_percentage || 0) : 0);
+                    // Only apply credit card fee for gold, silver, and platinum products
+                    var isGoldSilverOrPlatinum = product.product_type === 'gold' || product.product_type === 'silver' || product.product_type === 'platinum';
+                    var creditCardPercentage = (isGoldSilverOrPlatinum ? (response.credit_card_percentage || 0) : 0);
                     var tablesHtml = '';
                     
                     // Fixed tier pricing table

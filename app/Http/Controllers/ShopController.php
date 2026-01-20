@@ -220,10 +220,10 @@ class ShopController extends Controller
                     return round($tier->value, 2);
                 }
             } else {
-                // Fallback to blanket markup if no tier found for this quantity (only for gold/silver)
-                $isGoldOrSilver = in_array($product->product_type, ['gold', 'silver']);
+                // Fallback to blanket markup if no tier found for this quantity (only for gold/silver/platinum)
+                $isGoldSilverOrPlatinum = in_array($product->product_type, ['gold', 'silver', 'platinum']);
                 $price = $baseSpotPrice;
-                if ($isGoldOrSilver) {
+                if ($isGoldSilverOrPlatinum) {
                     $markupPercentage = $product->blanket_markup_percentage;
                     if ($markupPercentage) {
                         $price = $baseSpotPrice * (1 + ($markupPercentage / 100));

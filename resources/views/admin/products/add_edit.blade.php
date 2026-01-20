@@ -128,6 +128,7 @@
                                     <option value="">--select type--</option>
                                     <option value="gold" {{ $product_type == 'gold' ? 'selected' : '' }}>Gold</option>
                                     <option value="silver" {{ $product_type == 'silver' ? 'selected' : '' }}>Silver</option>
+                                    <option value="platinum" {{ $product_type == 'platinum' ? 'selected' : '' }}>Platinum</option>
                                     <option value="gift_items" {{ $product_type == 'gift_items' ? 'selected' : '' }}>Gift Items</option>
                                     <option value="collectables" {{ $product_type == 'collectables' ? 'selected' : '' }}>Collectables</option>
                                     <option value="other" {{ $product_type == 'other' ? 'selected' : '' }}>Other</option>
@@ -136,7 +137,7 @@
                             </div>
                         
                             <!-- Pricing Type (triggers fixed price visibility) -->
-                            <div class="col-lg-6 col-md-6 col-sm-12 pricing-type-field" style="display: {{ (isset($product) && !in_array($product->product_type ?? '', ['gold', 'silver'])) ? 'none' : 'block' }};">
+                            <div class="col-lg-6 col-md-6 col-sm-12 pricing-type-field" style="display: {{ (isset($product) && !in_array($product->product_type ?? '', ['gold', 'silver', 'platinum'])) ? 'none' : 'block' }};">
                                 <label class="form-label" for="label">Pricing Type<span class="text-danger">*</span></label>
                                 @php 
                                     $pricing_type = $product->pricing_type ?? 'spot';
@@ -155,7 +156,7 @@
                             </div>
 
                             <!-- Spot Percentage (conditionally shown) -->
-                            <div class="col-lg-6 col-md-6 col-sm-12 spot-price-field" style="display: {{ ($pricing_type == 'spot' && isset($product) && in_array($product->product_type, ['gold', 'silver'])) ? 'block' : 'none' }};">
+                            <div class="col-lg-6 col-md-6 col-sm-12 spot-price-field" style="display: {{ ($pricing_type == 'spot' && isset($product) && in_array($product->product_type, ['gold', 'silver', 'platinum'])) ? 'block' : 'none' }};">
                                 <label class="form-label" for="label">Spot Percentage <span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" value="{{ $product->spot_percentage ?? '' }}" class="form-control" id="spot_percentage" name="spot_percentage">
                             </div>
@@ -187,7 +188,7 @@
                             </div>
                         
                             <!-- Blanket Markup Percentage -->
-                            <div class="col-lg-6 col-md-6 col-sm-12 blanket-markup-field" style="display: {{ (isset($product) && in_array($product->product_type, ['gold', 'silver'])) ? 'block' : 'none' }};">
+                            <div class="col-lg-6 col-md-6 col-sm-12 blanket-markup-field" style="display: {{ (isset($product) && in_array($product->product_type, ['gold', 'silver', 'platinum'])) ? 'block' : 'none' }};">
                                 <label class="form-label" for="label">Blanket Markup Percentage<span class="text-danger">*</span></label>
                                 <input type="number" step="0.01" value="{{ $product->blanket_markup_percentage ?? '' }}" class="form-control" id="blanket_markup_percentage" name="blanket_markup_percentage">
                             </div>
@@ -403,10 +404,10 @@
     // Product Type - Show/hide blanket markup and spot percentage fields, and pricing type
     function toggleProductTypeFields() {
         var productType = $('#product_type').val();
-        var isGoldOrSilver = (productType === 'gold' || productType === 'silver');
+        var isGoldSilverOrPlatinum = (productType === 'gold' || productType === 'silver' || productType === 'platinum');
         var pricingTypeSelect = $('#pricing_type');
         
-        if (isGoldOrSilver) {
+        if (isGoldSilverOrPlatinum) {
             // Show pricing type field
             $('.pricing-type-field').show();
             
@@ -461,7 +462,7 @@
     // Pricing Type - Fixed Price toggle
     $('#pricing_type').change(function() {
         var productType = $('#product_type').val();
-        var isGoldOrSilver = (productType === 'gold' || productType === 'silver');
+        var isGoldSilverOrPlatinum = (productType === 'gold' || productType === 'silver' || productType === 'platinum');
         
         if ($(this).val() === 'fixed') {
             $('.fixed-price-field').show();
@@ -476,8 +477,8 @@
             $('#use_tier_pricing').prop('checked', false);
             $('#fixed_price').removeAttr('required');
             
-            // Show spot price field only if product type is gold or silver
-            if (isGoldOrSilver) {
+            // Show spot price field only if product type is gold, silver, or platinum
+            if (isGoldSilverOrPlatinum) {
                 $('.spot-price-field').show();
                 $('#spot_percentage').attr('required', true);
             } else {

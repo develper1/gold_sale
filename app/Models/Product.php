@@ -105,9 +105,9 @@ class Product extends Model
                 }
             }
         }
-        // Default: use blanket markup (only for gold and silver products)
-        $isGoldOrSilver = in_array($this->product_type, ['gold', 'silver']);
-        if ($isGoldOrSilver) {
+        // Default: use blanket markup (only for gold, silver, and platinum products)
+        $isGoldSilverOrPlatinum = in_array($this->product_type, ['gold', 'silver', 'platinum']);
+        if ($isGoldSilverOrPlatinum) {
             $markupPercentage = $this->blanket_markup_percentage;
             if ($markupPercentage) {
                 $spotPrice = $spotPrice * (1 + ($markupPercentage / 100));
