@@ -358,7 +358,7 @@
                                             <div class="privacy-policy-text"></div>
                                         </div>
                                         <div id="manual-payment-message" class="manual-payment-message">
-                                            To complete payment for your order, please call our office within 2 business days with your order number to make payment.
+                                            After placing order below, please call our office within 2 business days with your order number to make payment and complete your order.
                                         </div>
                                         <div id="checkout-errors" style="display:none;"></div>
                                         <button type="submit" name="checkout_place_order" id="place-order-btn" class="button alt">Place Order</button>
@@ -941,7 +941,7 @@ $(document).ready(function() {
     $(document).ready(function(){
         function toggleManualPaymentMessage() {
             var selected = $('input[name="payment_method"]:checked').val();
-            var manualMethods = ['bank_wire', 'ach', 'zelle'];
+            var manualMethods = ['bank_wire', 'ach', 'zelle', 'cheque'];
 
             if (manualMethods.includes(selected)) {
                 $('#manual-payment-message').show();
