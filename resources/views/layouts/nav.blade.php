@@ -55,6 +55,55 @@
         </div>
     </div>
 </div>
+<div class="top-ticker-section-mobile" style="margin-top: 5px;">
+  <div class="">
+    <div class="">
+      <div class="ticker-collection-mobile">
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="gold">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Gold</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="goldPriceMobile">0.00</span>
+            <img id="goldArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="goldChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="goldPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="silver">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Silver</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="silverPriceMobile">0.00</span>
+            <img id="silverArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="silverChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="silverPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="platinum">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Platinum</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="platinumPriceMobile">0.00</span>
+            <img id="platinumArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="platinumChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="platinumPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="palladium">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Palladium</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="palladiumPriceMobile">0.00</span>
+            <img id="palladiumArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="palladiumChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="palladiumPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 <header id="site-header" class="site-header header-v4">
     <div class="header-mobile">
         <div class="section-padding">
@@ -335,55 +384,7 @@
         </div>
     </div>
 </header>
-<div class="top-ticker-section-mobile">
-  <div class="">
-    <div class="">
-      <div class="ticker-collection-mobile">
 
-        <div class="homepage-collection-grid-item currency-box mobile-item" id="gold">
-          <div class="cbox cbox-mobile">
-            <span class="c-text">Gold</span>
-            <span class="dollar-sign">$</span><span class="currency-rate" id="goldPriceMobile">0.00</span>
-            <img id="goldArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
-            <span id="goldChangeMobile">$0.00</span>
-            <span class="mobile-percent"><span id="goldPerMobile" style="margin-left: 6px;">0.00</span>%</span>
-          </div>
-        </div>
-
-        <div class="homepage-collection-grid-item currency-box mobile-item" id="silver">
-          <div class="cbox cbox-mobile">
-            <span class="c-text">Silver</span>
-            <span class="dollar-sign">$</span><span class="currency-rate" id="silverPriceMobile">0.00</span>
-            <img id="silverArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
-            <span id="silverChangeMobile">$0.00</span>
-            <span class="mobile-percent"><span id="silverPerMobile" style="margin-left: 6px;">0.00</span>%</span>
-          </div>
-        </div>
-
-        <div class="homepage-collection-grid-item currency-box mobile-item" id="platinum">
-          <div class="cbox cbox-mobile">
-            <span class="c-text">Platinum</span>
-            <span class="dollar-sign">$</span><span class="currency-rate" id="platinumPriceMobile">0.00</span>
-            <img id="platinumArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
-            <span id="platinumChangeMobile">$0.00</span>
-            <span class="mobile-percent"><span id="platinumPerMobile" style="margin-left: 6px;">0.00</span>%</span>
-          </div>
-        </div>
-
-        <div class="homepage-collection-grid-item currency-box mobile-item" id="palladium">
-          <div class="cbox cbox-mobile">
-            <span class="c-text">Palladium</span>
-            <span class="dollar-sign">$</span><span class="currency-rate" id="palladiumPriceMobile">0.00</span>
-            <img id="palladiumArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
-            <span id="palladiumChangeMobile">$0.00</span>
-            <span class="mobile-percent"><span id="palladiumPerMobile" style="margin-left: 6px;">0.00</span>%</span>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</div>
 
 @push('scripts')
 <style>
@@ -495,10 +496,6 @@ $(document).ready(function() {
         });
     });
 
-    window.METALPRICE_API_KEY = "{{ config('services.metalpriceapi.key') }}";
-
-    const apiKey = window.METALPRICE_API_KEY; 
-    const baseUrl = 'https://api.metalpriceapi.com/v1/';
     const baseCurrency = 'USD';
     const metals = ['XAU', 'XAG', 'XPT', 'XPD']; // XAU = Gold, XAG = Silver, XPT = platinum, XPD = palladium
 
@@ -587,129 +584,37 @@ $(document).ready(function() {
             return;
         }
 
-        // Check for cached latest prices
-        const cachedLatest = getCookie('metalPricesLatest');
-        let latestData = null;
-        let needLatestApiCall = true;
+        // Fetch latest prices from backend (DB)
+        currentAjax = $.getJSON('{{ route("metal-prices.latest") }}', function(data) {
+            if (data && data.success) {
+                // Store in cookie with timestamp so other pages (e.g. cart) can reuse
+                setCookie('metalPricesLatest', {
+                    data: data,
+                    timestamp: Date.now()
+                }, LATEST_PRICE_CACHE_TIME);
 
-        if (cachedLatest && cachedLatest.data && cachedLatest.timestamp) {
-            const cacheAge = Date.now() - cachedLatest.timestamp;
-            if (cacheAge < LATEST_PRICE_CACHE_TIME) {
-                latestData = cachedLatest.data;
-                needLatestApiCall = false;
-                console.log('Using cached latest prices');
+                processPrices(data, null);
             }
-        }
-
-        // Check for cached yesterday prices
-        const cachedYesterday = getCookie('metalPricesYesterday');
-        let yesterdayData = null;
-        let needYesterdayApiCall = true;
-
-        if (cachedYesterday && cachedYesterday.data && cachedYesterday.timestamp) {
-            const cacheAge = Date.now() - cachedYesterday.timestamp;
-            if (cacheAge < YESTERDAY_PRICE_CACHE_TIME) {
-                yesterdayData = cachedYesterday.data;
-                needYesterdayApiCall = false;
-                console.log('Using cached yesterday prices');
-            }
-        }
-
-        // If we have both cached, use them and skip API calls
-        if (!needLatestApiCall && !needYesterdayApiCall) {
-            processPrices(latestData, yesterdayData);
             scheduleNext();
-            return;
-        }
-
-        // Fetch latest prices if needed
-        if (needLatestApiCall) {
-            currentAjax = $.getJSON(`${baseUrl}latest?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(data) {
-                if (data.success) {
-                    // Store in cookie with timestamp
-                    setCookie('metalPricesLatest', {
-                        data: data,
-                        timestamp: Date.now()
-                    }, LATEST_PRICE_CACHE_TIME);
-                    latestData = data;
-                }
-
-                // Fetch yesterday's prices if needed
-                if (needYesterdayApiCall) {
-                    currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(yData) {
-                        if (yData.success) {
-                            // Store in cookie with timestamp
-                            setCookie('metalPricesYesterday', {
-                                data: yData,
-                                timestamp: Date.now()
-                            }, YESTERDAY_PRICE_CACHE_TIME);
-                            yesterdayData = yData;
-                        }
-
-                        // Use cached latest if API call failed
-                        if (!latestData && cachedLatest) {
-                            latestData = cachedLatest.data;
-                        }
-
-                        // Use cached yesterday if API call failed
-                        if (!yesterdayData && cachedYesterday) {
-                            yesterdayData = cachedYesterday.data;
-                        }
-
-                        if (latestData && yesterdayData) {
-                            processPrices(latestData, yesterdayData);
-                        }
-                        scheduleNext();
-                    });
-                } else {
-                    // We have yesterday from cache, just use latest from API
-                    if (latestData && yesterdayData) {
-                        processPrices(latestData, yesterdayData);
-                    }
-                    scheduleNext();
-                }
-            });
-        } else {
-            // We have latest from cache, fetch yesterday if needed
-            if (needYesterdayApiCall) {
-                currentAjax = $.getJSON(`${baseUrl}yesterday?api_key=${apiKey}&base=${baseCurrency}&currencies=${metals.join(',')}`, function(yData) {
-                    if (yData.success) {
-                        // Store in cookie with timestamp
-                        setCookie('metalPricesYesterday', {
-                            data: yData,
-                            timestamp: Date.now()
-                        }, YESTERDAY_PRICE_CACHE_TIME);
-                        yesterdayData = yData;
-                    }
-
-                    // Use cached yesterday if API call failed
-                    if (!yesterdayData && cachedYesterday) {
-                        yesterdayData = cachedYesterday.data;
-                    }
-
-                    if (latestData && yesterdayData) {
-                        processPrices(latestData, yesterdayData);
-                    }
-                    scheduleNext();
-                });
-            } else {
-                // Both are cached, process them
-                if (latestData && yesterdayData) {
-                    processPrices(latestData, yesterdayData);
-                }
-                scheduleNext();
-            }
-        }
+        });
     }
 
     function processPrices(latestData, yesterdayData) {
-        if (!latestData || !latestData.success || !yesterdayData || !yesterdayData.success) {
+        if (!latestData || !latestData.success) {
             return;
         }
 
         metals.forEach(metal => {
-            const latestPrice = latestData.rates[baseCurrency + metal];
-            const yesterdayPrice = yesterdayData.rates[baseCurrency + metal];
+            const key = baseCurrency + metal;
+            const latestPrice = latestData.rates[key];
+
+            // Use change from backend if available, otherwise fall back to 0
+            const changes = latestData.changes || {};
+            const rawChange = typeof changes[key] !== 'undefined' ? parseFloat(changes[key]) : 0;
+
+            // Reconstruct "yesterday" price from latest and change so we can reuse existing UI logic
+            const yesterdayPrice = latestPrice - rawChange;
+
             if(metal === 'XAU') {
                 var element = 'gold';
             }else if(metal === 'XAG'){

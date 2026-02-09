@@ -37,7 +37,11 @@ class ShopController extends Controller
             ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
             ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
             ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id')
-            ->select('products.*');
+            ->select('products.*')
+
+            // ORDER BY CATEGORY SORT ORDER
+            ->orderByRaw('categories.sort_order IS NULL')
+            ->orderBy('categories.sort_order', 'asc');
         
         if ($sort === 'latest') {
             $productsQuery->orderBy('products.id', 'desc');

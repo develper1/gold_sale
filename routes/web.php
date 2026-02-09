@@ -29,6 +29,8 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AccountController;
+use App\Services\MetalPriceService;
+use App\Models\MetalPrice;
 
 /*
 |--------------------------------------------------------------------------
@@ -213,3 +215,60 @@ Route::get('/service-fee/{subtotal}', [\App\Http\Controllers\ShopController::cla
 Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
 Route::get('/order-confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
 Route::post('/validate-coupon', [OrderController::class, 'validateCoupon'])->name('coupon.validate');
+
+/**
+ * Public JSON endpoint for latest metal prices from DB (used by frontend JS).
+ */
+Route::get('/metal-prices/latest', function () {
+    $base     = 'USD';
+    $rates    = [];
+    $changes  = [];
+    $percents = [];
+
+    MetalPrice::query()
+        ->orderByDesc('fetched_at')
+        ->get()
+        ->groupBy('code')
+        ->each(function ($group, $code) use (&$rates, &$changes, &$percents, $base) {
+            $latest = $group->first();
+            $key = $base . $code;
+
+            $rates[$key] = (float) $latest->price;
+            // These may be null for older rows before the columns existed, so default to 0
+            $changes[$key]  = isset($latest->change) ? (float) $latest->change : 0.0;
+            $percents[$key] = isset($latest->percent) ? (float) $latest->percent : 0.0;
+        });
+
+    return response()->json([
+        'success' => true,
+        'base'     => $base,
+        'rates'    => $rates,
+        'changes'  => $changes,
+        'percents' => $percents,
+    ]);
+})->name('metal-prices.latest');
+
+/**
+ * Manual test route: fetch live metal prices from MetalPrice API
+ * and store them in the metal_prices table.
+ *
+ * Example (GET):
+ *   /cron/metal-prices-test?key=YOUR_SECRET_KEY
+ *
+ * For now this is only intended for manual testing, not as a public endpoint.
+ */
+Route::get('/cron/metal-prices-test', function (Request $request, MetalPriceService $service) {
+    $key = $request->query('key');
+
+    // Simple protection so this isn't called by random visitors
+    if ($key !== env('CRON_SECRET_KEY')) {
+        abort(403, 'Unauthorized');
+    }
+
+    $service->refreshAll();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Metal prices fetched and stored.',
+    ]);
+})->name('cron.metal-prices-test');
