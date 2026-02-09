@@ -21,8 +21,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // View::composer('layouts.nav', function ($view) {
+        //     $categories = Category::with('subCategories')->get();
         View::composer('layouts.nav', function ($view) {
-            $categories = Category::with('subCategories')->get();
+            $categories = Category::with('subCategories')
+                ->orderByRaw('sort_order IS NULL') // non‑null first, nulls last
+                ->orderBy('sort_order')            // 1,2,3,4...
+                ->orderBy('name')                  // fallback if same sort_order
+                ->get();
             $view->with('categories', $categories);
         });
     }

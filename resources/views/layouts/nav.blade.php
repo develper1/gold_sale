@@ -335,14 +335,63 @@
         </div>
     </div>
 </header>
+<div class="top-ticker-section-mobile">
+  <div class="">
+    <div class="">
+      <div class="ticker-collection-mobile">
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="gold">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Gold</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="goldPriceMobile">0.00</span>
+            <img id="goldArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="goldChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="goldPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="silver">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Silver</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="silverPriceMobile">0.00</span>
+            <img id="silverArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="silverChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="silverPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="platinum">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Platinum</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="platinumPriceMobile">0.00</span>
+            <img id="platinumArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="platinumChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="platinumPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+        <div class="homepage-collection-grid-item currency-box mobile-item" id="palladium">
+          <div class="cbox cbox-mobile">
+            <span class="c-text">Palladium</span>
+            <span class="dollar-sign">$</span><span class="currency-rate" id="palladiumPriceMobile">0.00</span>
+            <img id="palladiumArrowMobile" src="https://cdn.shopify.com/s/files/1/0643/9849/1787/files/plat.png?v=1731954034">
+            <span id="palladiumChangeMobile">$0.00</span>
+            <span class="mobile-percent"><span id="palladiumPerMobile" style="margin-left: 6px;">0.00</span>%</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 @push('scripts')
 <style>
-    @media (max-width: 767px) {
+    /* @media (max-width: 767px) {
         .mobile-hidden-percent {
             display: none;
         }
-    }
+    } */
 </style>
 <script>
 $(document).ready(function() {
@@ -497,10 +546,10 @@ $(document).ready(function() {
 
     // Helper to set price and change
     function setPriceAndChange(metal, latest, yesterday) {
-        const priceElem = $(`#${metal.toLowerCase()}Price`);
-        const changeElem = $(`#${metal.toLowerCase()}Change`);
-        const perElem = $(`#${metal.toLowerCase()}Per`);
-        const arrowElem = $(`#${metal.toLowerCase()}Arrow`);
+        const priceElem = $(`#${metal.toLowerCase()}Price, #${metal.toLowerCase()}PriceMobile`);
+        const changeElem = $(`#${metal.toLowerCase()}Change, #${metal.toLowerCase()}ChangeMobile`);
+        const perElem = $(`#${metal.toLowerCase()}Per, #${metal.toLowerCase()}PerMobile`);
+        const arrowElem = $(`#${metal.toLowerCase()}Arrow, #${metal.toLowerCase()}ArrowMobile`);
 
         const diff = latest - yesterday;
         console.log('diff',diff);

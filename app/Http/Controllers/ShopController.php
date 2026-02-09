@@ -12,7 +12,11 @@ class ShopController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::with('subCategories')->get();
+        $categories = Category::with('subCategories')
+            ->orderByRaw('sort_order IS NULL') // non-null sort_order first, nulls last
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
         
         // Get product counts for all subcategories
         $productCounts = Product::where('is_active', true)
@@ -59,7 +63,11 @@ class ShopController extends Controller
 
     public function subcategory(Request $request, $slug)
     {
-        $categories = Category::with('subCategories')->get();
+        $categories = Category::with('subCategories')
+            ->orderByRaw('sort_order IS NULL')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
         
         // Get product counts for all subcategories
         $productCounts = Product::where('is_active', true)
@@ -100,7 +108,11 @@ class ShopController extends Controller
 
     public function category(Request $request, $slug)
     {
-        $categories = Category::with('subCategories')->get();
+        $categories = Category::with('subCategories')
+            ->orderByRaw('sort_order IS NULL')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
         
         // Get product counts for all subcategories
         $productCounts = Product::where('is_active', true)
@@ -153,7 +165,11 @@ class ShopController extends Controller
 
     public function product($slug)
     {
-        $categories = Category::with('subCategories')->get();
+        $categories = Category::with('subCategories')
+            ->orderByRaw('sort_order IS NULL')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
         
         // Get product counts for all subcategories
         $productCounts = Product::where('is_active', true)

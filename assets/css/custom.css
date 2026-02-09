@@ -4,10 +4,80 @@
 .modal-content {
     margin-top: 100px;
 }
-.top-ticker-section{
+.top-ticker-section {
     min-height: 40px;
     background-color: #022952;
+    display: block;
 }
+
+.top-ticker-section-mobile {
+    min-height: 40px;
+    background-color: none;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .top-ticker-section {
+        display: none;
+    }
+
+    .top-ticker-section-mobile {
+        display: block;
+        background-color: none;
+    }
+
+}
+@media (max-width: 768px) {
+
+    .ticker-collection-mobile {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 10px;
+
+       /* important */
+    /* scrollbar-width: auto;     Firefox */
+    /* -webkit-overflow-scrolling: touch; */
+    }
+  
+
+    .mobile-item {
+      flex: 0 0 auto;
+      min-width: max-content;
+    }
+  
+    .cbox-mobile {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #d6d5d5;
+      color: #000;
+      border-radius: 20px;
+      border: 2px solid rgba(255, 193, 35, 0.836);
+      padding: 6px 12px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+  
+    .cbox-mobile .c-text {
+      color: #000;
+      font-weight: 600;
+    }
+  
+    .cbox-mobile .currency-rate,
+    .cbox-mobile .dollar-sign {
+      color: #000;
+      font-weight: 600;
+    }
+  
+    .cbox-mobile img {
+      width: 12px;
+      height: auto;
+      vertical-align: middle;
+    }
+  }
+  
+
 .ticker-collection{
     display: flex;
     flex-direction: row;

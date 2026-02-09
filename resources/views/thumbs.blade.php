@@ -12,7 +12,7 @@
                 @elseif(isset($category))
                     {{ $category->name }}
                 @else
-                    All Products
+                    Oasis Mint - Gold, Silver, and Investment Treasures
                 @endif
             </h1>
         </div>
