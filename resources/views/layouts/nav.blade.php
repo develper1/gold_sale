@@ -497,7 +497,7 @@ $(document).ready(function() {
     });
 
     const baseCurrency = 'USD';
-    const metals = ['XAU', 'XAG', 'XPT', 'XPD']; // XAU = Gold, XAG = Silver, XPT = platinum, XPD = palladium
+    const metals = ['XAU-ASK', 'XAG-ASK', 'XPT-ASK', 'XPD-ASK']; // XAU-ASK = Gold, XAG-ASK = Silver, XPT-ASK = platinum, XPD-ASK = palladium
 
     // Cookie expiration times
     const SECOND = 1000;
@@ -615,11 +615,11 @@ $(document).ready(function() {
             // Reconstruct "yesterday" price from latest and change so we can reuse existing UI logic
             const yesterdayPrice = latestPrice - rawChange;
 
-            if(metal === 'XAU') {
+            if(metal === 'XAU-ASK') {
                 var element = 'gold';
-            }else if(metal === 'XAG'){
+            }else if(metal === 'XAG-ASK'){
                 var element = 'silver';
-            }else if(metal === 'XPT'){
+            }else if(metal === 'XPT-ASK'){
                 var element = 'platinum';
             }else{
                 var element = 'palladium';

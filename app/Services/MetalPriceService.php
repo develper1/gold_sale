@@ -45,10 +45,10 @@ class MetalPriceService
     {
         // Map product types to currency codes
         $currencyMap = [
-            'gold'      => 'XAU',
-            'silver'    => 'XAG',
-            'platinum'  => 'XPT',
-            'palladium' => 'XPD',
+            'gold'      => 'XAU-ASK',
+            'silver'    => 'XAG-ASK',
+            'platinum'  => 'XPT-ASK',
+            'palladium' => 'XPD-ASK',
         ];
 
         $currencies = implode(',', array_values($currencyMap));

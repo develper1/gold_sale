@@ -604,10 +604,10 @@
             
             // Map product types to metal codes
             const metalMap = {
-                'gold': 'XAU',
-                'silver': 'XAG',
-                'platinum': 'XPT',
-                'palladium': 'XPD'
+                'gold': 'XAU-ASK',
+                'silver': 'XAG-ASK',
+                'platinum': 'XPT-ASK',
+                'palladium': 'XPD-ASK'
             };
             
             const metalCode = metalMap[productType.toLowerCase()];

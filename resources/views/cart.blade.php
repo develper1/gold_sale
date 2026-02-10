@@ -222,18 +222,18 @@ $(document).ready(function() {
             const baseCurrency = 'USD';
             
             // Map metal codes to product types
-            // XAU = Gold, XAG = Silver, XPT = Platinum, XPD = Palladium
-            if (rates[baseCurrency + 'XAU']) {
-                spotPrices['gold'] = rates[baseCurrency + 'XAU'];
+            // XAU-ASK = Gold, XAG-ASK = Silver, XPT-ASK = Platinum, XPD-ASK = Palladium
+            if (rates[baseCurrency + 'XAU-ASK']) {
+                spotPrices['gold'] = rates[baseCurrency + 'XAU-ASK'];
             }
-            if (rates[baseCurrency + 'XAG']) {
-                spotPrices['silver'] = rates[baseCurrency + 'XAG'];
+            if (rates[baseCurrency + 'XAG-ASK']) {
+                spotPrices['silver'] = rates[baseCurrency + 'XAG-ASK'];
             }
-            if (rates[baseCurrency + 'XPT']) {
-                spotPrices['platinum'] = rates[baseCurrency + 'XPT'];
+            if (rates[baseCurrency + 'XPT-ASK']) {
+                spotPrices['platinum'] = rates[baseCurrency + 'XPT-ASK'];
             }
-            if (rates[baseCurrency + 'XPD']) {
-                spotPrices['palladium'] = rates[baseCurrency + 'XPD'];
+            if (rates[baseCurrency + 'XPD-ASK']) {
+                spotPrices['palladium'] = rates[baseCurrency + 'XPD-ASK'];
             }
         }
         
