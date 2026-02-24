@@ -117,6 +117,19 @@
                                 <label class="form-label" for="label">Slug<span class="text-danger">*</span></label>
                                 <input name="slug" class="form-control" required value="{{ $product->slug ?? '' }}">
                             </div>
+
+                            <!-- Sort Priority -->
+                            <div class="col-lg-6 col-md-6 col-sm-12">
+                                <label class="form-label" for="sortID">Sort Priority <span class="text-danger">*</span></label>
+                                <input type="number" step="1" min="0" 
+                                    class="form-control" 
+                                    id="sortID" 
+                                    name="sortID" 
+                                    value="{{ $product->sortID ?? 0 }}"
+                                    placeholder="Higher number = higher priority">
+                                <small class="text-muted">Enter a number. Higher values appear first in default sorting.</small>
+                            </div>
+
                         
                             <!-- Product Type -->
                             <div class="col-lg-6 col-md-6 col-sm-12">

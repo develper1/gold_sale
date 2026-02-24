@@ -72,6 +72,7 @@ class ProductController extends Controller
             'images' => 'required|array',
             'images.*' => 'required|json',
             'use_tier_pricing' => 'boolean',
+            'sortID' => 'required|integer|min:0',
             // 'tier_prices' => 'array',
             // 'tier_prices.*.price' => 'required|numeric|min:0',
         ]);
@@ -113,6 +114,7 @@ class ProductController extends Controller
             "sub_category_id" => $request->sub_category_id,
             "use_tier_pricing" => $request->use_tier_pricing ?? false,
             "use_spot_tier_pricing" => $request->use_spot_tier_pricing ?? false,
+            "sortID" => $request->sortID,
         ]);
 
         // Store the remaining images 
@@ -191,6 +193,7 @@ class ProductController extends Controller
             'images' => 'required|array',
             'images.*' => 'required|json',
             'use_tier_pricing' => 'boolean',
+            'sortID' => 'required|integer|min:0',
             // 'tier_prices' => 'array',
             // 'tier_prices.*.price' => 'required|numeric|min:0',
         ]);
@@ -247,6 +250,7 @@ class ProductController extends Controller
                 "sub_category_id" => $request->sub_category_id,
                 "use_tier_pricing" => $request->use_tier_pricing ?? false,
                 "use_spot_tier_pricing" => $request->use_spot_tier_pricing ?? false,
+                "sortID" => $request->sortID,
             ]);
 
             // Handle tier prices

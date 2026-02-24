@@ -36,10 +36,15 @@ class Product extends Model
         'status',
         'use_tier_pricing',
         'use_spot_tier_pricing',
-        'spot_percentage'
+        'spot_percentage',
+        'sortID'
     ];
 
     protected $appends = ['current_price', 'formatted_price', 'lowest_price', 'formatted_lowest_price'];
+    
+    protected $casts = [
+        'sortID' => 'integer',
+    ];
 
     public function images()
     {

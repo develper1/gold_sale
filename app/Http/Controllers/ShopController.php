@@ -33,32 +33,102 @@ class ShopController extends Controller
         }
         
         $sort = $request->input('sort', 'default');
-        $productsQuery = Product::where('is_active', true)
-            ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
-            ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
-            ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id')
-            ->select('products.*')
-
-            // ORDER BY CATEGORY SORT ORDER
-            ->orderByRaw('categories.sort_order IS NULL')
-            ->orderBy('categories.sort_order', 'asc');
         
-        if ($sort === 'latest') {
-            $productsQuery->orderBy('products.id', 'desc');
-        } elseif ($sort === 'default') {
-            // Default: Sort by category, then subcategory, then product ID
-            $productsQuery->orderBy('categories.name', 'asc')
-                ->orderBy('sub_categories.name', 'asc')
-                ->orderBy('products.id', 'asc');
+        // For price sorts, mix all products and sort by price (ignores category order)
+        if ($sort === 'price_asc' || $sort === 'price_desc') {
+            $productsQuery = Product::where('is_active', true)
+                ->with(['images', 'subCategory.category', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
+            $products = $productsQuery->get();
+            
+            if ($sort === 'price_asc') {
+                $products = $products->sortBy(function($product) { return $product->current_price; })->values();
+            } else {
+                $products = $products->sortByDesc(function($product) { return $product->current_price; })->values();
+            }
         } else {
-            // For other sorts, keep original ID ordering
-            $productsQuery->orderBy('products.id', 'asc');
-        }
-        $products = $productsQuery->get();
-        if ($sort === 'price_asc') {
-            $products = $products->sortBy(function($product) { return $product->current_price; })->values();
-        } elseif ($sort === 'price_desc') {
-            $products = $products->sortByDesc(function($product) { return $product->current_price; })->values();
+            // For default and latest: Group by category/subcategory, then sort by sortID within each group
+            $productsQuery = Product::where('is_active', true)
+                ->with(['images', 'subCategory.category', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
+                ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
+                ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id')
+                ->select('products.*', 'categories.sort_order as category_sort_order', 'categories.name as category_name', 'sub_categories.name as subcategory_name');
+            
+            $products = $productsQuery->get();
+            
+            // Group products by category and subcategory, maintaining category order
+            $groupedProducts = $products->groupBy(function($product) {
+                $categoryId = $product->subCategory->category_id ?? null;
+                $subCategoryId = $product->sub_category_id ?? null;
+                return $categoryId . '_' . $subCategoryId;
+            });
+            
+            // Sort each group by sortID (highest first, NULL/0 last)
+            foreach ($groupedProducts as $key => $group) {
+                $sorted = $group->sort(function($a, $b) use ($sort) {
+                    // Cast sortID to integer to ensure proper numeric comparison
+                    $aSortId = $a->sortID !== null ? (int)$a->sortID : null;
+                    $bSortId = $b->sortID !== null ? (int)$b->sortID : null;
+                    
+                    // Handle NULL/0 values - put them last
+                    $aIsNull = ($aSortId === null || $aSortId == 0);
+                    $bIsNull = ($bSortId === null || $bSortId == 0);
+                    
+                    // If one is NULL/0 and the other isn't, the non-NULL/0 comes first
+                    if ($aIsNull && !$bIsNull) {
+                        return 1; // a comes after b
+                    }
+                    if (!$aIsNull && $bIsNull) {
+                        return -1; // a comes before b
+                    }
+                    
+                    // If both are NULL/0, sort by ID
+                    if ($aIsNull && $bIsNull) {
+                        if ($sort === 'latest') {
+                            return $b->id <=> $a->id; // Descending for latest
+                        } else {
+                            return $a->id <=> $b->id; // Ascending for default
+                        }
+                    }
+                    
+                    // Both have valid sortID - compare by sortID (descending - highest first)
+                    if ($aSortId != $bSortId) {
+                        return $bSortId <=> $aSortId;
+                    }
+                    
+                    // Same sortID - use product ID as tiebreaker
+                    if ($sort === 'latest') {
+                        return $b->id <=> $a->id; // Descending for latest
+                    } else {
+                        return $a->id <=> $b->id; // Ascending for default
+                    }
+                });
+                
+                $groupedProducts[$key] = $sorted->values();
+            }
+            
+            // Flatten and reorder by category order
+            $products = collect();
+            $processedKeys = [];
+            
+            // First, add products in category/subcategory order
+            foreach ($categories as $category) {
+                foreach ($category->subCategories as $subCategory) {
+                    $key = $category->id . '_' . $subCategory->id;
+                    if (isset($groupedProducts[$key])) {
+                        $products = $products->merge($groupedProducts[$key]);
+                        $processedKeys[] = $key;
+                    }
+                }
+            }
+            
+            // Add any products that might not be in the categories structure (orphaned products)
+            foreach ($groupedProducts as $key => $group) {
+                if (!in_array($key, $processedKeys)) {
+                    $products = $products->merge($group);
+                }
+            }
+            
+            $products = $products->values();
         }
         $setting = \App\Models\Setting::first();
         $credit_card_percentage = $setting ? $setting->credit_card_percentage : 0;
@@ -93,10 +163,14 @@ class ShopController extends Controller
             ->where('is_active', true)
             ->with(['images', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice']);
         if ($sort === 'latest') {
-            $productsQuery->orderBy('id', 'desc');
+            $productsQuery->orderByRaw('CASE WHEN sortID IS NULL OR sortID = 0 THEN 1 ELSE 0 END')
+                ->orderBy('sortID', 'desc')
+                ->orderBy('id', 'desc');
         } else {
-            // Default: Sort by product ID (all products are in same subcategory)
-            $productsQuery->orderBy('id', 'asc');
+            // Default: show highest sortID first within the subcategory (NULL/0 last).
+            $productsQuery->orderByRaw('CASE WHEN sortID IS NULL OR sortID = 0 THEN 1 ELSE 0 END')
+                ->orderBy('sortID', 'desc')
+                ->orderBy('id', 'asc');
         }
         $products = $productsQuery->get();
         if ($sort === 'price_asc') {
@@ -141,13 +215,18 @@ class ShopController extends Controller
         ->where('is_active', true)
         ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
         ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
-        ->select('products.*');
+        ->select('products.*')
+        // Keep subcategory sections stable.
+        ->orderBy('sub_categories.name', 'asc');
         
         if ($sort === 'latest') {
-            $productsQuery->orderBy('products.id', 'desc');
+            $productsQuery->orderByRaw('CASE WHEN products.sortID IS NULL OR products.sortID = 0 THEN 1 ELSE 0 END')
+                ->orderBy('products.sortID', 'desc')
+                ->orderBy('products.id', 'desc');
         } elseif ($sort === 'default') {
-            // Default: Sort by subcategory, then product ID (all products are in same category)
-            $productsQuery->orderBy('sub_categories.name', 'asc')
+            // Default: inside each subcategory, use highest sortID first (NULL/0 last).
+            $productsQuery->orderByRaw('CASE WHEN products.sortID IS NULL OR products.sortID = 0 THEN 1 ELSE 0 END')
+                ->orderBy('products.sortID', 'desc')
                 ->orderBy('products.id', 'asc');
         } else {
             $productsQuery->orderBy('products.id', 'asc');

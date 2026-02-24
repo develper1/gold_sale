@@ -34,7 +34,7 @@
     @endpush
     <style>
         .block-sliders.layout-4 .item-content .content-image img {
-            height: 60vh;
+            height: 40vh;
             object-fit: cover;
             width: 100%;
         }
@@ -42,7 +42,7 @@
     <section class="section m-b-0">
         <!-- Block Sliders (Layout 4) -->
         <div class="block block-sliders layout-4 auto-height color-white nav-center">
-            <div class="slick-sliders" data-autoplay="true" data-dots="true" data-nav="true" data-columns4="1" data-columns3="1" data-columns2="1" data-columns1="1" data-columns1440="1" data-columns="1">
+            <div class="slick-sliders" data-autoplay="true" data-dots="false" data-nav="true" data-columns4="1" data-columns3="1" data-columns2="1" data-columns1="1" data-columns1440="1" data-columns="1">
                 @foreach($sliders as $slider)
                 <div class="item slick-slide">
                     <div class="item-content">
