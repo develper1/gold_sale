@@ -3,7 +3,7 @@
 @section('content')
 <div class="container py-5">
     <h1>Order Confirmation</h1>
-    <p>Thank you for your order! Your order number is <strong>{{ $order->id }}</strong>.</p>
+    <p>Thank you for your order! Your order number is <strong style="font-size: 15px; font-weight: bold; color: #2563eb; letter-spacing: 1px;">{{ $order->id }}</strong>.</p>
     <p><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
         with your order number to make payment. Payment must be received within 48 hours of order placement
         or the order will be automatically canceled.</strong></p>

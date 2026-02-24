@@ -9,10 +9,32 @@ use App\Models\Category;
 
 class SubCategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $subCategories = SubCategory::with('category')->latest()->get();
-        return view('admin.sub-categories.index')->with('subCategories', $subCategories);
+        $sortBy  = $request->input('sort_by', 'sort_order');
+        $sortDir = $request->input('sort_dir', 'asc') === 'desc' ? 'desc' : 'asc';
+
+        $allowedSorts = ['sort_order', 'name', 'slug', 'category'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'sort_order';
+        }
+
+        $query = SubCategory::with('category')
+            ->leftJoin('categories', 'sub_categories.category_id', '=', 'categories.id')
+            ->select('sub_categories.*');
+
+        if ($sortBy === 'category') {
+            $query->orderBy('categories.name', $sortDir);
+        } elseif ($sortBy === 'sort_order') {
+            $query->orderByRaw('sub_categories.sort_order IS NULL')->orderBy('sub_categories.sort_order', $sortDir);
+        } else {
+            $query->orderBy('sub_categories.' . $sortBy, $sortDir);
+        }
+        $query->orderBy('sub_categories.name');
+
+        $subCategories = $query->get();
+
+        return view('admin.sub-categories.index', compact('subCategories', 'sortBy', 'sortDir'));
     }
 
     public function create()
@@ -29,6 +51,7 @@ class SubCategoryController extends Controller
             'slug' => 'required|string|unique:sub_categories',
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
+            'sort_order' => 'nullable|integer|min:0',
         ]);
 
         SubCategory::create($request->all());
@@ -50,6 +73,7 @@ class SubCategoryController extends Controller
             'slug' => 'required|string|unique:sub_categories,slug,' . $id,
             'description' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
+            'sort_order' => 'nullable|integer|min:0',
         ]);
 
         $subCategory = SubCategory::findOrFail($id);
@@ -67,7 +91,7 @@ class SubCategoryController extends Controller
 
     public function getSubCategoriesByCategory($categoryId)
     {
-        $subCategories = SubCategory::where('category_id', $categoryId)->get();
+        $subCategories = SubCategory::where('category_id', $categoryId)->orderBy('sort_order')->orderBy('name')->get();
         return response()->json($subCategories);
     }
 

@@ -6,8 +6,15 @@
           <img src="{{ url('assets/media/logo.png') }}" alt="{{ config('app.name','Oasis Mint') }}" width="160" style="display:block;margin:0 auto;max-width:160px;height:auto;">
         </a>
         <h1 style="margin:16px 0 8px;font-size:24px;line-height:32px;color:#111111;">Order Confirmation</h1>
-        <p style="margin:0 0 8px;font-size:14px;line-height:20px;color:#555555;">Thank you for your order! Your order ID is <strong>{{ $order->id }}</strong>.</p>
-        <!-- <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>Payment must be received within 48 hours of order placed or the order will be automatically canceled.</strong></p> -->
+        
+        <!-- Prominent Order Number Box -->
+        <div style="background:#f0f4ff;border:2px solid #2563eb;border-radius:6px;padding:16px;margin:16px 0;text-align:center;">
+          <div style="font-size:12px;color:#555;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Sales Order #</div>
+          <div style="font-size:28px;font-weight:bold;color:#2563eb;letter-spacing:1px;">{{ $order->id }}</div>
+        </div>
+
+        
+
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
         with your order number to make payment. Payment must be received within 48 hours of order placement
         or the order will be automatically canceled.</strong></p>
@@ -43,11 +50,16 @@
     </tr>
     <tr>
       <td style="padding:0 24px 24px;">
+        <!-- Order Details (REMOVED duplicate Sales Order #) -->
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:8px;">
           <tr>
             <td colspan="2" style="padding:12px 0;border-bottom:1px solid #e6e6e6;">
               <h3 style="margin:0;font-size:16px;color:#111111;">Order Details</h3>
             </td>
+          </tr>
+          <tr>
+            <td style="padding:8px 0;font-size:14px;color:#555;">Sales Order #</td>
+            <td style="padding:8px 0;font-size:16px;color:#2563eb;text-align:right;font-weight:bold;">{{ $order->id }}</td>
           </tr>
           <tr>
             <td style="padding:8px 0;font-size:14px;color:#555;">Name</td>
@@ -67,6 +79,72 @@
           </tr>
         </table>
 
+        <!-- NEW: Customer Information (Bill To, Ship To, Payment Method) -->
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:16px;">
+          <tr>
+            <td colspan="2" style="padding:12px 0;border-bottom:1px solid #e6e6e6;">
+              <h3 style="margin:0;font-size:16px;color:#111111;">Customer Information</h3>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top" style="padding:12px 8px 12px 0;width:50%;">
+              <div style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Bill To</div>
+              <div style="font-size:14px;color:#111;line-height:1.4;">
+                {{ $order->billing_first_name }} {{ $order->billing_last_name }}<br>
+                {{ $order->billing_address }}<br>
+                @if($order->billing_address2)
+                {{ $order->billing_address2 }}<br>
+                @endif
+                {{ $order->billing_city }}, {{ $order->billing_state }} {{ $order->billing_zip }}<br>
+                {{ $order->billing_phone }}
+              </div>
+            </td>
+            <td valign="top" style="padding:12px 0 12px 8px;width:50%;">
+              <div style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Ship To</div>
+              <div style="font-size:14px;color:#111;line-height:1.4;">
+                {{ $order->shipping_first_name ?? $order->billing_first_name }} {{ $order->shipping_last_name ?? $order->billing_last_name }}<br>
+                {{ $order->shipping_address ?? $order->billing_address }}<br>
+                @if($order->shipping_address2 ?? $order->billing_address2)
+                {{ $order->shipping_address2 ?? $order->billing_address2 }}<br>
+                @endif
+                {{ $order->shipping_city ?? $order->billing_city }}, {{ $order->shipping_state ?? $order->billing_state }} {{ $order->shipping_zip ?? $order->billing_zip }}<br>
+                {{ $order->shipping_phone ?? $order->billing_phone }}
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="padding:12px 0;border-top:1px solid #e6e6e6;">
+              <div style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Payment Method</div>
+              <div style="font-size:14px;color:#111;font-weight:bold;">
+                @if($order->payment_method === 'credit_card')
+                  Credit Card
+                @elseif($order->payment_method === 'paypal')
+                  PayPal
+                @elseif($order->payment_method === 'zelle')
+                  Zelle (Pending)
+                @elseif($order->payment_method === 'ach' || $order->payment_method === 'wire')
+                  Bank Wire/ACH (Pending)
+                @elseif($order->payment_method === 'check')
+                  Check (Pending)
+                @else
+                  {{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}
+                @endif
+              </div>
+              @if(in_array($order->payment_method, ['zelle', 'ach', 'wire', 'check']))
+              <div style="font-size:12px;color:#b42318;margin-top:4px;">⚠️ Payment pending - awaiting confirmation</div>
+                @if($order->payment_method === 'zelle')
+                  <div style="background:#fff7ed;border-radius:4px;padding:12px;margin-top:8px;text-align:center;">
+                    <div style="font-size:13px;color:#9a3412;font-weight:bold;">⚡ Send ${{ number_format($order->total, 2) }} via Zelle</div>
+                    <div style="font-size:18px;font-weight:bold;color:#2563eb;margin:4px 0;">Zelle@OasisMint.com</div>
+                    <div style="font-size:12px;color:#9a3412;">Due within 24 hours</div>
+                  </div>
+                @endif
+              @endif
+            </td>
+          </tr>
+        </table>
+
+        <!-- Order Fees -->
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:16px;">
           <tr>
             <td colspan="2" style="padding:12px 0;border-bottom:1px solid #e6e6e6;">
@@ -101,6 +179,7 @@
           </tr>
         </table>
 
+        <!-- Order Items -->
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;margin-top:16px;">
           <tr>
             <td colspan="4" style="padding:12px 0;border-bottom:1px solid #e6e6e6;">

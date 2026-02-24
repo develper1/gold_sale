@@ -1,6 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
+
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="card">
         <div class="row">
@@ -32,17 +33,17 @@
                         <td>{{ $order->created_at->format('d M Y') }}</td>
                         <td>
                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-sm btn-info">View</a>
-                            @if($order->status !== 'paid')
                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
                                     <select name="status" class="form-select form-select-sm d-inline w-auto me-1">
-                                        <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                        <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Paid</option>
+                                        <option value="pending"  {{ $order->status === 'pending'  ? 'selected' : '' }}>Pending</option>
+                                        <option value="paid"     {{ $order->status === 'paid'     ? 'selected' : '' }}>Paid</option>
+                                        <option value="shipped"  {{ $order->status === 'shipped'  ? 'selected' : '' }}>Shipped</option>
+                                        <option value="refunded" {{ $order->status === 'refunded' ? 'selected' : '' }}>Refunded</option>
                                         <option value="canceled" {{ $order->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
                                     </select>
                                     <button type="submit" class="btn btn-sm btn-primary">Update</button>
                                 </form>
-                            @endif
                             <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
@@ -55,7 +56,7 @@
             </table>
         </div>
         <div class="mt-3 ms-3">
-            {{ $orders->links() }}
+            {{ $orders->links('pagination::bootstrap-5') }}
         </div>
     </div>
 </div>

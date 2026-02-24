@@ -272,7 +272,25 @@
                                                     <a href="{{ route('account') }}"><span class="menu-item-text">My Account</span></a>
                                                 </li>
                                                 <li>
-                                                    <a href="{{ route('login') }}"><span class="menu-item-text">Login / Register</span></a>
+                                                    @guest
+                                                        {{-- Show Login/Register for non-authenticated users --}}
+                                                        <a href="{{ route('login') }}">
+                                                            <span class="menu-item-text">Login / Register</span>
+                                                        </a>
+                                                    @endguest
+
+                                                    @auth
+                                                        {{-- Show Logout for authenticated users --}}
+                                                        <a class="nav-link" href="{{ route('logout') }}" 
+                                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                            Logout
+                                                        </a>
+                                                        
+                                                        {{-- Hidden logout form --}}
+                                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                                            @csrf
+                                                        </form>
+                                                    @endauth
                                                 </li>
                                                 {{-- <li>
                                                     <a href="page-forgot-password.html"><span class="menu-item-text">Forgot Password</span></a>
@@ -296,8 +314,8 @@
 
                                 <!-- Login -->
                                 <div class="login-header icon">
-                                    <a  href="{{ route('login') }}"><i class="icon-user"></i></a>
-                                  
+                                    <a  href="{{ route('account') }}"><i class="icon-user"></i></a>
+                                    <!-- <a  href="{{ route('login') }}"><i class="icon-user"></i>www</a> -->
                                 </div>
                                 
 

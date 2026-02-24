@@ -5,7 +5,41 @@
 	<body class="home home-4 title-4">
 		<div id="page" class="hfeed page-wrapper">
 			@include('layouts.nav')
+			@if(session('success'))
+				<div class="alert alert-success" style="
+					background-color: #d4edda;
+					color: #155724;
+					padding: 15px 20px;
+					margin: 20px auto;
+					max-width: 600px;
+					border-radius: 8px;
+					border-left: 5px solid #28a745;
+					text-align: center;
+					font-weight: 500;
+					box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+				">
+					<i class="fa fa-check-circle" style="margin-right: 8px;"></i>
+					{{ session('success') }}
+				</div>
+			@endif
 
+			@if(session('error'))
+				<div class="alert alert-danger" style="
+					background-color: #f8d7da;
+					color: #721c24;
+					padding: 15px 20px;
+					margin: 20px auto;
+					max-width: 600px;
+					border-radius: 8px;
+					border-left: 5px solid #dc3545;
+					text-align: center;
+					font-weight: 500;
+					box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+				">
+					<i class="fa fa-exclamation-circle" style="margin-right: 8px;"></i>
+					{{ session('error') }}
+				</div>
+			@endif
 			<div id="site-main" class="site-main">
 				<div id="main-content" class="main-content">
 					<div id="primary" class="content-area">
@@ -121,8 +155,9 @@
 											<h2 class="block-title">Our Newsletter</h2>
 											<div class="block-content">
 												<div class="newsletter-text">Sign up for the latest offers and exclusives.</div>
-												<form action="" method="post" class="newsletter-form">
-													<input type="email" name="your-email" value="" size="40" placeholder="Email address">
+												<form action="{{ route('subscriber.store') }}" method="POST" class="newsletter-form">
+													@csrf
+													<input type="email" name="email" placeholder="Email address" required>
 													<span class="btn-submit">
 														<input type="submit" value="Subscribe">
 													</span>

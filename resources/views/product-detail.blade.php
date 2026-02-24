@@ -1,22 +1,23 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
 @extends('layouts.app')
 
 @section('content')
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">{{ $product->name }}</h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>
-            <a href="{{ route('shop.index') }}">Shop</a>
-            <span class="delimiter"></span>
-            <a href="{{ route('shop.category', $product->subCategory->category->slug) }}">{{ $product->subCategory->category->name }}</a>
-            <span class="delimiter"></span>
-            <a href="{{ route('shop.subcategory', $product->subCategory->slug) }}">{{ $product->subCategory->name }}</a>
-            <span class="delimiter"></span>{{ $product->name }}
-        </div>
-    </div>
-</div>
+
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+
+<x-page-header 
+    title="{{ $product->name }}" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Shop', 'url' => '/thumbs'],
+        ['label' => $product->subCategory->category->name, 'url' => route('shop.category', $product->subCategory->category->slug)],
+        ['label' => $product->subCategory->name, 'url' => route('shop.subcategory', $product->subCategory->slug)],
+        ['label' => $product->name]
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="shop-details zoom" data-product_layout_thumb="scroll" data-zoom_scroll="true" data-zoom_contain_lens="true" data-zoomtype="inner" data-lenssize="200" data-lensshape="square" data-lensborder="" data-bordersize="2" data-bordercolour="#f9b61e" data-popup="false">	

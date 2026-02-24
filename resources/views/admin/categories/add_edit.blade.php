@@ -51,6 +51,12 @@
                                 <label class="form-label" for="slug">Slug<span class="text-danger">*</span></label>
                                 <input name="slug" class="form-control" required value="{{ $category->slug ?? '' }}">
                             </div>
+                            <!-- Sort Order -->
+                            <div class="col-lg-6 col-md-6 col-sm-12 mt-2">
+                                <label class="form-label" for="sort_order">Sort Order</label>
+                                <input type="number" name="sort_order" class="form-control" min="0" value="{{ $category->sort_order ?? 0 }}">
+                                <small class="text-muted">Lower numbers appear first. Leave 0 for default ordering.</small>
+                            </div>
                             <!-- Description -->
                             <div class="col-md-12 mt-2">
                                 <label class="form-label" for="description">Description</label>

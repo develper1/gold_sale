@@ -25,7 +25,24 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Name</th>
+                        <th>
+                            @php
+                                $nextDir = ($sortBy === 'sort_order' && $sortDir === 'asc') ? 'desc' : 'asc';
+                                $icon = $sortBy === 'sort_order' ? ($sortDir === 'asc' ? '↑' : '↓') : '↕';
+                            @endphp
+                            <a href="{{ route('admin.categories.index', ['sort_by' => 'sort_order', 'sort_dir' => $nextDir]) }}" class="text-dark text-decoration-none">
+                                Sort Order {!! $icon !!}
+                            </a>
+                        </th>
+                        <th>
+                            @php
+                                $nextDir = ($sortBy === 'name' && $sortDir === 'asc') ? 'desc' : 'asc';
+                                $icon = $sortBy === 'name' ? ($sortDir === 'asc' ? '↑' : '↓') : '↕';
+                            @endphp
+                            <a href="{{ route('admin.categories.index', ['sort_by' => 'name', 'sort_dir' => $nextDir]) }}" class="text-dark text-decoration-none">
+                                Name {!! $icon !!}
+                            </a>
+                        </th>
                         <th>Slug</th>
                         <th>Description</th>
                         <th>Actions</th>
@@ -34,6 +51,7 @@
                 <tbody>
                     @foreach($categories as $category)
                         <tr>
+                            <td>{{ $category->sort_order ?? 0 }}</td>
                             <td>{{ $category->name }}</td>
                             <td>{{ $category->slug }}</td>
                             <td>{{ $category->description }}</td>
@@ -52,4 +70,4 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection

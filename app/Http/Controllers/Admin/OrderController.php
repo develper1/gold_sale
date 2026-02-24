@@ -30,16 +30,26 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,paid,canceled',
+            'status' => 'required|in:pending,paid,shipped,refunded,canceled',
         ]);
 
         $order = Order::findOrFail($id);
-        if ($order->status === 'paid') {
-            return back()->with('error', 'Paid orders cannot be updated.');
-        }
         $order->status = $request->status;
         $order->save();
 
         return back()->with('success', 'Order status updated to ' . $order->status . '.');
+    }
+
+    public function updateNotes(Request $request, $id)
+    {
+        $request->validate([
+            'admin_notes' => 'nullable|string|max:5000',
+        ]);
+
+        $order = Order::findOrFail($id);
+        $order->admin_notes = $request->input('admin_notes');
+        $order->save();
+
+        return back()->with('success', 'Admin notes saved.');
     }
 } 

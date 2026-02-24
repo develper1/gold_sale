@@ -24,6 +24,10 @@
         <!-- Filter Section -->
         <div class="card-body" style="padding: 1rem 1.5rem 0.5rem;">
             <form method="GET" action="{{ route('admin.products.index') }}" class="d-flex align-items-center gap-2 mb-2">
+                {{-- Preserve current sort state when filter changes --}}
+                <input type="hidden" name="sort_by"  value="{{ $sortBy }}">
+                <input type="hidden" name="sort_dir" value="{{ $sortDir }}">
+
                 <label for="sub_category_id" class="form-label mb-0" style="margin-right: 0.5rem; white-space: nowrap;">Filter by Subcategory:</label>
                 <select name="sub_category_id" id="sub_category_id" class="form-select" style="width: auto; max-width: 300px;" onchange="this.form.submit()">
                     <option value="">All Subcategories</option>
@@ -39,14 +43,45 @@
             </form>
         </div>
         
+        @php
+            /* Helper: build a sort URL toggling direction for the given column */
+            $sortUrl = function(string $col) use ($sortBy, $sortDir) {
+                $dir = ($sortBy === $col && $sortDir === 'asc') ? 'desc' : 'asc';
+                return request()->fullUrlWithQuery(['sort_by' => $col, 'sort_dir' => $dir]);
+            };
+            /* Helper: render a sort indicator arrow */
+            $sortIcon = function(string $col) use ($sortBy, $sortDir) {
+                if ($sortBy !== $col) return '<span style="opacity:.3;font-size:.75rem;">⇅</span>';
+                return $sortDir === 'asc'
+                    ? '<span style="font-size:.75rem;">▲</span>'
+                    : '<span style="font-size:.75rem;">▼</span>';
+            };
+        @endphp
         <div class="table-responsive text-nowrap">
             <table class="table">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Subcategory</th>
+                        <th>
+                            <a href="{{ $sortUrl('name') }}" class="text-body text-decoration-none">
+                                Name {!! $sortIcon('name') !!}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ $sortUrl('category') }}" class="text-body text-decoration-none">
+                                Category {!! $sortIcon('category') !!}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ $sortUrl('subcategory') }}" class="text-body text-decoration-none">
+                                Subcategory {!! $sortIcon('subcategory') !!}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ $sortUrl('sort_id') }}" class="text-body text-decoration-none">
+                                Sort ID {!! $sortIcon('sort_id') !!}
+                            </a>
+                        </th>
                         <th>Image</th>
                         <th>Active</th>
                         <th>Action</th>
@@ -61,6 +96,7 @@
                           <td>{{ $data->name }}</td>
                           <td>{{ $data->subCategory->category->name ?? 'N/A' }}</td>
                           <td>{{ $data->subCategory->name ?? 'N/A' }}</td>
+                          <td>{{ $data->sortID }}</td>
                           <td>
                             @if($data->images->count() > 0)
                                 <img src="{{ asset('storage/app/public/' . $data->images->first()->image_path) }}" alt="{{ $data->name }}" width="100">

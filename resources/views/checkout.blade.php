@@ -1,3 +1,6 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
 @extends('layouts.app')
 
 @section('content')
@@ -9,18 +12,16 @@
         border-color: #dc3545 !important;
     }
 </style>
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                Checkout
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="index.html">Home</a><span class="delimiter"></span><a href="shop-grid-left.html">Shop</a><span class="delimiter"></span>Checkout
-        </div>
-    </div>
-</div>
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+<x-page-header 
+    title="Checkout" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Shop', 'url' => '/thumbs'],
+        ['label' => 'Checkout']
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -125,66 +126,84 @@
                                 </div> --}}
                             </div>
                             <div class="shipping-fields">
-                                <p class="form-row form-row-wide ship-to-different-address">
-                                    <label class="checkbox">
-                                        <input class="input-checkbox" type="checkbox" name="ship_to_different_address" value="1">
-                                        <span>Ship to a different address?</span>
-                                    </label>
-                                </p>
-                                <div class="shipping-address">
-                                    <p class="form-row form-row-first validate-required">
-                                        <label>First name <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper">
-                                            <input type="text" class="input-text" name="shipping_first_name" value="">
-                                        </span>
+                                @php
+                                    // Always read fresh from DB so admin permission changes take effect immediately
+                                    // without requiring the user to log out and back in.
+                                    $canShipDifferent = auth()->check() && \App\Models\User::find(auth()->id())?->allow_different_shipping;
+                                @endphp
+
+                                @if($canShipDifferent)
+                                    {{-- Only users approved by admin can ship to a different address --}}
+                                    <p class="form-row form-row-wide ship-to-different-address">
+                                        <label class="checkbox">
+                                            <input class="input-checkbox" type="checkbox" name="ship_to_different_address" id="ship_to_different_address" value="1">
+                                            <span>Ship to a different address?</span>
+                                        </label>
                                     </p>
-                                    <p class="form-row form-row-last validate-required">
-                                        <label>Last name <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper">
-                                            <input type="text" class="input-text" name="shipping_last_name" value="">
-                                        </span>
+                                    <div class="shipping-address" id="shipping-address-fields" style="display:none;">
+                                        <p class="form-row form-row-first">
+                                            <label>First name <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper">
+                                                <input type="text" class="input-text" name="shipping_first_name" value="">
+                                            </span>
+                                        </p>
+                                        <p class="form-row form-row-last">
+                                            <label>Last name <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper">
+                                                <input type="text" class="input-text" name="shipping_last_name" value="">
+                                            </span>
+                                        </p>
+                                        <p class="form-row form-row-wide">
+                                            <label>Company name <span class="optional">(optional)</span></label>
+                                            <span class="input-wrapper">
+                                                <input type="text" class="input-text" name="shipping_company" value="">
+                                            </span>
+                                        </p>
+                                        <p class="form-row form-row-wide address-field">
+                                            <label for="shipping_country" class="">Country / Region <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper">
+                                                <select id="shipping_country" name="shipping_country" class="country-select custom-select"></select>
+                                            </span>
+                                        </p>
+                                        <p class="form-row address-field form-row-wide">
+                                            <label>Street address <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper">
+                                                <input type="text" class="input-text" name="shipping_address_1" placeholder="House number and street name" value="">
+                                            </span>
+                                        </p>
+                                        <p class="form-row address-field form-row-wide">
+                                            <label>Apartment, suite, unit, etc. <span class="optional">(optional)</span></label>
+                                            <span class="input-wrapper">
+                                                <input type="text" class="input-text" name="shipping_address_2" placeholder="Apartment, suite, unit, etc. (optional)" value="">
+                                            </span>
+                                        </p>
+                                        <p class="form-row address-field form-row-wide">
+                                            <label>Town / City <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper"><input type="text" class="input-text" name="shipping_city" value=""></span>
+                                        </p>
+                                        <p class="form-row address-field validate-state form-row-wide">
+                                            <label for="shipping_state" class="">State / County <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper">
+                                                <select id="shipping_state" name="shipping_state" class="state-select custom-select"></select>
+                                            </span>
+                                        </p>
+                                        <p class="form-row address-field validate-postcode form-row-wide">
+                                            <label>Postcode / ZIP <span class="required" title="required">*</span></label>
+                                            <span class="input-wrapper">
+                                                <input type="text" class="input-text" name="shipping_postcode" value="">
+                                            </span>
+                                        </p>
+                                    </div>
+                                @else
+                                    {{-- Shipping address will be copied from billing on the backend --}}
+                                    <p class="form-row form-row-wide" style="margin-top: 0.5rem;">
+                                        <small class="text-muted" style="font-size: 14px;">
+                                            <i class="fa fa-lock" style="margin-right:4px;"></i>
+                                            For security purposes, your order will be shipped to your billing address.
+                                            If you need to ship to a different address, please <a href="/contact">contact us</a>.
+                                        </small>
                                     </p>
-                                    <p class="form-row form-row-wide">
-                                        <label>Company name <span class="optional">(optional)</span></label>
-                                        <span class="input-wrapper">
-                                            <input type="text" class="input-text" name="shipping_company" value="">
-                                        </span>
-                                    </p>
-                                    <p class="form-row form-row-wide address-field validate-required">
-                                        <label for="shipping_country" class="">Country / Region <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper">
-                                            <select id="shipping_country" name="shipping_country" class="country-select custom-select"></select>
-                                        </span>
-                                    </p>
-                                    <p class="form-row address-field validate-required form-row-wide">
-                                        <label>Street address <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper">
-                                            <input type="text" class="input-text" name="shipping_address_1" placeholder="House number and street name" value="">
-                                        </span>
-                                    </p>
-                                    <p class="form-row address-field form-row-wide">
-                                        <label>Apartment, suite, unit, etc. <span class="optional">(optional)</span></label>
-                                        <span class="input-wrapper">
-                                            <input type="text" class="input-text" name="shipping_address_2" placeholder="Apartment, suite, unit, etc. (optional)" value="">
-                                        </span>
-                                    </p>
-                                    <p class="form-row address-field validate-required form-row-wide">
-                                        <label>Town / City <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper"><input type="text" class="input-text" name="shipping_city" value=""></span>
-                                    </p>
-                                    <p class="form-row address-field validate-required validate-state form-row-wide">
-                                        <label for="shipping_state" class="">State / County <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper">
-                                            <select id="shipping_state" name="shipping_state" class="state-select custom-select"></select>
-                                        </span>
-                                    </p>
-                                    <p class="form-row address-field validate-required validate-postcode form-row-wide">
-                                        <label>Postcode / ZIP <span class="required" title="required">*</span></label>
-                                        <span class="input-wrapper">
-                                            <input type="text" class="input-text" name="shipping_postcode" value="">
-                                        </span>
-                                    </p>
-                                </div>
+                                @endif
                             </div>
                             <div class="additional-fields">
                                 <p class="form-row notes">
@@ -285,14 +304,17 @@
                                              <div class="payment-box">
                                                 <p>Pay with cash upon delivery.</p>
                                             </div>
-                                        </li> --}}
+                                        </li> 
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="credit_card" id="payment_method_credit_card">
                                             <label for="payment_method_credit_card">Credit Card</label>
-                                        </li>
+                                        </li>--}}
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="paypal" id="payment_method_paypal">
-                                            <label for="payment_method_paypal">PayPal</label>
+                                            <label for="payment_method_paypal">PayPal / Credit Card</label>
+                                            <div class="payment-box">
+                                                <p>To pay via credit card, please use the paypal option.</p>
+                                            </div>
                                             {{-- <div class="payment-box">
                                                 <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal account.</p>
                                             </div> --}}
@@ -303,7 +325,7 @@
                                          </li>
                                          <li class="payment-method">
                                              <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
-                                             <label for="payment_method_ach">ACH/Echeck</label>
+                                             <label for="payment_method_ach">ACH / Echeck</label>
                                          </li>
                                          <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="zelle" id="payment_method_zelle">
@@ -560,6 +582,15 @@ $(document).ready(function() {
         $('.cart-total').text('$' + total.toFixed(2));
     }
 
+    // --- Ship to different address toggle (only rendered for approved users) ---
+    $('#ship_to_different_address').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#shipping-address-fields').slideDown(200);
+        } else {
+            $('#shipping-address-fields').slideUp(200);
+        }
+    });
+
     // Load countries and states from JSON
     $.getJSON('public/countries.json', function(data) {
         countriesData = data;
@@ -567,7 +598,12 @@ $(document).ready(function() {
         data.forEach(function(country) {
             countryOptions += `<option value="${country.iso2}">${country.name}</option>`;
         });
-        $('#billing_country, #shipping_country').html(countryOptions);
+        // Only populate shipping_country if the element exists (approved users only)
+        if ($('#shipping_country').length) {
+            $('#billing_country, #shipping_country').html(countryOptions);
+        } else {
+            $('#billing_country').html(countryOptions);
+        }
     });
 
     // Billing country change

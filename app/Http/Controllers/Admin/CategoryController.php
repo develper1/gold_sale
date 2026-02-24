@@ -8,10 +8,22 @@ use App\Models\Category;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::latest()->get();
-        return view('admin.categories.index')->with('categories', $categories);
+        $sortBy  = $request->input('sort_by', 'sort_order');
+        $sortDir = $request->input('sort_dir', 'asc') === 'desc' ? 'desc' : 'asc';
+
+        $allowedSorts = ['sort_order', 'name', 'slug'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'sort_order';
+        }
+
+        $categories = Category::orderByRaw($sortBy === 'sort_order' ? 'sort_order IS NULL' : '0')
+            ->orderBy($sortBy, $sortDir)
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.categories.index', compact('categories', 'sortBy', 'sortDir'));
     }
 
     public function create()
@@ -26,6 +38,7 @@ class CategoryController extends Controller
             'name' => 'required|string',
             'slug' => 'required|string|unique:categories',
             'description' => 'nullable|string',
+            'sort_order' => 'nullable|integer|min:0',
         ]);
 
         Category::create($request->all());
@@ -45,6 +58,7 @@ class CategoryController extends Controller
             'name' => 'required|string',
             'slug' => 'required|string|unique:categories,slug,' . $id,
             'description' => 'nullable|string',
+            'sort_order' => 'nullable|integer|min:0',
         ]);
 
         $category = Category::findOrFail($id);

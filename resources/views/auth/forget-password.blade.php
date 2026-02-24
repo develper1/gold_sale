@@ -1,18 +1,20 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
 @extends('layouts.app')
 
 @section('content')
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                Forgot Password
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="index.html">Home</a><span class="delimiter"></span>Forgot Password
-        </div>
-    </div>
-</div>
+
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+
+<x-page-header 
+    title="Forgot Password" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Forgot Password']
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">

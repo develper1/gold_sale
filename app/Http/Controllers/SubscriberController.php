@@ -21,10 +21,10 @@ class SubscriberController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => $validator->errors()->first()
-            ], 422);
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', $validator->errors()->first());
         }
 
         try {
@@ -36,33 +36,23 @@ class SubscriberController extends Controller
             try {
                 Mail::to($request->email)->send(new SubscriberWelcome($request->email));
             } catch (Exception $mailException) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Email could not be sent. Please try again.',
-                    'error' => $mailException->getMessage(),
-                    'trace' => $mailException->getTraceAsString()
-                ], 500);
+                return redirect()->back()
+                    ->with('error', 'Email could not be sent. Please try again.');
             }
 
             // Send notification to admin (ignore errors)
             try {
-                Mail::to(env('MAIL_ADMIN'))->send(new AdminSubscriberNotification($request->email));
+                Mail::to(env('MAIL_ADMIN_EMAIL'))->send(new AdminSubscriberNotification($request->email));
             } catch (Exception $adminMailException) {
                 Log::error('Admin Notification Mail Error: ' . $adminMailException->getMessage());
-                // Don't return error response, just log it
             }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Thank you for subscribing!'
-            ]);
+            return redirect()->back()
+                ->with('success', 'Thank you for subscribing!');
+
         } catch (Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Something went wrong. Please try again.',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ], 500);
+            return redirect()->back()
+                ->with('error', 'Something went wrong. Please try again.');
         }
     }
 

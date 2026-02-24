@@ -28,14 +28,31 @@ class ProductController extends Controller
             $query->where('products.sub_category_id', $request->sub_category_id);
         }
 
-        $products = $query->orderBy('categories.name', 'asc')
-            ->orderBy('sub_categories.name', 'asc')
-            ->orderBy('products.id', 'asc')
-            ->get();
+        // Sorting
+        $sortBy    = $request->input('sort_by', 'sort_id'); // default: sort by sortID
+        $sortDir   = $request->input('sort_dir', 'asc') === 'desc' ? 'desc' : 'asc';
+
+        $allowedSorts = [
+            'sort_id'     => 'products.sortID',
+            'name'        => 'products.name',
+            'category'    => 'categories.name',
+            'subcategory' => 'sub_categories.name',
+            'id'          => 'products.id',
+        ];
+
+        $sortColumn = $allowedSorts[$sortBy] ?? 'products.sortID';
+        $query->orderBy($sortColumn, $sortDir);
+
+        // Secondary sort for stability
+        if ($sortColumn !== 'products.sortID') {
+            $query->orderBy('products.sortID', 'asc');
+        }
+
+        $products = $query->get();
 
         $subCategories = SubCategory::with('category')->orderBy('name', 'asc')->get();
 
-        return view('admin.products.index', compact('products', 'subCategories'));
+        return view('admin.products.index', compact('products', 'subCategories', 'sortBy', 'sortDir'));
     }
 
     /**
@@ -47,7 +64,7 @@ class ProductController extends Controller
     {
         $product = null;
         $categories = Category::all();
-        $subCategories = SubCategory::all();
+        $subCategories = SubCategory::orderBy('sort_order')->orderBy('name')->get();
         $priceTierRanges = PriceTierRange::all();
         $spotTierPrices = SpotTierPrice::all();
         $productSpotTierPrices = collect();
@@ -163,7 +180,7 @@ class ProductController extends Controller
     {
         $product = Product::with(['images', 'tierPrices'])->findOrFail($id);
         $categories = Category::all();
-        $subCategories = SubCategory::where('category_id', $product->category_id)->get();
+        $subCategories = SubCategory::where('category_id', $product->category_id)->orderBy('sort_order')->orderBy('name')->get();
         $priceTierRanges = PriceTierRange::all();
         $spotTierPrices = SpotTierPrice::all();
         $productSpotTierPrices = ProductSpotTierPrice::where('product_id', $product->id)->get();
