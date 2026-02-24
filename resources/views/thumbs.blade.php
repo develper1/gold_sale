@@ -1,32 +1,22 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
 
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
 
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                @if(isset($subcategory))
-                    {{ $subcategory->name }}
-                @elseif(isset($category))
-                    {{ $category->name }}
-                @else
-                    Oasis Mint - Gold, Silver, and Investment Treasures
-                @endif
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>
-            <a href="{{ route('shop.index') }}">Shop</a>
-            @if(isset($category))
-                <span class="delimiter"></span>{{ $category->name }}
-            @elseif(isset($subcategory))
-                <span class="delimiter"></span>{{ $subcategory->category->name }}<span class="delimiter"></span>{{ $subcategory->name }}
-            @endif
-        </div>
-    </div>
-</div>
+<x-page-header 
+    :title="($subcategory ?? null)?->name ?? ($category ?? null)?->name ?? 'Oasis Mint - Gold, Silver, and Investment Treasures'"
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Shop', 'url' => '/thumbs'],
+        ['label' => ($subcategory ?? null)?->name ?? ($category ?? null)?->name ?? '']
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -162,7 +152,7 @@
                                                             @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
                                                                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
                                                                     @if($product->quantity_available > 0)
-                                                                        Available: {{ $product->quantity_available }}
+                                                                       {{--  Available: {{ $product->quantity_available }} --}}
                                                                     @else
                                                                         <span style="color: #dc3545;">Out of stock</span>
                                                                     @endif
@@ -305,7 +295,7 @@
                                                                 @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
                                                                     <p style="font-size: 12px; color: #666; margin-top: 5px;">
                                                                         @if($product->quantity_available > 0)
-                                                                            Available: {{ $product->quantity_available }}
+                                                                           {{--  Available: {{ $product->quantity_available }} --}}
                                                                         @else
                                                                             <span style="color: #dc3545;">Out of stock</span>
                                                                         @endif
@@ -388,7 +378,7 @@
                                                             @if($product->inventory_type === 'limited' && $product->quantity_available !== null)
                                                                 <p style="font-size: 12px; color: #666; margin-top: 5px;">
                                                                     @if($product->quantity_available > 0)
-                                                                        Available: {{ $product->quantity_available }}
+                                                                        {{--  Available: {{ $product->quantity_available }} --}}
                                                                     @else
                                                                         <span style="color: #dc3545;">Out of stock</span>
                                                                     @endif

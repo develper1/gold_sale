@@ -43,6 +43,7 @@ class Order extends Model
         'transaction_id',
         'credit_card_fee',
         'credit_card_percentage',
+        'admin_notes',
     ];
 
     public function items()

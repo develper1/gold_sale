@@ -1,18 +1,20 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
 @extends('layouts.app')
 
 @section('content')
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                Returns &amp; Exchanges Policy
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Returns &amp; Exchanges Policy
-        </div>
-    </div>
-</div>
+
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+
+<x-page-header 
+    title="Returns & Exchanges Policy" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Returns & Exchanges Policy']
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">

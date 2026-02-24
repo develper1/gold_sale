@@ -1,19 +1,47 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
 
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                Login / Register
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="index.html">Home</a><span class="delimiter"></span>Login / Register
-        </div>
+
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+
+<x-page-header 
+    title="Login / Register" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Login / Register']
+    ]" 
+/>
+
+
+{{-- Error Summary at Top --}}
+@if($errors->any())
+    <div class="alert alert-danger" style="
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 15px 20px;
+        margin: 20px auto;
+        max-width: 800px;
+        border-radius: 8px;
+        border-left: 5px solid #dc3545;
+        text-align: center;
+        font-weight: 500;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    ">
+        <i class="fa fa-exclamation-circle" style="margin-right: 8px;"></i>
+        <strong>Please fix the following errors:</strong>
+        <ul style="list-style: none; padding: 0; margin: 10px 0 0 0;">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
-</div>
+@endif
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -31,7 +59,7 @@
                                             <label>{{ __('Email Address') }} <span class="required">*</span></label>
                                             <input id="email" type="email" class="input-text @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                             @error('email')
-                                                <span class="invalid-feedback" role="alert">
+                                                <span class="invalid-feedback" style="color: red; display: block;" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror

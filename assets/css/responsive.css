@@ -873,7 +873,8 @@
     padding: 0 0 0 25px;
   }
   .block-sliders.auto-height .item-content .content-image img {
-    min-height: 350px;
+/*    min-height: 350px; */
+    max-height: 120px;
     object-fit: cover;
   }
   .block-sliders .item-content .item-info .title-slider {

@@ -51,7 +51,18 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/'
+            ],
+            // 'g-recaptcha-response' => 'required|captcha'
+        ], [
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
+            // 'g-recaptcha-response.required' => 'Please complete the CAPTCHA verification.',
+            // 'g-recaptcha-response.captcha' => 'CAPTCHA verification failed. Please try again.'
         ]);
     }
 

@@ -1,18 +1,21 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
+
 @extends('layouts.app')
 
 @section('content')
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                Frequently Asked Questions
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Frequently Asked Questions
-        </div>
-    </div>
-</div>
+
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+
+<x-page-header 
+    title="Frequently Asked Questions" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Frequently Asked Questions']
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">

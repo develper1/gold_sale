@@ -34,7 +34,7 @@
     @endpush
     <style>
         .block-sliders.layout-4 .item-content .content-image img {
-            height: 40vh;
+            height: 30vh;
             object-fit: cover;
             width: 100%;
         }

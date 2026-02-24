@@ -126,6 +126,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('settings', SettingsController::class)->only(['index', 'update']);
         Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'destroy']);
         Route::post('/orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+        Route::post('/orders/{order}/notes', [App\Http\Controllers\Admin\OrderController::class, 'updateNotes'])->name('orders.updateNotes');
         Route::resource('home-sliders', App\Http\Controllers\Admin\HomeSliderController::class);
 
     });

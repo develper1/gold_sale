@@ -67,6 +67,19 @@ class OrderController extends Controller
             'billing_country' => 'required',
         ]);
 
+        // Fraud prevention: only users explicitly approved by an admin may ship to a
+        // different address. For all other users the shipping address is forced to
+        // match billing so we never silently accept a mismatched address.
+        // Always read fresh from DB so admin permission changes take effect immediately
+        // without requiring the user to log out and back in.
+        $user = Auth::id() ? \App\Models\User::find(Auth::id()) : null;
+        $allowDifferentShipping = $user && $user->allow_different_shipping;
+
+        if ($request->input('ship_to_different_address') && !$allowDifferentShipping) {
+            // Silently ignore the different-address request and use billing details.
+            $request->merge(['ship_to_different_address' => null]);
+        }
+
         $cart = session('cart', []);
         $productIds = collect($cart)->pluck('id')->unique();
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
@@ -256,6 +269,10 @@ class OrderController extends Controller
             }
         }
 
+        // Determine whether a separate shipping address should be used.
+        // Only allowed when the user has been granted permission by an admin.
+        $useShippingAddress = $request->input('ship_to_different_address') && $allowDifferentShipping;
+
         $order = Order::create([
             'user_id' => \Auth::id(),
             'order_uid' => Order::generateOrderUid(),
@@ -270,15 +287,16 @@ class OrderController extends Controller
             'billing_state' => $request->billing_state,
             'billing_postcode' => $request->billing_postcode,
             'billing_country' => $request->billing_country,
-            'shipping_first_name' => $request->shipping_first_name,
-            'shipping_last_name' => $request->shipping_last_name,
-            'shipping_company' => $request->shipping_company,
-            'shipping_address_1' => $request->shipping_address_1,
-            'shipping_address_2' => $request->shipping_address_2,
-            'shipping_city' => $request->shipping_city,
-            'shipping_state' => $request->shipping_state,
-            'shipping_postcode' => $request->shipping_postcode,
-            'shipping_country' => $request->shipping_country,
+            // Shipping address: use separate address only if user is approved, otherwise mirror billing
+            'shipping_first_name' => $useShippingAddress ? $request->shipping_first_name : $request->billing_first_name,
+            'shipping_last_name'  => $useShippingAddress ? $request->shipping_last_name  : $request->billing_last_name,
+            'shipping_company'    => $useShippingAddress ? $request->shipping_company    : null,
+            'shipping_address_1'  => $useShippingAddress ? $request->shipping_address_1  : $request->billing_address_1,
+            'shipping_address_2'  => $useShippingAddress ? $request->shipping_address_2  : $request->billing_address_2,
+            'shipping_city'       => $useShippingAddress ? $request->shipping_city       : $request->billing_city,
+            'shipping_state'      => $useShippingAddress ? $request->shipping_state      : $request->billing_state,
+            'shipping_postcode'   => $useShippingAddress ? $request->shipping_postcode   : $request->billing_postcode,
+            'shipping_country'    => $useShippingAddress ? $request->shipping_country    : $request->billing_country,
             'order_comments' => $request->order_comments,
             'subtotal' => $subtotal,
             'shipping_fee' => $shipping_fee,
@@ -339,6 +357,152 @@ class OrderController extends Controller
             \Mail::to($order->billing_email)->send(new OrderConfirmation($order));
         } catch (\Exception $e) {
             dd($e->getMessage());
+        }
+
+        // NEW: Send copy to ADMIN
+        // try {
+        //     $adminEmail = env('MAIL_ADMIN_EMAIL', 'info@oasismint.com');
+        //     if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+        //         \Mail::to($adminEmail)->send(new OrderConfirmation($order));  // Same email, or create AdminOrderNotification
+        //     }
+        // } catch (\Exception $e) {
+        //     Log::error('Failed to send admin order notification: ' . $e->getMessage());
+        // }
+        // Send ADMIN notification 
+        try {
+            $adminEmail = config('mail.admin_email', env('MAIL_ADMIN_EMAIL', 'info@oasismint.com'));
+            
+            if ($adminEmail && filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+                
+                $isHighValue = $order->total > 5000;
+                $isDifferentShipping = $order->billing_address_1 !== $order->shipping_address_1;
+                $itemCount = $order->items->sum('quantity');
+                
+                // Build items table rows
+                $itemsHtml = '';
+                foreach ($order->items as $item) {
+                    $itemsHtml .= "
+                        <tr>
+                            <td style='padding:8px;border:1px solid #ddd;'>{$item->name}</td>
+                            <td style='padding:8px;border:1px solid #ddd;text-align:center;'>{$item->quantity}</td>
+                            <td style='padding:8px;border:1px solid #ddd;text-align:right;'>$" . number_format($item->price, 2) . "</td>
+                            <td style='padding:8px;border:1px solid #ddd;text-align:right;'>$" . number_format($item->price * $item->quantity, 2) . "</td>
+                        </tr>
+                    ";
+                }
+                
+                // Alert boxes
+                $alerts = '';
+                if ($isHighValue) {
+                    $alerts .= "<div style='background:#fff3cd;border:1px solid #ffc107;padding:10px;margin:10px 0;border-radius:4px;'>⚠️ <strong>HIGH VALUE ORDER:</strong> $" . number_format($order->total, 2) . "</div>";
+                }
+                if ($isDifferentShipping) {
+                    $alerts .= "<div style='background:#fff3cd;border:1px solid #ffc107;padding:10px;margin:10px 0;border-radius:4px;'>📍 <strong>Different Shipping Address</strong> - Verify user permission</div>";
+                }
+                
+                $userType = $order->user_id 
+                    ? "<span style='color:green;'>✓ Registered User (ID: {$order->user_id})</span>" 
+                    : "<span style='color:orange;'>⚠️ Guest Checkout</span>";
+                    
+                $paymentStatus = $order->status === 'paid' 
+                    ? "<span style='color:green;'>PAID</span>" 
+                    : "<span style='color:orange;'>PENDING</span>";
+                
+                $html = "
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                </head>
+                <body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
+                    <h2>🛒 New Order Received - #{$order->id}</h2>
+                    
+                    {$alerts}
+                    
+                    <p>
+                        <a href='" . route('admin.orders.show', $order->id) . "' 
+                        style='background:#007bff;color:white;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block;margin:10px 0;'>
+                        View & Process Order in Admin
+                        </a>
+                    </p>
+                    
+                    <div style='background:#f8f9fa;padding:15px;margin:10px 0;border-radius:4px;'>
+                        <h3 style='margin-top:0;'>Order Summary</h3>
+                        <table style='width:100%;'>
+                            <tr><td><strong>Order ID:</strong></td><td>#{$order->id}</td></tr>
+                            <tr><td><strong>Placed:</strong></td><td>{$order->created_at->format('M d, Y H:i')} ({$order->created_at->diffForHumans()})</td></tr>
+                            <tr><td><strong>Payment:</strong></td><td>" . strtoupper($order->payment_method) . " - {$paymentStatus}</td></tr>
+                            <tr><td><strong>Total:</strong></td><td><strong>$" . number_format($order->total, 2) . "</strong></td></tr>
+                        </table>
+                    </div>
+                    
+                    <div style='background:#f8f9fa;padding:15px;margin:10px 0;border-radius:4px;'>
+                        <h3 style='margin-top:0;'>Customer</h3>
+                        <p>
+                            <strong>{$order->billing_first_name} {$order->billing_last_name}</strong><br>
+                            📧 {$order->billing_email}<br>
+                            📱 " . ($order->billing_phone ?: 'N/A') . "<br>
+                            {$userType}
+                        </p>
+                    </div>
+                    
+                    <div style='background:#f8f9fa;padding:15px;margin:10px 0;border-radius:4px;'>
+                        <h3 style='margin-top:0;'>Shipping Address</h3>
+                        <p>
+                            {$order->shipping_first_name} {$order->shipping_last_name}<br>
+                            {$order->shipping_address_1}<br>
+                            " . ($order->shipping_address_2 ? $order->shipping_address_2 . '<br>' : '') . "
+                            {$order->shipping_city}, {$order->shipping_state} {$order->shipping_postcode}<br>
+                            {$order->shipping_country}
+                        </p>
+                    </div>
+                    
+                    <h3>Items ({$itemCount} total)</h3>
+                    <table style='width:100%;border-collapse:collapse;font-size:14px;'>
+                        <thead style='background:#e9ecef;'>
+                            <tr>
+                                <th style='padding:8px;border:1px solid #ddd;text-align:left;'>Product</th>
+                                <th style='padding:8px;border:1px solid #ddd;text-align:center;'>Qty</th>
+                                <th style='padding:8px;border:1px solid #ddd;text-align:right;'>Price</th>
+                                <th style='padding:8px;border:1px solid #ddd;text-align:right;'>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {$itemsHtml}
+                        </tbody>
+                    </table>
+                    
+                    <h3>Financial Breakdown</h3>
+                    <table style='width:300px;'>
+                        <tr><td>Subtotal:</td><td style='text-align:right;'>$" . number_format($order->subtotal, 2) . "</td></tr>
+                        <tr><td>Shipping:</td><td style='text-align:right;'>$" . number_format($order->shipping_fee, 2) . "</td></tr>
+                        " . ($order->state_fee > 0 ? "<tr><td>State Fee:</td><td style='text-align:right;'>$" . number_format($order->state_fee, 2) . "</td></tr>" : '') . "
+                        " . ($order->service_fee > 0 ? "<tr><td>Service Fee:</td><td style='text-align:right;'>$" . number_format($order->service_fee, 2) . "</td></tr>" : '') . "
+                        " . ($order->credit_card_fee > 0 ? "<tr><td>CC Fee ({$order->credit_card_percentage}%):</td><td style='text-align:right;'>$" . number_format($order->credit_card_fee, 2) . "</td></tr>" : '') . "
+                        <tr style='font-weight:bold;font-size:16px;border-top:2px solid #333;'>
+                            <td style='padding-top:10px;'>TOTAL:</td>
+                            <td style='text-align:right;padding-top:10px;'>$" . number_format($order->total, 2) . "</td>
+                        </tr>
+                    </table>
+                    
+                    <hr style='margin:20px 0;'>
+                    <p style='font-size:12px;color:#666;'>
+                        Automated notification from " . config('app.name') . " | " . now() . "
+                    </p>
+                </body>
+                </html>
+                ";
+                
+                \Mail::html($html, function ($message) use ($order, $adminEmail) {
+                    $message->to($adminEmail)
+                            ->subject("🔔 NEW ORDER #{$order->id} - {$order->billing_email}")
+                            ->priority(1);
+                });
+                
+                Log::info('Admin notification sent for order: ' . $order->id);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to send admin order notification: ' . $e->getMessage());
         }
 
         session()->forget('cart');

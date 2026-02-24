@@ -15,7 +15,8 @@ class SubCategory extends Model
         'slug',
         'category_id',
         'description',
-        'is_active'
+        'is_active',
+        'sort_order',
     ];
 
     public function category()

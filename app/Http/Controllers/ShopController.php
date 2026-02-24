@@ -216,7 +216,9 @@ class ShopController extends Controller
         ->with(['images', 'subCategory', 'tierPrices.priceTierRange', 'spotTierPrices.spotTierPrice'])
         ->leftJoin('sub_categories', 'products.sub_category_id', '=', 'sub_categories.id')
         ->select('products.*')
-        // Keep subcategory sections stable.
+        // Keep subcategory sections stable — ordered by sort_order, then name as fallback.
+        ->orderByRaw('CASE WHEN sub_categories.sort_order IS NULL OR sub_categories.sort_order = 0 THEN 1 ELSE 0 END')
+        ->orderBy('sub_categories.sort_order', 'asc')
         ->orderBy('sub_categories.name', 'asc');
         
         if ($sort === 'latest') {

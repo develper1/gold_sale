@@ -48,6 +48,13 @@
                 <li>Address: {{ $order->shipping_address_1 }}, {{ $order->shipping_city }}, {{ $order->shipping_state }}, {{ $order->shipping_postcode }}, {{ $order->shipping_country }}</li>
             </ul>
             
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
             <h6>Order Items</h6>
             <table class="table">
                 <thead>
@@ -90,6 +97,24 @@
                     </tr>
                 </tbody>
             </table>
+            {{-- Admin Notes --}}
+            <div class="card border mt-4">
+                <div class="card-header py-2">
+                    <h6 class="mb-0">Admin Notes</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.orders.updateNotes', $order->id) }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <textarea name="admin_notes" class="form-control" rows="4" maxlength="5000"
+                                placeholder="Internal notes — not visible to the customer…">{{ old('admin_notes', $order->admin_notes) }}</textarea>
+                            <div class="form-text text-muted">Max 5,000 characters. Never shown to customers.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Save Notes</button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

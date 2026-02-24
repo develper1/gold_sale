@@ -1,18 +1,19 @@
+@php
+$sliders = \App\Models\HomeSlider::orderBy('order')->get();
+@endphp
 @extends('layouts.app')
 
 @section('content')
-<div id="title" class="page-title">
-    <div class="section-container">
-        <div class="content-title-heading">
-            <h1 class="text-title-heading">
-                Anti-Money Laundering Policy
-            </h1>
-        </div>
-        <div class="breadcrumbs">
-            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Anti-Money Laundering Policy
-        </div>
-    </div>
-</div>
+{{-- Reusable Slider Component --}}
+<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
+
+<x-page-header 
+    title="Anti-Money Laundering Policy" 
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Anti-Money Laundering Policy']
+    ]" 
+/>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -101,9 +102,7 @@
                         <p>This policy must be reviewed and updated annually or upon any material change in regulations.</p>
 
                         <p><strong>Approved By:</strong></p>
-                        <p>John Doe<br>
-                        Managing Member<br>
-                        May 11, 2025</p>
+                        <p> Oasis Mint LLC, New York</p>
 
 
                     </div>

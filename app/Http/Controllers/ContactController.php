@@ -59,7 +59,7 @@ class ContactController extends Controller
             $message1 = (string) strip_tags($request->message);
 
             // Send to admin
-            \Mail::to(env('MAIL_ADMIN'))->send(new ContactFormNotification($name, $email, $message1));
+            \Mail::to(env('MAIL_ADMIN_EMAIL'))->send(new ContactFormNotification($name, $email, $message1));
 
             // Send confirmation to user
             \Mail::to($email)->send(new ContactConfirmation($name, $email, $message1));
