@@ -21,6 +21,9 @@ class UserMiddleware
             return $next($request);
         }
 
+        // Check if trying to access checkout specifically
+        return redirect('/login')->with('error', 'You must register with an account to finalize your purchase.');
+
         // return redirect('/login');
 
         abort(403,'you do not have access to this page');

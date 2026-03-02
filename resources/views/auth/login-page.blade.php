@@ -78,7 +78,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                             </div>
 
                                             <div class="lost-password">
-                                                <a href="{{ route('forget-password') }}">Lost your password?</a>
+                                                <a href="{{ route('forget-password') }}">Forgot Password?</a>
                                             </div>
                                         </div>
                                         <div class="button-login">

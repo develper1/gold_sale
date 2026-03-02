@@ -69,10 +69,17 @@ class UserLoginController extends Controller
             ['email' => $request->user_login]
         );
 
-        return back()->with(
-            $status === Password::RESET_LINK_SENT
-                ? ['status' => __($status)]
-                : ['error' => __($status)]
-        );
+        // return back()->with(
+        //     $status === Password::RESET_LINK_SENT
+        //         ? ['status' => __($status)]
+        //         : ['error' => __($status)]
+        // );
+
+        if ($status === Password::RESET_LINK_SENT) {
+            return redirect()->route('login')
+                ->with('status', __($status));
+        }
+
+        return back()->with('error', __($status));
     }
 }

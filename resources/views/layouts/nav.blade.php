@@ -312,6 +312,11 @@
                                     <div class="search-toggle"><i class="icon-search"></i></div>
                                 </div> --}}
 
+                                @if(auth()->check())
+                                    <span class="welcome-text small text-secondary fst-italic">Welcome, {{ auth()->user()->name }}</span>
+                                @else
+                                    <a href="{{ route('login') }}" class="welcome-text md text-secondary fst-italic">Login/Register</a>
+                                @endif
                                 <!-- Login -->
                                 <div class="login-header icon">
                                     <a  href="{{ route('account') }}"><i class="icon-user"></i></a>
