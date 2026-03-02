@@ -140,6 +140,23 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                 </div>
                             </div>
                             <div class="proceed-to-checkout">		
+                                @if(auth()->check())
+                                        
+                                    @else
+                                        <div class="alert alert-info" style="
+                                            background-color: #fff3cd;
+                                            color: #856404;
+                                            padding: 15px;
+                                            margin-bottom: 15px;
+                                            border-radius: 8px;
+                                            border-left: 5px solid #ffc107;
+                                            text-align: center;
+                                            font-weight: 500;
+                                        ">
+                                            <i class="fa fa-info-circle" style="margin-right: 8px;"></i>
+                                            You must <a href="{{ route('login') }}" style="color: #856404; text-decoration: underline; font-weight: bold;">register or login</a> to finalize your purchase.
+                                        </div>
+                                    @endif
                                 <a href="{{ route('checkout') }}" class="checkout-button button">
                                     Proceed to checkout
                                 </a>

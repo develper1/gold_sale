@@ -28,7 +28,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                     @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
-                    <p>Lost your password? Please enter your  email address. You will receive a link to create a new password via email.</p>
+                    <p>Forgot Password? Please enter your  email address. You will receive a link to create a new password via email.</p>
                     <p class="form-row form-row-first">
                         <label>Email</label>
                         <input class="input-text" type="text" name="user_login" autocomplete="username" value="{{ old('user_login') }}">
