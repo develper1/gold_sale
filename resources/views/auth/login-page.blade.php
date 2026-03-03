@@ -98,7 +98,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 
                                 </div>
                                 <div class="form-register" id="register-form-section">
-                                    <form method="post" class="register" action="{{ route('register') }}">
+                                    <form method="post" class="register" id="register-form" action="{{ route('register.submit') }}">
                                         @csrf
                                         <div class="email">
                                             <label>Name <span class="required">*</span></label>
@@ -136,6 +136,14 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                             <input type="password" class="input-text" name="register_password_confirmation" required autocomplete="new-password">
 
                                         </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                                @error('g-recaptcha-response')
+                                                    <span class="invalid-feedback" style="color: #dc3545; display: block; margin-top: 5px;" role="alert">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
                                         <div class="button-register">
                                             <input type="submit" class="button" name="register" value="Register">
                                         </div>
@@ -153,8 +161,34 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 @endsection
 
 @push('scripts')
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
 $(document).ready(function() {
+    // With two reCAPTCHA widgets, first (login) = widget 0, second (register) = widget 1
+    // var loginWidgetId = 0;
+    var registerWidgetId = 1;
+    // Client-side captcha validation for login form
+    // document.getElementById('login-form')?.addEventListener('submit', function(e) {
+    //     if (typeof grecaptcha !== 'undefined') {
+    //         var response = grecaptcha.getResponse(loginWidgetId);
+    //         if (!response || response.length === 0) {
+    //             e.preventDefault();
+    //             alert('Please complete the CAPTCHA verification.');
+    //             return false;
+    //         }
+    //     }
+    // });
+    // Client-side captcha validation for register form
+    document.getElementById('register-form')?.addEventListener('submit', function(e) {
+        if (typeof grecaptcha !== 'undefined') {
+            var response = grecaptcha.getResponse(registerWidgetId);
+            if (!response || response.length === 0) {
+                e.preventDefault();
+                alert('Please complete the CAPTCHA verification.');
+                return false;
+            }
+        }
+    });
     @if($errors->has('register_email') || $errors->has('register_name') || $errors->has('register_password'))
     // Scroll to register form when there are validation errors
     document.getElementById('register-form-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });

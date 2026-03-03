@@ -8,6 +8,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 
@@ -40,6 +41,7 @@ class UserRegisterController extends Controller
                 'confirmed',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/'
             ],
+            'g-recaptcha-response' => 'required',
         ], [
             'register_name.required' => 'Please enter your name.',
             'register_email.required' => 'Please enter your email address.',
@@ -49,7 +51,21 @@ class UserRegisterController extends Controller
             'register_password.confirmed' => 'The password confirmation does not match.',
             'register_password.min' => 'Password must be at least 8 characters.',
             'register_password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
+            'g-recaptcha-response.required' => 'Please complete the CAPTCHA verification.',
         ]);
+
+        // Verify reCAPTCHA with Google
+        $recaptchaVerification = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret'   => config('services.recaptcha.secret_key'),
+            'response' => $request->input('g-recaptcha-response'),
+            'remoteip' => $request->ip(),
+        ]);
+
+        if (!$recaptchaVerification->json('success')) {
+            return back()
+                ->withInput($request->except('register_password', 'register_password_confirmation'))
+                ->withErrors(['g-recaptcha-response' => 'CAPTCHA verification failed. Please try again.']);
+        }
 
         try {
             $user = User::create([
