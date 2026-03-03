@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
@@ -30,7 +31,24 @@ class UserLoginController extends Controller
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+            // 'g-recaptcha-response' => 'required',
+        ], [
+            // 'g-recaptcha-response.required' => 'Please complete the CAPTCHA verification.',
         ]);
+
+        // Verify reCAPTCHA with Google
+        // $recaptchaVerification = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+        //     'secret'   => config('services.recaptcha.secret_key'),
+        //     'response' => $request->input('g-recaptcha-response'),
+        //     'remoteip' => $request->ip(),
+        // ]);
+
+        // if (!$recaptchaVerification->json('success')) {
+        //     return back()
+        //         ->withInput($request->except('password'))
+        //         ->withErrors(['g-recaptcha-response' => 'CAPTCHA verification failed. Please try again.']);
+        // }
+
         $credentials = $request->only('email', 'password');
         $remember = $request->has('remember');
 

@@ -192,7 +192,7 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
         <!-- * *                               SB Forms JS                               * *-->
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        <!-- <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script> -->
 
         <script>
             $(document).ready(function() {
@@ -211,8 +211,10 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
                     $.ajax({
                         url: '{{ route("subscriber.store") }}',
                         method: 'POST',
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
                         data: {
                             email: $('#email').val(),
+                            // source: 'landing',
                             _token: '{{ csrf_token() }}'
                         },
                         success: function(response) {
