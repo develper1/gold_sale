@@ -54,6 +54,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                             <div class="box-content">
                                 <div class="form-login">
                                     <form method="post" class="login" action="{{ route('login') }}">
+                                    {{-- <!-- <form method="post" class="login" id="login-form" action="{{ route('login.submit') }}"> --> --}}
                                         @csrf
                                         <div class="username">
                                             <label>{{ __('Email Address') }} <span class="required">*</span></label>
@@ -81,6 +82,14 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                                 <a href="{{ route('forget-password') }}">Forgot Password?</a>
                                             </div>
                                         </div>
+                                        {{-- <!-- <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                                @error('g-recaptcha-response')
+                                                    <span class="invalid-feedback" style="color: #dc3545; display: block; margin-top: 5px;" role="alert">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div> --> --}}
                                         <div class="button-login">
                                             <input type="submit" class="button" name="login" value="Login">
                                         </div>

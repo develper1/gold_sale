@@ -20,29 +20,43 @@ class SubscriberController extends Controller
             'email' => 'required|email'
         ]);
 
+        $isAjax = $request->ajax() || $request->wantsJson();
+
         if ($validator->fails()) {
+            if ($isAjax) {
+                return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 422);
+            }
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
                 ->with('error', $validator->errors()->first());
         }
 
-        // Check for duplicate email (case-insensitive)
+        // Check for duplicate email (case-insensitive) — do not allow duplicates
         $existing = Subscriber::whereRaw('LOWER(email) = ?', [strtolower($request->email)])->first();
         if ($existing) {
+            if ($isAjax) {
+                return response()->json(['status' => 'error', 'message' => 'This email is already subscribed. Please use a different email address.'], 422);
+            }
             return redirect()->back()
-                ->with('success', 'You\'re already subscribed with this email!');
+                ->withInput()
+                ->withErrors(['email' => 'This email is already subscribed. Please use a different email address.'])
+                ->with('error', 'This email is already subscribed. Please use a different email address.');
         }
 
         try {
             $subscriber = Subscriber::create([
-                'email' => $request->email
+                'email' => $request->email,
+                'source' => $request->input('source', 'landing'),
             ]);
 
             // Send welcome email to subscriber
             try {
                 Mail::to($request->email)->send(new SubscriberWelcome($request->email));
             } catch (Exception $mailException) {
+                if ($isAjax) {
+                    return response()->json(['status' => 'error', 'message' => 'Email could not be sent. Please try again.'], 500);
+                }
                 return redirect()->back()
                     ->with('error', 'Email could not be sent. Please try again.');
             }
@@ -54,10 +68,16 @@ class SubscriberController extends Controller
                 Log::error('Admin Notification Mail Error: ' . $adminMailException->getMessage());
             }
 
+            if ($isAjax) {
+                return response()->json(['status' => 'success', 'message' => 'Thank you for subscribing!']);
+            }
             return redirect()->back()
                 ->with('success', 'Thank you for subscribing!');
 
         } catch (Exception $e) {
+            if ($isAjax) {
+                return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'], 500);
+            }
             return redirect()->back()
                 ->with('error', 'Something went wrong. Please try again.');
         }
@@ -174,6 +194,7 @@ class SubscriberController extends Controller
             fputcsv($file, [
                 'ID',
                 'Email',
+                'Source',
                 'First Name',
                 'Last Name',
                 'City',
@@ -189,6 +210,7 @@ class SubscriberController extends Controller
                 fputcsv($file, [
                     $subscriber->id,
                     $subscriber->email,
+                    $subscriber->source ?? 'landing',
                     $subscriber->details ? $subscriber->details->first_name : '-',
                     $subscriber->details ? $subscriber->details->last_name : '-',
                     $subscriber->details ? $subscriber->details->city : '-',
