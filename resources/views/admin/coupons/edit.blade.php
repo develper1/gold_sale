@@ -37,16 +37,20 @@
                         <input type="text" name="description" class="form-control" value="{{ old('description', $coupon->description) }}">
                     </div>
                 </div>
-                {{-- <div class="row">
+                <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label>Discount</label>
-                        <input type="number" step="0.01" name="discount" class="form-control" value="{{ old('discount', $coupon->discount) }}" required>
+                        <label>Discount Type</label>
+                        <select name="discount_type" id="discount_type" class="form-control">
+                            <option value="" {{ old('discount_type', $coupon->discount_type) == '' ? 'selected' : '' }}>None (Free Shipping / Service Fee only)</option>
+                            <option value="percent" {{ old('discount_type', $coupon->discount_type) == 'percent' ? 'selected' : '' }}>Percent Off</option>
+                            <option value="dollar" {{ old('discount_type', $coupon->discount_type) == 'dollar' ? 'selected' : '' }}>Dollar Amount Off</option>
+                        </select>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Order Total</label>
-                        <input type="number" step="0.01" name="order_total" class="form-control" value="{{ old('order_total', $coupon->order_total) }}">
+                    <div class="col-md-6 mb-3" id="discount_amount_wrap" style="display:none;">
+                        <label>Discount Amount <span id="discount_suffix">(%)</span></label>
+                        <input type="number" step="0.01" min="0" name="discount" id="discount" class="form-control" value="{{ old('discount', $coupon->discount) }}" placeholder="e.g. 20 for 20% or 10 for $10">
                     </div>
-                </div> --}}
+                </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label>Valid From</label>
@@ -110,6 +114,23 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(function() {
+    function toggleDiscountField() {
+        var t = $('#discount_type').val();
+        if (t === 'percent' || t === 'dollar') {
+            $('#discount_amount_wrap').show();
+            $('#discount_suffix').text(t === 'percent' ? '(%)' : '($)');
+            $('#discount').attr('required', true);
+        } else {
+            $('#discount_amount_wrap').hide();
+            $('#discount').attr('required', false);
+        }
+    }
+    $('#discount_type').on('change', toggleDiscountField);
+    toggleDiscountField();
+});
+</script>
 <script>
 $(document).ready(function() {
     $('#product_id').select2({

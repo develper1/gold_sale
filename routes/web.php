@@ -146,13 +146,26 @@ Route::middleware([GuestUserMiddleware::class])->group(function(){
 
     Route::get('/register', [UserRegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register.submit');
-
-
 });
 
-Route::group(['middleware' => ['auth:web', 'user']], function () {
+// Email verification (auth required, verified NOT required)
+Route::middleware(['auth:web'])->group(function () {
+    Route::get('/email/verify', [App\Http\Controllers\Auth\VerificationController::class, 'show'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', function (Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect()->route('account.complete-profile');
+    })->middleware(['signed', 'throttle:6,1'])->name('verification.verify');
+    Route::post('/email/verification-notification', [App\Http\Controllers\Auth\VerificationController::class, 'resend'])->middleware('throttle:6,1')->name('verification.send');
+});
 
+Route::group(['middleware' => ['auth:web', 'user', 'verified']], function () {
     Route::post('/logout', [UserLoginController::class, 'logout'])->name('logout');
+    // Complete profile (no profile.completed - must be accessible before profile is done)
+    Route::get('/account/complete-profile', [AccountController::class, 'completeProfile'])->name('account.complete-profile');
+    Route::post('/account/complete-profile', [AccountController::class, 'storeCompleteProfile'])->name('account.complete-profile.store');
+});
+
+Route::group(['middleware' => ['auth:web', 'user', 'verified', 'profile.completed']], function () {
     Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
     Route::get('/account', [AccountController::class, 'index'])->name('account');
     Route::get('/account/orders/{order}', [AccountController::class, 'showOrder'])->name('account.orders.show');

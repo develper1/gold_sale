@@ -27,6 +27,7 @@
                     <th>Description</th>
                     <th>Valid From</th>
                     <th>Valid To</th>
+                    <th>Discount</th>
                     <th>Free Shipping</th>
                     <th>Free Service</th>
                     <th>Active</th>
@@ -41,12 +42,17 @@
                         <td>{{ $coupon->description }}</td>
                         <td>{{ $coupon->valid_from }}</td>
                         <td>{{ $coupon->valid_to }}</td>
+                        <td>
+                            @if($coupon->discount_type === 'percent' && $coupon->discount)
+                                {{ number_format($coupon->discount, 0) }}% off
+                            @elseif($coupon->discount_type === 'dollar' && $coupon->discount)
+                                ${{ number_format($coupon->discount, 2) }} off
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ $coupon->free_shipping ? 'Yes' : 'No' }}</td>
                         <td>{{ $coupon->free_service_fee ? 'Yes' : 'No' }}</td>
-                        {{-- <td>{{ $coupon->discount_type == 'percent' ? number_format($coupon->discount, 0).'%' : '$'. $coupon->discount }}</td>
-                        <td>{{ ucfirst($coupon->discount_type) }}</td>
-                        <td>{{ $coupon->order_total ? '$'.$coupon->order_total : 'N/A' }}</td>
-                        <td>{{ $coupon->product ? $coupon->product->name : 'N/A' }}</td> --}}
                         <td>{{ $coupon->is_active ? 'Yes' : 'No' }}</td>
                         <td>
                             <div class="dropdown">
@@ -55,7 +61,7 @@
                                     <form id="form-{{ $coupon->id }}" action="{{ route('admin.coupons.destroy', $coupon->id) }}" method="POST">
                                         @method('DELETE')
                                         @csrf
-                                        <a class="dropdown-item delete-btn" onclick="confirmDelete({{ $coupon->id }}, '{{ route('admin.products.destroy', $coupon->id) }}')" href="javascript:void(0)">
+                                        <a class="dropdown-item delete-btn" onclick="confirmDelete({{ $coupon->id }})" href="javascript:void(0)">
                                             <i class="fa-solid fa-trash me-1"></i> Delete
                                         </a>
                                     </form>
@@ -76,7 +82,7 @@
 $(document).ready(function() {
     $('.table').DataTable();
 });
-function confirmDelete(id, url) {
+function confirmDelete(id) {
     if (confirm('Are you sure you want to delete this item?')) {
         document.getElementById(`form-${id}`).submit();
     }
