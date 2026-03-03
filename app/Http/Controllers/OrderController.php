@@ -65,6 +65,10 @@ class OrderController extends Controller
             'billing_state' => 'required',
             'billing_postcode' => 'required',
             'billing_country' => 'required',
+            'agree_terms' => 'required|accepted',
+        ], [
+            'agree_terms.required' => 'You must agree to the Terms of Sale and AML policies to complete your order.',
+            'agree_terms.accepted' => 'You must agree to the Terms of Sale and AML policies to complete your order.',
         ]);
 
         // Fraud prevention: only users explicitly approved by an admin may ship to a

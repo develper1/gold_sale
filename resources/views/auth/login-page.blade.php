@@ -97,39 +97,43 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                     <strong>Note:</strong> For anti-money laundering compliance, you must register an account to place orders. Guest checkout is not available.
 
                                 </div>
-                                <div class="form-register">
+                                <div class="form-register" id="register-form-section">
                                     <form method="post" class="register" action="{{ route('register') }}">
                                         @csrf
                                         <div class="email">
                                             <label>Name <span class="required">*</span></label>
-                                            <input type="text" class="input-text @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-                                            @error('name')
-                                                <span class="invalid-feedback" role="alert">
+                                            <input type="text" class="input-text @error('register_name') is-invalid @enderror" name="register_name" value="{{ old('register_name') }}" required autocomplete="name" {{ $errors->has('register_email') ? 'autofocus' : '' }}>
+                                            @error('register_name')
+                                                <span class="invalid-feedback" style="color: #dc3545; display: block; margin-top: 4px;" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
                                         <div class="email">
                                             <label>Email address <span class="required">*</span></label>
-                                            <input type="email" class="input-text @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-                                            @error('email')
-                                                <span class="invalid-feedback" role="alert">
+                                            <input type="email" class="input-text @error('register_email') is-invalid @enderror" name="register_email" value="{{ old('register_email') }}" required autocomplete="email">
+                                            @error('register_email')
+                                                <span class="invalid-feedback" style="color: #dc3545; display: block; margin-top: 4px;" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
+                                                <p style="margin-top: 8px; margin-bottom: 0; font-size: 0.9em;">
+                                                    <a href="{{ route('login') }}">Log in instead</a> ·
+                                                    <a href="{{ route('forget-password') }}">Forgot Password</a>
+                                                </p>
                                             @enderror
                                         </div>
                                         <div class="password">
                                             <label>Password <span class="required">*</span></label>
-                                            <input type="password" class="input-text @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-                                            @error('password')
-                                                <span class="invalid-feedback" role="alert">
+                                            <input type="password" class="input-text @error('register_password') is-invalid @enderror" name="register_password" required autocomplete="new-password">
+                                            @error('register_password')
+                                                <span class="invalid-feedback" style="color: #dc3545; display: block; margin-top: 4px;" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>
                                             @enderror
                                         </div>
                                         <div class="password">
                                             <label>{{ __('Confirm Password') }} <span class="required">*</span></label>
-                                            <input type="password" class="input-text" name="password_confirmation" required autocomplete="new-password">
+                                            <input type="password" class="input-text" name="register_password_confirmation" required autocomplete="new-password">
 
                                         </div>
                                         <div class="button-register">
@@ -150,6 +154,12 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 
 @push('scripts')
 <script>
+$(document).ready(function() {
+    @if($errors->has('register_email') || $errors->has('register_name') || $errors->has('register_password'))
+    // Scroll to register form when there are validation errors
+    document.getElementById('register-form-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    @endif
+});
 function togglePassword(fieldId, el) {
     var input = document.getElementById(fieldId);
     var icon = el.querySelector('i');

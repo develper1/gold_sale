@@ -32,16 +32,48 @@ class CouponController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'code' => 'required|unique:coupons,code',
             'description' => 'required',
             'valid_from' => 'required',
             'valid_to' => 'required',
             // 'discount' => 'required|numeric',
             // 'discount_type' => 'required|in:percent,dollar',
-        ]);
+            'free_shipping' => 'nullable|boolean',
+            'free_service_fee' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+        ];
 
-        Coupon::create($request->all());
+        $discountType = $request->input('discount_type');
+        if (in_array($discountType, ['percent', 'dollar'])) {
+            $rules['discount'] = 'required|numeric|min:0';
+            if ($discountType === 'percent') {
+                $rules['discount'] .= '|max:100';
+            }
+        }
+
+        $validated = $request->validate($rules);
+
+        $hasBenefit = $request->boolean('free_shipping') || $request->boolean('free_service_fee')
+            || (in_array($discountType, ['percent', 'dollar']) && $request->filled('discount'));
+        if (!$hasBenefit) {
+            return redirect()->back()->withInput()->withErrors(['discount_type' => 'Please select at least one benefit: Free Shipping, Free Service Fee, or a Percent/Dollar discount.']);
+        }
+
+        $data = $request->only(['code', 'description', 'valid_from', 'valid_to', 'free_shipping', 'free_service_fee', 'is_active']);
+        $data['free_shipping'] = $request->boolean('free_shipping');
+        $data['free_service_fee'] = $request->boolean('free_service_fee');
+        $data['is_active'] = $request->boolean('is_active');
+
+        if (in_array($discountType, ['percent', 'dollar'])) {
+            $data['discount'] = $request->input('discount');
+            $data['discount_type'] = $discountType;
+        } else {
+            $data['discount'] = null;
+            $data['discount_type'] = null;
+        }
+
+        Coupon::create($data);
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon created!');
     }
 
@@ -69,14 +101,46 @@ class CouponController extends Controller
     public function update(Request $request, $id)
     {
         $coupon = Coupon::findOrFail($id);
-        $request->validate([
+        $rules = [
             'code' => 'required|unique:coupons,code,' . $coupon->id,
             'description' => 'required',
             'valid_from' => 'required',
             'valid_to' => 'required',
-        ]);
+            'free_shipping' => 'nullable|boolean',
+            'free_service_fee' => 'nullable|boolean',
+            'is_active' => 'nullable|boolean',
+        ];
 
-        $coupon->update($request->all());
+        $discountType = $request->input('discount_type');
+        if (in_array($discountType, ['percent', 'dollar'])) {
+            $rules['discount'] = 'required|numeric|min:0';
+            if ($discountType === 'percent') {
+                $rules['discount'] .= '|max:100';
+            }
+        }
+
+        $validated = $request->validate($rules);
+
+        $hasBenefit = $request->boolean('free_shipping') || $request->boolean('free_service_fee')
+            || (in_array($discountType, ['percent', 'dollar']) && $request->filled('discount'));
+        if (!$hasBenefit) {
+            return redirect()->back()->withInput()->withErrors(['discount_type' => 'Please select at least one benefit: Free Shipping, Free Service Fee, or a Percent/Dollar discount.']);
+        }
+
+        $data = $request->only(['code', 'description', 'valid_from', 'valid_to']);
+        $data['free_shipping'] = $request->boolean('free_shipping');
+        $data['free_service_fee'] = $request->boolean('free_service_fee');
+        $data['is_active'] = $request->boolean('is_active');
+
+        if (in_array($discountType, ['percent', 'dollar'])) {
+            $data['discount'] = $request->input('discount');
+            $data['discount_type'] = $discountType;
+        } else {
+            $data['discount'] = null;
+            $data['discount_type'] = null;
+        }
+
+        $coupon->update($data);
         return redirect()->route('admin.coupons.index')->with('success', 'Coupon updated!');
     }
 

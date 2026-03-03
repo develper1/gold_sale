@@ -36,24 +36,21 @@
                         <input type="text" name="description" class="form-control">
                     </div>
                 </div>
-                {{-- <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label>Discount</label>
-                        <input type="number" step="0.01" name="discount" class="form-control" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label>Order Total</label>
-                        <input type="number" step="0.01" name="order_total" class="form-control">
-                    </div>
-                </div> --}}
                 <div class="row">
-                    {{-- <div class="col-md-6 mb-3">
-                        <label>Percent or Dollar Coupon</label>
-                        <select name="discount_type" class="form-control">
-                            <option value="percent">Percent</option>
-                            <option value="dollar">Dollar</option>
+                    <div class="col-md-6 mb-3">
+                        <label>Discount Type</label>
+                        <select name="discount_type" id="discount_type" class="form-control">
+                            <option value="">None (Free Shipping / Service Fee only)</option>
+                            <option value="percent">Percent Off</option>
+                            <option value="dollar">Dollar Amount Off</option>
                         </select>
-                    </div> --}}
+                    </div>
+                    <div class="col-md-6 mb-3" id="discount_amount_wrap" style="display:none;">
+                        <label>Discount Amount <span id="discount_suffix">(%)</span></label>
+                        <input type="number" step="0.01" min="0" name="discount" id="discount" class="form-control" placeholder="e.g. 20 for 20% or 10 for $10">
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-md-6 mb-3">
                         <label>Valid From</label>
                         <input type="date" class="form-control" name="valid_from" id="valid_from" value="" required>
@@ -107,6 +104,23 @@
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(function() {
+    function toggleDiscountField() {
+        var t = $('#discount_type').val();
+        if (t === 'percent' || t === 'dollar') {
+            $('#discount_amount_wrap').show();
+            $('#discount_suffix').text(t === 'percent' ? '(%)' : '($)');
+            $('#discount').attr('required', true);
+        } else {
+            $('#discount_amount_wrap').hide();
+            $('#discount').val('').attr('required', false);
+        }
+    }
+    $('#discount_type').on('change', toggleDiscountField);
+    toggleDiscountField();
+});
+</script>
 {{-- <script>
 $(document).ready(function() {
     $('#product_id').select2({
