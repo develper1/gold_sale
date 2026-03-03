@@ -376,8 +376,14 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                         </div>
                                     </div>
                                     <div class="form-row place-order">
-                                        <div class="terms-and-conditions-wrapper">
-                                            <div class="privacy-policy-text"></div>
+                                        <div class="terms-and-conditions-wrapper mb-3">
+                                            <p class="form-row form-row-wide">
+                                                <label class="checkbox">
+                                                    <input type="checkbox" class="input-checkbox" name="agree_terms" id="agree_terms" value="1">
+                                                    <span>I agree to the <a href="{{ route('sales-policy') }}" target="_blank" rel="noopener">Sales Policy</a>, <a href="{{ route('returns-exchanges-policy') }}" target="_blank" rel="noopener">Returns & Exchanges Policy</a>, <a href="{{ route('terms-of-sale') }}" target="_blank" rel="noopener">Terms of Sale</a>, and <a href="{{ route('anti-money-laundering-policy') }}" target="_blank" rel="noopener">Anti Money Laundering Policy</a> <span class="required" title="required">*</span></span>
+                                                </label>
+                                            </p>
+                                            <p id="agree-terms-error" class="text-danger" style="display:none; margin-top: 4px;">You must agree to the Sales Policy, Returns & Exchanges Policy, Terms of Sale, and Anti Money Laundering Policy to complete your order.</p>
                                         </div>
                                         <div id="manual-payment-message" class="manual-payment-message">
                                             After placing order below, please call our office within 2 business days with your order number to make payment and complete your order.
@@ -606,6 +612,13 @@ $(document).ready(function() {
         }
     });
 
+    // Hide terms error when user checks the box
+    $('#agree_terms').on('change', function() {
+        if ($(this).is(':checked')) {
+            $('#agree-terms-error').hide();
+        }
+    });
+
     // Billing country change
     $('#billing_country').on('change', function() {
         let selectedCountry = $(this).val();
@@ -733,6 +746,15 @@ $(document).ready(function() {
             }
         });
 
+        // Terms and conditions checkbox
+        var $agreeTerms = $('#agree_terms');
+        if ($agreeTerms.length && !$agreeTerms.is(':checked')) {
+            $('#agree-terms-error').show();
+            valid = false;
+        } else {
+            $('#agree-terms-error').hide();
+        }
+
         return valid;
     }
 
@@ -754,7 +776,10 @@ $(document).ready(function() {
                         return actions.order.create({
                             purchase_units: [{
                                 amount: { value: total }
-                            }]
+                            }],
+                            application_context: {
+                                brand_name: 'Oasis Mint'
+                            }
                         });
                     },
                     onApprove: function(data, actions) {

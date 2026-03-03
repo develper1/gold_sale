@@ -27,7 +27,16 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
         'allow_different_shipping',
+        'shipping_country',
+        'shipping_address_1',
+        'shipping_address_2',
+        'shipping_city',
+        'shipping_state',
+        'shipping_postcode',
+        'profile_completed_at',
+        'policies_agreed_at',
     ];
 
     /**

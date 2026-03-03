@@ -87,6 +87,96 @@
                             </small>
                         </div>
 
+                        <!-- Shipping Address -->
+                        <hr>
+                        <h6 class="mb-3 text-muted">
+                            <i class="fa-solid fa-location-dot me-1"></i> Shipping Address
+                        </h6>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="shipping_address_1" class="form-label">Street address</label>
+                                <input
+                                    type="text"
+                                    id="shipping_address_1"
+                                    name="shipping_address_1"
+                                    class="form-control @error('shipping_address_1') is-invalid @enderror"
+                                    placeholder="House number and street name"
+                                    value="{{ old('shipping_address_1', $user->shipping_address_1) }}"
+                                >
+                                @error('shipping_address_1')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="shipping_address_2" class="form-label">Apartment, suite, unit, etc. <span class="text-muted">(optional)</span></label>
+                                <input
+                                    type="text"
+                                    id="shipping_address_2"
+                                    name="shipping_address_2"
+                                    class="form-control @error('shipping_address_2') is-invalid @enderror"
+                                    placeholder="Apartment, suite, unit, etc. (optional)"
+                                    value="{{ old('shipping_address_2', $user->shipping_address_2) }}"
+                                >
+                                @error('shipping_address_2')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="shipping_city" class="form-label">Town / City</label>
+                                <input
+                                    type="text"
+                                    id="shipping_city"
+                                    name="shipping_city"
+                                    class="form-control @error('shipping_city') is-invalid @enderror"
+                                    value="{{ old('shipping_city', $user->shipping_city) }}"
+                                >
+                                @error('shipping_city')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="shipping_postcode" class="form-label">Postcode / ZIP</label>
+                                <input
+                                    type="text"
+                                    id="shipping_postcode"
+                                    name="shipping_postcode"
+                                    class="form-control @error('shipping_postcode') is-invalid @enderror"
+                                    value="{{ old('shipping_postcode', $user->shipping_postcode) }}"
+                                >
+                                @error('shipping_postcode')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="shipping_country" class="form-label">Country / Region</label>
+                                <select
+                                    id="shipping_country"
+                                    name="shipping_country"
+                                    class="form-select @error('shipping_country') is-invalid @enderror"
+                                    data-selected-country="{{ old('shipping_country', $user->shipping_country) }}"
+                                >
+                                    <option value="">Select a Country / Region</option>
+                                </select>
+                                @error('shipping_country')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="shipping_state" class="form-label">State / County</label>
+                                <select
+                                    id="shipping_state"
+                                    name="shipping_state"
+                                    class="form-select @error('shipping_state') is-invalid @enderror"
+                                    data-selected-state="{{ old('shipping_state', $user->shipping_state) }}"
+                                >
+                                    <option value="">Select a State / County</option>
+                                </select>
+                                @error('shipping_state')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
                         <hr>
 
                         <!-- Reset Password Section -->
@@ -166,6 +256,59 @@
             icon.classList.replace('fa-eye-slash', 'fa-eye');
         }
     }
+
+    // Populate shipping country/state dropdowns from countries.json (same source as checkout)
+    document.addEventListener('DOMContentLoaded', function () {
+        const countrySelect = document.getElementById('shipping_country');
+        const stateSelect   = document.getElementById('shipping_state');
+
+        if (!countrySelect || !stateSelect) {
+            return;
+        }
+
+        let countriesData = [];
+        const selectedCountry = countrySelect.getAttribute('data-selected-country') || '';
+        const selectedState   = stateSelect.getAttribute('data-selected-state') || '';
+
+        function populateStates(countryCode, selectedStateCode) {
+            let states = [];
+            countriesData.forEach(function (country) {
+                if (country.iso2 === countryCode) {
+                    states = country.states || [];
+                }
+            });
+
+            let stateOptions = '<option value=\"\">Select a state / county…</option>';
+            states.forEach(function (state) {
+                const selectedAttr = state.state_code === selectedStateCode ? ' selected' : '';
+                stateOptions += '<option value=\"' + state.state_code + '\"' + selectedAttr + '>' + state.name + '</option>';
+            });
+            stateSelect.innerHTML = stateOptions;
+        }
+
+        fetch('/public/countries.json')
+            .then(function (response) { return response.json(); })
+            .then(function (data) {
+                countriesData = data;
+                let countryOptions = '<option value=\"\">Select a country / region…</option>';
+                data.forEach(function (country) {
+                    const selectedAttr = country.iso2 === selectedCountry ? ' selected' : '';
+                    countryOptions += '<option value=\"' + country.iso2 + '\"' + selectedAttr + '>' + country.name + '</option>';
+                });
+                countrySelect.innerHTML = countryOptions;
+
+                if (selectedCountry) {
+                    populateStates(selectedCountry, selectedState);
+                }
+            })
+            .catch(function () {
+                // silently fail if file is missing
+            });
+
+        countrySelect.addEventListener('change', function () {
+            populateStates(this.value, '');
+        });
+    });
 </script>
 @endpush
 

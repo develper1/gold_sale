@@ -27,6 +27,13 @@ class SubscriberController extends Controller
                 ->with('error', $validator->errors()->first());
         }
 
+        // Check for duplicate email (case-insensitive)
+        $existing = Subscriber::whereRaw('LOWER(email) = ?', [strtolower($request->email)])->first();
+        if ($existing) {
+            return redirect()->back()
+                ->with('success', 'You\'re already subscribed with this email!');
+        }
+
         try {
             $subscriber = Subscriber::create([
                 'email' => $request->email
@@ -104,7 +111,7 @@ class SubscriberController extends Controller
             if ($subscriber->details) {
                 $subscriber->details->delete();
             }
-            
+
             // Delete the subscriber
             $subscriber->delete();
             
@@ -113,6 +120,38 @@ class SubscriberController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.subscribers.index')
                 ->with('error', 'Failed to delete subscriber. Please try again.');
+        }
+    }
+
+    public function destroyBulk(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:subscribers,id',
+        ]);
+
+        try {
+            $count = 0;
+            foreach ($request->ids as $id) {
+                $subscriber = Subscriber::find($id);
+                if ($subscriber) {
+                    if ($subscriber->details) {
+                        $subscriber->details->delete();
+                    }
+                    $subscriber->delete();
+                    $count++;
+                }
+            }
+
+            $message = $count === 1
+                ? '1 subscriber deleted successfully.'
+                : $count . ' subscribers deleted successfully.';
+
+            return redirect()->route('admin.subscribers.index')
+                ->with('success', $message);
+        } catch (\Exception $e) {
+            return redirect()->route('admin.subscribers.index')
+                ->with('error', 'Failed to delete subscribers. Please try again.');
         }
     }
 
