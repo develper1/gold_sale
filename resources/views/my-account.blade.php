@@ -137,6 +137,44 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                         <label>Email address <span class="required">*</span></label>
                                         <input type="email" class="input-text" name="account_email" value="{{ $user ? $user->email : '' }}">
                                     </p>
+                                    <p class="form-row">
+                                        <label>Phone number</label>
+                                        <input type="tel" class="input-text" name="phone" value="{{ $user ? $user->phone : '' }}" placeholder="e.g. +1 (555) 123-4567">
+                                    </p>
+                                    <!-- Shipping address -->
+                                    <fieldset>
+                                        <legend>Shipping address</legend>
+                                        <p class="form-row">
+                                            <label>Street address</label>
+                                            <input type="text" class="input-text" name="shipping_address_1" value="{{ $user ? $user->shipping_address_1 : '' }}" placeholder="House number and street name">
+                                        </p>
+                                        <p class="form-row">
+                                            <label>Apartment, suite, unit, etc. <span class="optional">(optional)</span></label>
+                                            <input type="text" class="input-text" name="shipping_address_2" value="{{ $user ? $user->shipping_address_2 : '' }}" placeholder="Apartment, suite, unit, etc. (optional)">
+                                        </p>
+                                        <p class="form-row">
+                                            <label>Town / City</label>
+                                            <input type="text" class="input-text" name="shipping_city" value="{{ $user ? $user->shipping_city : '' }}">
+                                        </p>
+                                        <p class="form-row">
+                                            <label>Country / Region</label>
+                                            <select id="shipping_country" name="shipping_country" class="input-text " data-selected-country="{{ $user ? $user->shipping_country : '' }}">
+                                                <option value="">Select a Country / Region</option>
+                                            </select>
+                                        </p>
+                                        <p class="form-row">
+                                            <label>State / County</label>
+                                            <select id="shipping_state" name="shipping_state" class="input-text" data-selected-state="{{ $user ? $user->shipping_state : '' }}">
+                                                <option value="">Select a State / County</option>
+                                            </select>
+                                        </p>
+                                        <p class="form-row">
+                                            <label>Postcode / ZIP</label>
+                                            <input type="text" class="input-text" name="shipping_postcode" value="{{ $user ? $user->shipping_postcode : '' }}">
+                                        </p>
+                                    </fieldset>
+
+                                    <div class="clear"></div>
                                     <fieldset>
                                         <legend>Password change</legend>
                                         <p class="form-row" style="position:relative;">
@@ -231,7 +269,56 @@ $(document).ready(function() {
                 $('#account-error-message').html(message).show();
             }
         });
-    });
+    });  
+    // Shipping country/state dropdowns
+    var countriesData = [];
+    var $countrySelect = $('#shipping_country');
+    var $stateSelect = $('#shipping_state');
+
+    if ($countrySelect.length && $stateSelect.length) {
+        
+        function populateStates(countryCode, selectedStateCode) {
+            var states = [];
+            countriesData.forEach(function(country) {
+                if (country.iso2 === countryCode) {
+                    states = country.states || [];
+                }
+            });
+            
+            var stateOptions = '<option value="">Select a state / county…</option>';
+            states.forEach(function(state) {
+                var selectedAttr = (state.state_code === selectedStateCode) ? ' selected' : '';
+                stateOptions += '<option value="' + state.state_code + '"' + selectedAttr + '>' + state.name + '</option>';
+            });
+            $stateSelect.html(stateOptions);
+        }
+
+        // Get selected values BEFORE ajax call
+        var preselectedCountry = $countrySelect.data('selected-country') || '';
+        var preselectedState = $stateSelect.data('selected-state') || '';
+
+        $.getJSON('public/countries.json', function(data) {
+            countriesData = data;
+            
+            // Build country options with preselection
+            var countryOptions = '<option value="">Select a country / region…</option>';
+            data.forEach(function(country) {
+                var selectedAttr = (country.iso2 === preselectedCountry) ? ' selected' : '';
+                countryOptions += '<option value="' + country.iso2 + '"' + selectedAttr + '>' + country.name + '</option>';
+            });
+            $countrySelect.html(countryOptions);
+
+            // Now populate states if country was preselected
+            if (preselectedCountry) {
+                populateStates(preselectedCountry, preselectedState);
+            }
+        });
+
+        $countrySelect.on('change', function() {
+            var countryCode = $(this).val();
+            populateStates(countryCode, ''); // Clear state on country change
+        });
+    }
 });
 $(document).on('click', '.view-order-detail', function(e) {
     e.preventDefault();

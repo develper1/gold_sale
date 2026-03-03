@@ -7,8 +7,11 @@
             <div class="col-md-6">
                 <h5 class="card-header">Subscriber List</h5>
             </div>
-            <div class="col-md-6 text-end">
-                <a href="{{ route('admin.subscribers.export') }}" class="btn btn-primary mt-3 me-3">
+            <div class="col-md-6 text-end mt-3">
+                <button type="button" id="bulk-delete-btn" class="btn btn-danger" disabled title="Select subscribers to delete">
+                    <i class="ti ti-trash me-1"></i> Delete Selected
+                </button>
+                <a href="{{ route('admin.subscribers.export') }}" class="btn btn-primary">
                     <i class="ti ti-file-export me-1"></i> Export CSV
                 </a>
             </div>
@@ -20,11 +23,21 @@
                     {{ session('success') }}
                 </div>  
             @endif
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
 
+            <form id="bulk-delete-form" action="{{ route('admin.subscribers.bulkDelete') }}" method="POST">
+                @csrf
             <div class="table-responsive">
                 <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="select-all" title="Select all">
+                        </th>
                         <th>ID</th>
                         <th>Email</th>
                         <th>Name</th>
@@ -40,6 +53,9 @@
                 <tbody class="table-border-bottom-0">
                     @foreach($subscribers as $subscriber)
                         <tr>
+                            <td>
+                                <input type="checkbox" class="subscriber-checkbox" name="ids[]" value="{{ $subscriber->id }}">
+                            </td>
                             <td>{{ $subscriber->id }}</td>
                             <td>{{ $subscriber->email }}</td>
                             <td>
@@ -104,6 +120,7 @@
                 </tbody>
                 </table>
             </div>
+            </form>
         </div>
     </div>
 </div>
@@ -113,6 +130,31 @@
 <script>
     $(document).ready(function() {
         $('.table').DataTable();
+
+        // Select all checkbox
+        $('#select-all').on('change', function() {
+            $('.subscriber-checkbox').prop('checked', this.checked);
+            updateBulkDeleteButton();
+        });
+
+        // Individual checkboxes
+        $(document).on('change', '.subscriber-checkbox', function() {
+            updateBulkDeleteButton();
+            $('#select-all').prop('checked', $('.subscriber-checkbox:checked').length === $('.subscriber-checkbox').length);
+        });
+
+        function updateBulkDeleteButton() {
+            var checked = $('.subscriber-checkbox:checked');
+            $('#bulk-delete-btn').prop('disabled', checked.length === 0);
+        }
+
+        // Bulk delete
+        $('#bulk-delete-btn').on('click', function() {
+            var checked = $('.subscriber-checkbox:checked');
+            if (checked.length === 0) return;
+            if (!confirm('Are you sure you want to delete ' + checked.length + ' selected subscriber(s)?')) return;
+            $('#bulk-delete-form').submit();
+        });
     });
 
     function confirmDelete(id) {

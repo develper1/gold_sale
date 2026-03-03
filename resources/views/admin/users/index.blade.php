@@ -18,16 +18,53 @@
             <div class="col-md-6">
                 <h5 class="card-header">Users</h5>
             </div>
+            <div class="col-md-6">
+                <form action="{{ route('admin.users.index') }}" method="GET" class="d-flex gap-2 align-items-center justify-content-end mt-3 me-3">
+                    <input type="text" name="search" class="form-control" style="max-width: 240px;" placeholder="Search by name or email..." value="{{ request('search') }}">
+                    <input type="hidden" name="sort_by" value="{{ $sortBy }}">
+                    <input type="hidden" name="sort_dir" value="{{ $sortDir }}">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
         </div>
 
+        @php
+            $sortUrl = function(string $col) use ($sortBy, $sortDir) {
+                $dir = ($sortBy === $col && $sortDir === 'asc') ? 'desc' : 'asc';
+                return request()->fullUrlWithQuery(['sort_by' => $col, 'sort_dir' => $dir]);
+            };
+            $sortIcon = function(string $col) use ($sortBy, $sortDir) {
+                if ($sortBy !== $col) return '<span style="opacity:.3;font-size:.75rem;">⇅</span>';
+                return $sortDir === 'asc'
+                    ? '<span style="font-size:.75rem;">▲</span>'
+                    : '<span style="font-size:.75rem;">▼</span>';
+            };
+        @endphp
         <div class="table-responsive text-nowrap">
             <table class="table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Registered</th>
+                        <th>
+                            <a href="{{ $sortUrl('id') }}" class="text-body text-decoration-none">
+                                ID {!! $sortIcon('id') !!}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ $sortUrl('name') }}" class="text-body text-decoration-none">
+                                Name {!! $sortIcon('name') !!}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ $sortUrl('email') }}" class="text-body text-decoration-none">
+                                Email {!! $sortIcon('email') !!}
+                            </a>
+                        </th>
+                        <th>Ship Country</th>
+                        <th>
+                            <a href="{{ $sortUrl('created_at') }}" class="text-body text-decoration-none">
+                                Registered {!! $sortIcon('created_at') !!}
+                            </a>
+                        </th>
                         <th>Orders</th>
                         <th>Action</th>
                     </tr>
@@ -39,6 +76,7 @@
                             <td>{{ $data->id }}</td>
                             <td>{{ $data->name }}</td>
                             <td>{{ $data->email }}</td>
+                            <td>{{ $data->shipping_country ?: '-' }}</td>
                             <td>{{ $data->created_at->format('M d, Y') }}</td>
                             <td>
                                 <span class="badge bg-label-primary">{{ $data->orders_count }}</span>

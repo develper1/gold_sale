@@ -158,9 +158,9 @@
 												<form action="{{ route('subscriber.store') }}" method="POST" class="newsletter-form">
 													@csrf
 													<input type="email" name="email" placeholder="Email address" required>
-													<span class="btn-submit">
-														<input type="submit" value="Subscribe">
-													</span>
+													<label class="btn-submit" for="newsletter-submit">
+														<input type="submit" id="newsletter-submit" value="Subscribe">
+													</label>
 												</form>
 											</div>
 										</div>

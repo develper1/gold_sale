@@ -13,32 +13,37 @@
           <div style="font-size:28px;font-weight:bold;color:#2563eb;letter-spacing:1px;">{{ $order->id }}</div>
         </div>
 
-        
+        @php
+            $isPaidAtOrder = in_array($order->payment_method, ['credit_card', 'paypal']);
+        @endphp
 
+        @if($isPaidAtOrder)
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#16a34a;">
+            <strong>Thank you! Your payment has been received.</strong> We will process your order shortly.
+        </p>
+        @else
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
         with your order number to make payment. Payment must be received within 48 hours of order placement
         or the order will be automatically canceled.</strong></p>
+
+        @if(in_array($order->payment_method, ['ach', 'bank_wire', 'wire']))
+        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
+            You MUST email the accounts department at 
+            <a href="mailto:Payments@OasisMint.com" style="color:#2563eb;text-decoration:none;">Payments@OasisMint.com</a>
+            to request account and routing information within 2 business days of order confirmation.
+        </p>
+        @endif
+
+        @if($order->payment_method === 'zelle')
+        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
+            Payment via Zelle must be sent to 
+            <a href="mailto:Zelle@OasisMint.com" style="color:#2563eb;text-decoration:none;">Zelle@OasisMint.com</a>
+            within 24 hours of Order Confirmation.
+        </p>
+        @endif
+        @endif
+
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;">
-
-        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
-            If your chosen method of payment is via ACH or Bank Wire, you MUST email the accounts department at 
-            <a href="mailto:Payments@OasisMint.com" style="color:#2563eb;text-decoration:none;">
-                Payments@OasisMint.com
-            </a>
-            to request account and routing information within 2 business days of order confirmation to obtain details.
-        </p>
-
-        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
-            Payment being made via Zelle must be sent to 
-            <a href="mailto:Zelle@OasisMint.com" style="color:#2563eb;text-decoration:none;">
-                Zelle@OasisMint.com
-            </a>
-            and within 24 hours of Order Confirmation.
-        </p>
-
-        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
-            PayPal and Credit Card payments are required at time of order.
-        </p>
 
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
             If any form of payment is returned unpaid or returned, the office or authorized agent may debit my account for the full amount with a service fee of $50 plus any actual charges assessed by this office and from your financial institution as a result of the dishonored check or chargeback.
@@ -91,11 +96,7 @@
               <div style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Bill To</div>
               <div style="font-size:14px;color:#111;line-height:1.4;">
                 {{ $order->billing_first_name }} {{ $order->billing_last_name }}<br>
-                {{ $order->billing_address }}<br>
-                @if($order->billing_address2)
-                {{ $order->billing_address2 }}<br>
-                @endif
-                {{ $order->billing_city }}, {{ $order->billing_state }} {{ $order->billing_zip }}<br>
+                {{ $order->billing_address_1 }}@if($order->billing_address_2), {{ $order->billing_address_2 }}@endif, {{ $order->billing_city }}, {{ $order->billing_state }}, {{ $order->billing_postcode }}, {{ $order->billing_country }}<br>
                 {{ $order->billing_phone }}
               </div>
             </td>
@@ -103,12 +104,8 @@
               <div style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Ship To</div>
               <div style="font-size:14px;color:#111;line-height:1.4;">
                 {{ $order->shipping_first_name ?? $order->billing_first_name }} {{ $order->shipping_last_name ?? $order->billing_last_name }}<br>
-                {{ $order->shipping_address ?? $order->billing_address }}<br>
-                @if($order->shipping_address2 ?? $order->billing_address2)
-                {{ $order->shipping_address2 ?? $order->billing_address2 }}<br>
-                @endif
-                {{ $order->shipping_city ?? $order->billing_city }}, {{ $order->shipping_state ?? $order->billing_state }} {{ $order->shipping_zip ?? $order->billing_zip }}<br>
-                {{ $order->shipping_phone ?? $order->billing_phone }}
+                {{ $order->shipping_address_1 ?? $order->billing_address_1 }}@if($order->shipping_address_2), {{ $order->shipping_address_2 }}@endif, {{ $order->shipping_city ?? $order->billing_city }}, {{ $order->shipping_state ?? $order->billing_state }}, {{ $order->shipping_postcode ?? $order->billing_postcode }}, {{ $order->shipping_country ?? $order->billing_country }}<br>
+                {{ $order->billing_phone }}
               </div>
             </td>
           </tr>
