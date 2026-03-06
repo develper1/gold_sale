@@ -95,7 +95,7 @@ class UserLoginController extends Controller
 
         if ($status === Password::RESET_LINK_SENT) {
             return redirect()->route('login')
-                ->with('status', __($status));
+                ->with('success', 'Your Reset Password Link Has Been Processed');
         }
 
         return back()->with('error', __($status));
