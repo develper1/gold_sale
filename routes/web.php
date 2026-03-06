@@ -110,6 +110,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::get('/subscribers/export', [SubscriberController::class, 'export'])->name('subscribers.export');
         Route::post('/subscribers/bulk-delete', [SubscriberController::class, 'destroyBulk'])->name('subscribers.bulkDelete');
         Route::resource("/subscribers", SubscriberController::class);
+        Route::resource('contact-inquiries', App\Http\Controllers\Admin\ContactInquiryController::class)->only(['index', 'show']);
         Route::resource("/users", UserController::class);
         Route::get('/products/search', [ProductController::class, 'search'])->name('products.search');
         Route::resource("/products", ProductController::class)->except(['show']);

@@ -82,6 +82,13 @@
         </a>
       </li>
 
+      <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'contact-inquiries' ? ' active open' : '' }}">
+        <a href="{{ route('admin.contact-inquiries.index') }}" class="menu-link">
+          <i class="menu-icon tf-icons ti ti-mail"></i>
+          <div data-i18n="Contact Forms">Contact Forms</div>
+        </a>
+      </li>
+
       <li class="menu-item {{ request()->segment(1) == 'admin' && request()->segment(2) == 'coupons' ? ' active open' : '' }}">
         <a href="{{ route('admin.coupons.index') }}" class="menu-link">
           <i class="menu-icon tf-icons ti ti-ticket"></i>
