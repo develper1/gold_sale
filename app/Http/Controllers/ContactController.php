@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContactInquiry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
@@ -57,6 +58,14 @@ class ContactController extends Controller
             $name = (string) strip_tags($request->name);
             $email = (string) strip_tags($request->email);
             $message1 = (string) strip_tags($request->message);
+
+            // Save to database
+            ContactInquiry::create([
+                'name' => $name,
+                'email' => $email,
+                'message' => $message1,
+                'ip_address' => $request->ip(),
+            ]);
 
             // Send to admin
             \Mail::to(env('MAIL_ADMIN_EMAIL'))->send(new ContactFormNotification($name, $email, $message1));
