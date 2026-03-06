@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderShippedNotification;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -36,6 +38,10 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
         $order->status = $request->status;
         $order->save();
+
+        if ($request->status === 'shipped') {
+            Mail::to($order->billing_email)->send(new OrderShippedNotification($order));
+        }
 
         return back()->with('success', 'Order status updated to ' . $order->status . '.');
     }
