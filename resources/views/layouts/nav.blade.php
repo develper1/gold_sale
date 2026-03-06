@@ -312,11 +312,25 @@
                                     <div class="search-toggle"><i class="icon-search"></i></div>
                                 </div> --}}
 
-                                @if(auth()->check())
-                                    <span class="welcome-text small text-secondary fst-italic">Welcome, {{ auth()->user()->name }}</span>
-                                @else
-                                    <a href="{{ route('login') }}" class="welcome-text md text-secondary fst-italic">Login/Register</a>
-                                @endif
+                                <div class="d-flex flex-column">
+                                    @if(auth()->check())
+                                        <div >
+                                            <span class="welcome-text small text-secondary fst-italic" style="margin-right: 5px;">Welcome, {{ auth()->user()->name }}   </span>
+                                            {{-- Show Logout for authenticated users --}}
+                                            <a class="nav-link" href="{{ route('logout') }}" 
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                                <i class="fa fa-sign-out"></i>
+                                            </a>
+                                            
+                                            {{-- Hidden logout form --}}
+                                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                                @csrf
+                                            </form>
+                                        </div>
+                                    @else
+                                        <a href="{{ route('login') }}" class="welcome-text md text-secondary fst-italic">Login/Register</a>
+                                    @endif
+                                </div>
                                 <!-- Login -->
                                 <div class="login-header icon">
                                     <a  href="{{ route('account') }}"><i class="icon-user"></i></a>

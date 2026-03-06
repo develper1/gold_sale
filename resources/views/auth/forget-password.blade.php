@@ -22,8 +22,8 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
             <div class="page-forget-password">
                 <form method="post" class="reset-password" action="{{ route('forget-password.submit') }}">
                     @csrf
-                    @if(session('status'))
-                        <div class="alert alert-success">{{ session('status') }}</div>
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
                     @if(session('error'))
                         <div class="alert alert-danger">{{ session('error') }}</div>

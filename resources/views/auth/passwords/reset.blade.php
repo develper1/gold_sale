@@ -34,16 +34,22 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </p>
-                    <p class="form-row form-row-first">
+                    <p class="form-row form-row-first" style="position:relative;">
                         <label>New Password</label>
-                        <input class="input-text" type="password" name="password" required autocomplete="new-password">
+                        <input class="input-text" type="password" name="password" id="password" required autocomplete="new-password">
+                        <span class="password-toggle" onclick="togglePassword('password', this)" style="position:absolute;top:38px;right:15px;cursor:pointer;z-index:2;">
+                            <i class="fa fa-eye"></i>
+                        </span>
                         @error('password')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </p>
-                    <p class="form-row form-row-first">
+                    <p class="form-row form-row-first" style="position:relative;">
                         <label>Confirm New Password</label>
-                        <input class="input-text" type="password" name="password_confirmation" required autocomplete="new-password">
+                        <input class="input-text" type="password" name="password_confirmation" id="password_confirmation" required autocomplete="new-password">
+                        <span class="password-toggle" onclick="togglePassword('password_confirmation', this)" style="position:absolute;top:38px;right:15px;cursor:pointer;z-index:2;">
+                            <i class="fa fa-eye"></i>
+                        </span>
                     </p>
 
                     {{-- CAPTCHA - Same style as contact page --}}
@@ -70,6 +76,20 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 @push('scripts')
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
+function togglePassword(fieldId, el) {
+    var input = document.getElementById(fieldId);
+    var icon = el.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('reset-password-form');
     const messageDiv = document.getElementById('reset-message');
