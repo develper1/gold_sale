@@ -1,5 +1,19 @@
 @php
 $sliders = \App\Models\HomeSlider::orderBy('order')->get();
+$user = $user ?? null;
+$nameParts = $user ? preg_split('/\s+/', trim($user->name), 2) : [];
+$billingFirstName = old('billing_first_name', $nameParts[0] ?? '');
+$billingLastName = old('billing_last_name', $nameParts[1] ?? '');
+$billingEmail = old('billing_email', $user?->email ?? '');
+$billingPhone = old('billing_phone', $user?->phone ?? '');
+$billingAddress1 = old('billing_address_1', $user?->shipping_address_1 ?? '');
+$billingAddress2 = old('billing_address_2', $user?->shipping_address_2 ?? '');
+$billingCity = old('billing_city', $user?->shipping_city ?? '');
+$billingState = old('billing_state', $user?->shipping_state ?? '');
+$billingPostcode = old('billing_postcode', $user?->shipping_postcode ?? '');
+$billingCountry = old('billing_country', $user?->shipping_country ?? '');
+$billingCompany = old('billing_company', '');
+
 @endphp
 @extends('layouts.app')
 
@@ -46,62 +60,62 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                     <div class="billing-fields-wrapper">
                                         <p class="form-row form-row-first validate-required">
                                             <label>First name <span class="required" title="required">*</span></label>
-                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_first_name" value="" autocomplete="given-name"></span>
+                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_first_name" value="{{ $billingFirstName }}" autocomplete="given-name"></span>
                                         </p>
                                         <p class="form-row form-row-last validate-required">
                                             <label>Last name <span class="required" title="required">*</span></label>
-                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_last_name" value=""></span>
+                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_last_name" value="{{ $billingLastName }}"></span>
                                         </p>
                                         <p class="form-row form-row-wide">
                                             <label>Company name <span class="optional">(optional)</span></label>
-                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_company" value="" autocomplete="organization"></span>
+                                            <span class="input-wrapper"><input type="text" class="input-text" name="billing_company" value="{{ $billingCompany }}" autocomplete="organization"></span>
                                         </p>
                                         <p class="form-row form-row-wide validate-required">
                                             <label>Country / Region <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <select id="billing_country" name="billing_country" class="country-select custom-select"></select>
+                                                <select id="billing_country" name="billing_country" class="country-select custom-select" data-selected-country="{{ $billingCountry }}" data-selected-state="{{ $billingState }}"></select>
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required form-row-wide">
                                             <label>Street address <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_address_1" placeholder="House number and street name" value="" autocomplete="address-line1">
+                                                <input type="text" class="input-text" name="billing_address_1" placeholder="House number and street name" value="{{ $billingAddress1 }}" autocomplete="address-line1">
                                             </span>
                                         </p>
                                         <p class="form-row address-field form-row-wide">
                                             <label>Apartment, suite, unit, etc.&nbsp;<span class="optional">(optional)</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_address_2" placeholder="Apartment, suite, unit, etc. (optional)" value="" autocomplete="address-line2">
+                                                <input type="text" class="input-text" name="billing_address_2" placeholder="Apartment, suite, unit, etc. (optional)" value="{{ $billingAddress2 }}" autocomplete="address-line2">
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required form-row-wide">
                                             <label for="billing_city" class="">Town / City <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_city" value="" autocomplete="address-level2">
+                                                <input type="text" class="input-text" name="billing_city" value="{{ $billingCity }}" autocomplete="address-level2">
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required validate-state form-row-wide">
                                             <label>State / County <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <select id="billing_state" name="billing_state" class="state-select custom-select"></select>
+                                                <select id="billing_state" name="billing_state" data-selected-state="{{ $billingState }}" class="state-select custom-select"></select>
                                             </span>
                                         </p>
                                         <p class="form-row address-field validate-required validate-postcode form-row-wide">
                                             <label>Postcode / ZIP <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="text" class="input-text" name="billing_postcode" value="" autocomplete="postal-code">
+                                                <input type="text" class="input-text" name="billing_postcode" value="{{ $billingPostcode }}" autocomplete="postal-code">
                                             </span>
                                         </p>
                                         <p class="form-row form-row-wide validate-required validate-phone">
                                             <label>Phone <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="tel" class="input-text" name="billing_phone" value="" autocomplete="tel">
+                                                <input type="tel" class="input-text" name="billing_phone" value="{{ $billingPhone }}" autocomplete="tel">
                                             </span>
                                         </p>
                                         <p class="form-row form-row-wide validate-required validate-email">
                                             <label>Email address <span class="required" title="required">*</span></label>
                                             <span class="input-wrapper">
-                                                <input type="email" class="input-text" name="billing_email" value="" autocomplete="off" autocomplete="email">
+                                                <input type="email" class="input-text" name="billing_email" value="{{ $billingEmail }}" autocomplete="email">
                                             </span>
                                         </p>
                                     </div>
@@ -600,15 +614,56 @@ $(document).ready(function() {
     // Load countries and states from JSON
     $.getJSON('public/countries.json', function(data) {
         countriesData = data;
-        let countryOptions = '<option value="">Select a country / region…</option>';
-        data.forEach(function(country) {
-            countryOptions += `<option value="${country.iso2}">${country.name}</option>`;
-        });
-        // Only populate shipping_country if the element exists (approved users only)
+        var billingCountry = $('#billing_country').data('selected-country') || '';
+        var billingState = $('#billing_country').data('selected-state') || '';
+        var shippingCountry = $('#shipping_country').length ? ($('#shipping_country').data('selected-country') || '') : '';
+        var shippingState = $('#shipping_country').length ? ($('#shipping_country').data('selected-state') || '') : '';
+
+        function buildCountryOptions(selectedCountry) {
+            var opts = '<option value="">Select a country / region…</option>';
+            data.forEach(function(country) {
+                var sel = (country.iso2 === selectedCountry) ? ' selected' : '';
+                opts += '<option value="' + country.iso2 + '"' + sel + '>' + country.name + '</option>';
+            });
+            return opts;
+        }
+        function buildStateOptions(countryCode, selectedState) {
+            var states = [];
+            data.forEach(function(c) {
+                if (c.iso2 === countryCode) states = c.states || [];
+            });
+            var opts = '<option value="">Select a state / county…</option>';
+            states.forEach(function(state) {
+                var sel = (state.state_code === selectedState) ? ' selected' : '';
+                opts += '<option value="' + state.state_code + '"' + sel + '>' + state.name + '</option>';
+            });
+            return opts;
+        }
+
         if ($('#shipping_country').length) {
-            $('#billing_country, #shipping_country').html(countryOptions);
+            $('#billing_country').html(buildCountryOptions(billingCountry));
+            $('#shipping_country').html(buildCountryOptions(shippingCountry));
+            if (billingCountry) {
+                $('#billing_state').html(buildStateOptions(billingCountry, billingState));
+                updateStateFee();
+            }
+            if (shippingCountry && $('#shipping_state').length) {
+                $('#shipping_state').html(buildStateOptions(shippingCountry, shippingState));
+            }
+            // Sync Select2 display with pre-selected values (Select2 doesn't auto-update when options are injected)
+            $('#billing_country').val(billingCountry).trigger('change');
+            if (billingCountry) $('#billing_state').val(billingState).trigger('change');
+            $('#shipping_country').val(shippingCountry).trigger('change');
+            if (shippingCountry && $('#shipping_state').length) $('#shipping_state').val(shippingState).trigger('change');
         } else {
-            $('#billing_country').html(countryOptions);
+            $('#billing_country').html(buildCountryOptions(billingCountry));
+            if (billingCountry) {
+                $('#billing_state').html(buildStateOptions(billingCountry, billingState));
+                updateStateFee();
+            }
+            // Sync Select2 display with pre-selected values
+            $('#billing_country').val(billingCountry).trigger('change');
+            if (billingCountry) $('#billing_state').val(billingState).trigger('change');
         }
     });
 
