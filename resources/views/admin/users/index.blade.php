@@ -65,6 +65,11 @@
                                 Registered {!! $sortIcon('created_at') !!}
                             </a>
                         </th>
+                        <th>
+                            <a href="{{ $sortUrl('created_at') }}" class="text-body text-decoration-none">
+                                Policies Agreement At {!! $sortIcon('policies_agreed_at') !!}
+                            </a>
+                        </th>
                         <th>Orders</th>
                         <th>Action</th>
                     </tr>
@@ -78,6 +83,7 @@
                             <td>{{ $data->email }}</td>
                             <td>{{ $data->shipping_country ?: '-' }}</td>
                             <td>{{ $data->created_at->format('M d, Y') }}</td>
+                            <td>{{ optional($data->policies_agreed_at)->format('M d, Y h:i A') ?? '-' }}</td>
                             <td>
                                 <span class="badge bg-label-primary">{{ $data->orders_count }}</span>
                             </td>
