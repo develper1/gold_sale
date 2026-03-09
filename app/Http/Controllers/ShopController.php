@@ -592,7 +592,8 @@ class ShopController extends Controller
         $stateFees = \App\Models\StateFee::all(['code', 'amount']);
         $setting = \App\Models\Setting::first();
         $creditCardPercentage = $setting ? $setting->credit_card_percentage : 0;
-        return view('checkout', compact('cart', 'total', 'stateFees', 'creditCardPercentage'));
+        $user = auth()->user();
+        return view('checkout', compact('cart', 'total', 'stateFees', 'creditCardPercentage', 'user'));
     }
 
     /**
