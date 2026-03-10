@@ -46,14 +46,42 @@ class OrderController extends Controller
             if (!$accessTokenResponse->ok()) {
                 return response()->json(['error' => 'Could not authenticate with PayPal'], 500);
             }
-            $accessToken = $accessTokenResponse['access_token'];
+            $accessToken = $accessTokenResponse->json()['access_token'];
 
-            // Verify order status
+            // Verify order status and get payment source (card vs PayPal wallet)
             $paypalResponse = \Http::withToken($accessToken)
+                ->withHeaders(['Prefer' => 'return=representation'])
                 ->get($baseUrl . '/v2/checkout/orders/' . $paypalOrderId);
-            if (!$paypalResponse->ok() || $paypalResponse['status'] !== 'COMPLETED') {
+
+            if (!$paypalResponse->ok()) {
+                return response()->json(['error' => 'PayPal order could not be verified'], 422);
+            }
+
+            $paypalOrderData = $paypalResponse->json();
+            if (($paypalOrderData['status'] ?? '') !== 'COMPLETED') {
                 return response()->json(['error' => 'PayPal payment not completed'], 422);
             }
+
+            // Resolve actual payment source for display: card = credit_card, paypal = PayPal wallet
+            // Note: $isCreditCard stays false - we never run Authorize.Net for PayPal flow
+            $paymentSource = $paypalOrderData['payment_source'] ?? [];
+            if (!empty($paymentSource['card'])) {
+                $paymentMethod = 'credit_card';
+            } elseif (!empty($paymentSource['paypal'])) {
+                $paymentMethod = 'paypal';
+            } else {
+                // Fallback: try paypal_details from client capture response
+                $paypalDetails = $request->input('paypal_details');
+                if ($paypalDetails) {
+                    $details = is_string($paypalDetails) ? json_decode($paypalDetails, true) : $paypalDetails;
+                    $detailsPaymentSource = $details['paymentSource'] ?? $details['payment_source'] ?? [];
+                    $paymentMethod = !empty($detailsPaymentSource['card']) ? 'credit_card' : 'paypal';
+                } else {
+                    $paymentMethod = 'paypal';
+                }
+            }
+
+           
         }
 
         $validated = $request->validate([
@@ -153,12 +181,23 @@ class OrderController extends Controller
 
         // Coupon logic
         $appliedCoupon = session('applied_coupon');
+        $couponDiscount = 0;
         if ($appliedCoupon) {
             if (!empty($appliedCoupon['free_shipping'])) {
                 $shipping_fee = 0;
             }
             if (!empty($appliedCoupon['free_service_fee'])) {
                 $service_fee = 0;
+            }
+            // Percent or dollar discount (applied to subtotal)
+            $discountType = $appliedCoupon['discount_type'] ?? null;
+            $discountVal = isset($appliedCoupon['discount']) ? (float)$appliedCoupon['discount'] : 0;
+            if ($discountType === 'percent' && $discountVal > 0) {
+                $couponDiscount = round($subtotal * ($discountVal / 100), 2);
+                $couponDiscount = min($couponDiscount, $subtotal);
+            } elseif ($discountType === 'dollar' && $discountVal > 0) {
+                $couponDiscount = min($discountVal, $subtotal);
+                $couponDiscount = round($couponDiscount, 2);
             }
         }
         
@@ -170,19 +209,26 @@ class OrderController extends Controller
                 $goldSilverSubtotal += $item['price'] * $item['quantity'];
             }
         }
-        
+
+        // Apply proportional coupon discount to gold/silver for CC fee (when discount is on full subtotal)
+        $goldSilverAfterDiscount = $goldSilverSubtotal;
+        if ($couponDiscount > 0 && $subtotal > 0) {
+            $discountRatio = $couponDiscount / $subtotal;
+            $goldSilverAfterDiscount = round($goldSilverSubtotal * (1 - $discountRatio), 2);
+        }
+
         // Calculate total before credit card fee (for gold/silver/platinum products only)
-        $totalBeforeCreditCardFee = $goldSilverSubtotal + $shipping_fee + $state_fee + $service_fee;
+        $totalBeforeCreditCardFee = $subtotal - $couponDiscount + $shipping_fee + $state_fee + $service_fee;
         $totalBeforeCreditCardFee = round($totalBeforeCreditCardFee, 2);
         
         // Calculate credit card fee based on gold/silver/platinum products total including all fees
         if ($isCreditCard || $isPaypal) {
-            $creditCardFee = ($totalBeforeCreditCardFee) * ($creditCardPercentage / 100);
-            $creditCardFee = round($creditCardFee, 2);
+            $ccBase = $goldSilverAfterDiscount + $shipping_fee + $state_fee + $service_fee;
+            $creditCardFee = round($ccBase * ($creditCardPercentage / 100), 2);
         }
-        
-        // Total is full subtotal + fees + credit card fee
-        $total = $subtotal + $shipping_fee + $state_fee + $service_fee + $creditCardFee;
+
+        // Total is subtotal - coupon discount + fees + credit card fee
+        $total = $subtotal - $couponDiscount + $shipping_fee + $state_fee + $service_fee + $creditCardFee;
         $total = round($total, 2);
 
         // Authorize.Net credit card payment via direct API
@@ -544,11 +590,14 @@ class OrderController extends Controller
             return response()->json(['valid' => false, 'message' => 'Invalid or expired coupon.']);
         }
         // Store coupon in session for use on order
-        session(['applied_coupon' => $coupon->only(['id','code','free_shipping','free_service_fee'])]);
+        $sessionData = $coupon->only(['id', 'code', 'free_shipping', 'free_service_fee', 'discount', 'discount_type']);
+        session(['applied_coupon' => $sessionData]);
         return response()->json([
             'valid' => true,
             'free_shipping' => (bool)$coupon->free_shipping,
             'free_service_fee' => (bool)$coupon->free_service_fee,
+            'discount' => $coupon->discount ? (float)$coupon->discount : null,
+            'discount_type' => $coupon->discount_type,
             'description' => $coupon->description,
             'code' => $coupon->code,
         ]);
