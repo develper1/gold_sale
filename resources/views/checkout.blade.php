@@ -280,6 +280,10 @@ $billingCompany = old('billing_company', '');
                                         <h2>Credit Card Fee ({{ $creditCardPercentage }}%)</h2>
                                         <div class="credit-card-fee-amount">$0.00</div>
                                     </div>
+                                    <div class="coupon-discount" id="coupon-discount-row" style="display:none;">
+                                        <h2>Coupon Discount</h2>
+                                        <div class="coupon-discount-amount text-success">-$0.00</div>
+                                    </div>
 
                                     <div class="coupon-code">
                                         <label for="checkout-coupon-code">Have a coupon?</label>
@@ -493,6 +497,7 @@ $(document).ready(function() {
     let serviceFee = 0;
     let creditCardPercentage = {{ $creditCardPercentage ?? 0 }};
     let creditCardFee = 0;
+    let couponDiscount = 0;
 
     function updateShippingFee() {
         // Check if cart has any non-physical items
@@ -579,10 +584,18 @@ $(document).ready(function() {
             @endforeach
         @endif
 
+        // Apply proportional coupon discount to gold/silver base
+        var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+        var goldSilverAfterDiscount = goldSilverSubtotal;
+        if (couponDiscount > 0 && baseTotal > 0) {
+            var discountRatio = couponDiscount / baseTotal;
+            goldSilverAfterDiscount = Math.round(goldSilverSubtotal * (1 - discountRatio) * 100) / 100;
+        }
+
         // Only calculate credit card fee if payment method is credit_card or paypal
         // Apply fee to gold/silver/platinum subtotal + all fees (shipping, state, service)
         if (selected === 'credit_card' || selected === 'paypal') {
-            var totalBeforeCreditCardFee = goldSilverSubtotal + shippingFee + stateFee + serviceFee;
+            var totalBeforeCreditCardFee = goldSilverAfterDiscount + shippingFee + stateFee + serviceFee;
             creditCardFee = (totalBeforeCreditCardFee) * (creditCardPercentage / 100);
             // Round to 2 decimal places consistently
             creditCardFee = Math.round(creditCardFee * 100) / 100;
@@ -596,8 +609,7 @@ $(document).ready(function() {
 
     function updateOrderTotal() {
         var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
-        var total = baseTotal + shippingFee + stateFee + serviceFee + creditCardFee;
-        // Round to 2 decimal places consistently
+        var total = baseTotal + shippingFee + stateFee + serviceFee + creditCardFee - couponDiscount;
         total = Math.round(total * 100) / 100;
         $('.cart-total').text('$' + total.toFixed(2));
     }
@@ -918,7 +930,24 @@ $(document).ready(function() {
                         $('.service-fee-amount').text('$0.00');
                         $('#service_fee').val(0);
                     }
-                    updateOrderTotal();
+                    // Percent or dollar discount
+                    var baseTotal = parseFloat($('.subtotal-price span').text().replace('$','').replace(/,/g, ''));
+                    if (response.discount && response.discount_type === 'percent') {
+                        couponDiscount = Math.round(baseTotal * (response.discount / 100) * 100) / 100;
+                        couponDiscount = Math.min(couponDiscount, baseTotal);
+                    } else if (response.discount && response.discount_type === 'dollar') {
+                        couponDiscount = Math.min(parseFloat(response.discount), baseTotal);
+                        couponDiscount = Math.round(couponDiscount * 100) / 100;
+                    } else {
+                        couponDiscount = 0;
+                    }
+                    if (couponDiscount > 0) {
+                        $('#coupon-discount-row').show();
+                        $('.coupon-discount-amount').text('-$' + couponDiscount.toFixed(2));
+                    } else {
+                        $('#coupon-discount-row').hide();
+                    }
+                    updateCreditCardFee();
                     // Hide input, show description and remove button
                     $('#coupon-input-group').hide();
                     $('#coupon-applied-group').show();
@@ -934,7 +963,8 @@ $(document).ready(function() {
     });
     // Remove coupon logic
     $('#remove-coupon-btn').on('click', function() {
-        // Revert fees
+        couponDiscount = 0;
+        $('#coupon-discount-row').hide();
         if (originalShippingFee !== null) {
             shippingFee = originalShippingFee;
             $('.shipping-fee-amount').text('$' + shippingFee.toFixed(2));
@@ -945,7 +975,7 @@ $(document).ready(function() {
             $('.service-fee-amount').text('$' + serviceFee.toFixed(2));
             $('#service_fee').val(serviceFee);
         }
-        updateOrderTotal();
+        updateCreditCardFee();
         // Remove coupon from session via AJAX (optional, for backend consistency)
         $.post('validate-coupon', { coupon_code: '', _token: $('input[name="_token"]').val() });
         // Show input, hide description and remove button
