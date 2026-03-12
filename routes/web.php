@@ -129,6 +129,8 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::resource('orders', App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'destroy']);
         Route::post('/orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
         Route::post('/orders/{order}/notes', [App\Http\Controllers\Admin\OrderController::class, 'updateNotes'])->name('orders.updateNotes');
+        Route::post('/orders/{order}/cancel', [App\Http\Controllers\Admin\OrderController::class, 'cancelOrder'])->name('orders.cancel');
+        Route::post('/orders/{order}/refund', [App\Http\Controllers\Admin\OrderController::class, 'refund'])->name('orders.refund');
         Route::resource('home-sliders', App\Http\Controllers\Admin\HomeSliderController::class);
 
     });

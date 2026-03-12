@@ -152,6 +152,12 @@
             <td style="padding:6px 0;font-size:14px;color:#555;">Subtotal</td>
             <td style="padding:6px 0;font-size:14px;color:#111;text-align:right;">${{ number_format($order->subtotal, 2) }}</td>
           </tr>
+          @if(($order->coupon_discount ?? 0) > 0)
+          <tr>
+            <td style="padding:6px 0;font-size:14px;color:#16a34a;">Coupon Discount ({{ $order->coupon_code }}{{ $order->coupon_description ? ' – ' . $order->coupon_description : '' }}) – This discount has been applied according to the coupon</td>
+            <td style="padding:6px 0;font-size:14px;color:#16a34a;text-align:right;">-${{ number_format($order->coupon_discount, 2) }}</td>
+          </tr>
+          @endif
           <tr>
             <td style="padding:6px 0;font-size:14px;color:#555;">Shipping Fee</td>
             <td style="padding:6px 0;font-size:14px;color:#111;text-align:right;">${{ number_format($order->shipping_fee, 2) }}</td>

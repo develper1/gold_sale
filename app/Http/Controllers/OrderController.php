@@ -357,6 +357,9 @@ class OrderController extends Controller
             'total' => $total,
             'payment_method' => $paymentMethod,
             'status' => $isPaypal || $isCreditCard ? 'paid' : 'pending',
+            'coupon_code' => $couponDiscount > 0 ? ($appliedCoupon['code'] ?? null) : null,
+            'coupon_discount' => $couponDiscount,
+            'coupon_description' => $couponDiscount > 0 ? ($appliedCoupon['description'] ?? null) : null,
         ]);
 
         foreach ($cart as $item) {
@@ -406,7 +409,7 @@ class OrderController extends Controller
         try {
             \Mail::to($order->billing_email)->send(new OrderConfirmation($order));
         } catch (\Exception $e) {
-            dd($e->getMessage());
+            Log::error('Order confirmation email failed: ' . $e->getMessage(), ['order_id' => $order->id, 'trace' => $e->getTraceAsString()]);
         }
 
         // NEW: Send copy to ADMIN
@@ -525,6 +528,7 @@ class OrderController extends Controller
                     <h3>Financial Breakdown</h3>
                     <table style='width:300px;'>
                         <tr><td>Subtotal:</td><td style='text-align:right;'>$" . number_format($order->subtotal, 2) . "</td></tr>
+                        " . (($order->coupon_discount ?? 0) > 0 ? "<tr><td style='color:#16a34a;'>Coupon Discount (" . e($order->coupon_code) . ($order->coupon_description ? ' – ' . e($order->coupon_description) : '') . "):</td><td style='text-align:right;color:#16a34a;'>-$" . number_format($order->coupon_discount, 2) . "</td></tr>" : '') . "
                         <tr><td>Shipping:</td><td style='text-align:right;'>$" . number_format($order->shipping_fee, 2) . "</td></tr>
                         " . ($order->state_fee > 0 ? "<tr><td>State Fee:</td><td style='text-align:right;'>$" . number_format($order->state_fee, 2) . "</td></tr>" : '') . "
                         " . ($order->service_fee > 0 ? "<tr><td>Service Fee:</td><td style='text-align:right;'>$" . number_format($order->service_fee, 2) . "</td></tr>" : '') . "
@@ -590,7 +594,7 @@ class OrderController extends Controller
             return response()->json(['valid' => false, 'message' => 'Invalid or expired coupon.']);
         }
         // Store coupon in session for use on order
-        $sessionData = $coupon->only(['id', 'code', 'free_shipping', 'free_service_fee', 'discount', 'discount_type']);
+        $sessionData = $coupon->only(['id', 'code', 'description', 'free_shipping', 'free_service_fee', 'discount', 'discount_type']);
         session(['applied_coupon' => $sessionData]);
         return response()->json([
             'valid' => true,
