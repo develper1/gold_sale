@@ -78,6 +78,9 @@
                 <td colspan="3"></td>
                 <td>
                     <span>Subtotal: ${{ number_format($order->subtotal, 2) }}</span><br>
+                    @if(($order->coupon_discount ?? 0) > 0)
+                    <span class="text-success">Coupon Discount ({{ $order->coupon_code }}{{ $order->coupon_description ? ' – ' . $order->coupon_description : '' }}) – This discount has been applied according to the coupon: -${{ number_format($order->coupon_discount, 2) }}</span><br>
+                    @endif
                     <span>Shipping Fee: ${{ number_format($order->shipping_fee, 2) }}</span><br>
                     <span>State Fee: ${{ number_format($order->state_fee, 2) }}</span><br>
                     <span>Service Fee: ${{ number_format($order->service_fee, 2) }}</span><br>

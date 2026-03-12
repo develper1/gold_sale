@@ -37,6 +37,7 @@ class Order extends Model
         'state_fee',
         'service_fee',
         'total',
+        'refunded_amount',
         'payment_method',
         'status',
         'order_uid',
@@ -44,11 +45,19 @@ class Order extends Model
         'credit_card_fee',
         'credit_card_percentage',
         'admin_notes',
+        'coupon_code',
+        'coupon_discount',
+        'coupon_description',
     ];
 
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function refunds()
+    {
+        return $this->hasMany(OrderRefund::class);
     }
 
     public static function generateOrderUid()
