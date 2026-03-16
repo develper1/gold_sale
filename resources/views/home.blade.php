@@ -117,7 +117,16 @@
                                                 <div class="products-content">
                                                     <div class="contents">
                                                         <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
-                                                        <span class="price">${{ number_format($product->current_price, 2) }}</span>
+                                                        {{--  <!-- <span class="price">${{ number_format($product->current_price, 2) }}</span> --> --}}
+                                                        <span class="price">
+                                                            @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
+                                                                As low as {{ $product->formatted_lowest_price }}
+                                                            @elseif($product->pricing_type === 'fixed')
+                                                                {{ $product->formatted_price }}
+                                                            @else
+                                                                {{ $product->formatted_price }}
+                                                            @endif
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -185,9 +194,9 @@
 									<div class="block block-info">
 										<div class="block-widget-wrap">
 											<div class="info-wrap">
-                <h2 class="caption-title">Stand Out In Style</h2>
-                <p class="caption-subtitle">Unique Jewelry and Great Gift Ideas</p>
-                <a class="button button-white animation-horizontal" href="/thumbs/category/great_gifts/">DISCOVER NOW</a>
+                                                <h2 class="caption-title">Stand Out In Style</h2>
+                                                <p class="caption-subtitle">Unique Jewelry and Great Gift Ideas</p>
+                                                <a class="button button-white animation-horizontal" href="/thumbs/category/great_gifts/">DISCOVER NOW</a>
 											</div>
 										</div>
 									</div>
@@ -252,7 +261,16 @@
                                                 <div class="products-content">
                                                     <div class="contents">
                                                         <h3 class="product-title"><a href="{{ route('shop.product', $product->slug) }}">{{ $product->name }}</a></h3>
-                                                        <span class="price">${{ number_format($product->current_price, 2) }}</span>
+                                                        {{--  <!-- <span class="price">${{ number_format($product->current_price, 2) }}</span> --> --}}
+                                                        <span class="price">
+                                                            @if($product->use_tier_pricing || $product->use_spot_tier_pricing)
+                                                                As low as {{ $product->formatted_lowest_price }}
+                                                            @elseif($product->pricing_type === 'fixed')
+                                                                {{ $product->formatted_price }}
+                                                            @else
+                                                                {{ $product->formatted_price }}
+                                                            @endif
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
