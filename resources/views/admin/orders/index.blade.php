@@ -38,6 +38,7 @@
                             @endif
                                 <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
+                                    <input type="hidden" name="from" value="index">
                                     <select name="status" class="form-select form-select-sm d-inline w-auto me-1">
                                         <option value="pending"  {{ $order->status === 'pending'  ? 'selected' : '' }}>Pending</option>
                                         <option value="paid"     {{ $order->status === 'paid'     ? 'selected' : '' }}>Paid</option>

@@ -2,58 +2,15 @@
 
 @section('content')
 <div class="container-xxl flex-grow-1 container-p-y">
-    <div class="card">
-        <div class="card-header">
-            <h5>Order #{{ $order->id }}</h5>
-        </div>
-        <div class="card-body">
-            <h6>Order Info</h6>
-            <ul>
-                <li>Status: {{ ucfirst($order->status) }}</li>
-                <li>Payment Method: {{ ucfirst($order->payment_method) }}</li>
-                <li>Order Comments: {{ $order->order_comments }}</li>
-                <li>Created At: {{ $order->created_at->format('d M Y') }}</li>
-                <li>Transaction ID: {{ $order->transaction_id }}</li>
-            </ul>
-
-            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="mb-4">
-                @csrf
-                <div class="row g-2 align-items-end">
-                    <div class="col-md-4">
-                        <label class="form-label">Update Status</label>
-                        <select name="status" class="form-select">
-                            <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Paid</option>
-                            <option value="processed" {{ $order->status === 'processed' ? 'selected' : '' }}>Processed</option>
-                            <option value="shipped" {{ $order->status === 'shipped' ? 'selected' : '' }}>Shipped</option>
-                            <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                            <option value="refunded" {{ $order->status === 'refunded' ? 'selected' : '' }}>Refunded</option>
-                            <option value="partially_refunded" {{ $order->status === 'partially_refunded' ? 'selected' : '' }}>Partially Refunded</option>
-                            <option value="canceled" {{ $order->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </div>
-            </form>
-            <h6>Billing Info</h6>
-            <ul>
-                <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>
-                <li>Email: {{ $order->billing_email }}</li>
-                <li>Phone: {{ $order->billing_phone }}</li>
-                <li>Address: {{ $order->billing_address_1 }}, {{ $order->billing_city }}, {{ $order->billing_state }}, {{ $order->billing_postcode }}, {{ $order->billing_country }}</li>
-            </ul>
-            <h6>Shipping Info</h6>
-            <ul>
-                <li>Name: {{ $order->shipping_first_name }} {{ $order->shipping_last_name }}</li>
-                <li>Company: {{ $order->shipping_company }}</li>
-                <li>Address: {{ $order->shipping_address_1 }}, {{ $order->shipping_city }}, {{ $order->shipping_state }}, {{ $order->shipping_postcode }}, {{ $order->shipping_country }}</li>
-            </ul>
-            
             @if(session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+            @if(session('info'))
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    {{ session('info') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             @endif
@@ -80,6 +37,107 @@
                 </script>
                 @endif
             @endif
+    <div class="card">
+        <div class="card-header">
+            <h5>Order #{{ $order->id }}</h5>
+        </div>
+        <div class="card-body">
+            <h6>Order Info</h6>
+            <ul>
+                <li>Status: {{ ucfirst($order->status) }}</li>
+                <li>Payment Method: {{ ucfirst($order->payment_method) }}</li>
+                @if($order->shipping_method || $order->tracking_number)
+                <li>Shipping Method: {{ $order->shipping_method ?? '—' }}</li>
+                <li>Tracking Number: {{ $order->tracking_number ?? '—' }}</li>
+                @endif
+                <li>Order Comments: {{ $order->order_comments }}</li>
+                <li>Created At: {{ $order->created_at->format('d M Y') }}</li>
+                <li>Transaction ID: {{ $order->transaction_id }}</li>
+            </ul>
+
+            @php
+                $currentStatus = request('status', $order->status);
+            @endphp
+
+            <div>
+            <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="mb-4">
+                @csrf
+                <input type="hidden" name="from" value="show">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Update Status</label>
+                        <select name="status" class="form-select" id="order-status-select">
+                            <option value="pending" {{ $currentStatus === 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="paid" {{ $currentStatus === 'paid' ? 'selected' : '' }}>Paid</option>
+                            <option value="processed" {{ $currentStatus === 'processed' ? 'selected' : '' }}>Processed</option>
+                            <option value="shipped" {{ $currentStatus === 'shipped' ? 'selected' : '' }}>Shipped</option>
+                            <option value="delivered" {{ $currentStatus === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                            <option value="refunded" {{ $currentStatus === 'refunded' ? 'selected' : '' }}>Refunded</option>
+                            <option value="partially_refunded" {{ $currentStatus === 'partially_refunded' ? 'selected' : '' }}>Partially Refunded</option>
+                            <option value="canceled" {{ $currentStatus === 'canceled' ? 'selected' : '' }}>Canceled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4" id="shipping-info-fields" style="display: none;">
+                        <div class="mb-2">
+                            <label class="form-label mb-1">Shipping Method</label>
+                            <input
+                                type="text"
+                                name="shipping_method"
+                                class="form-control form-control-sm"
+                                placeholder="e.g. UPS Ground"
+                                value="{{ old('shipping_method', $order->shipping_method) }}"
+                            >
+                        </div>
+                        <div>
+                            <label class="form-label mb-1">Tracking Number</label>
+                            <input
+                                type="text"
+                                name="tracking_number"
+                                class="form-control form-control-sm"
+                                placeholder="e.g. 1Z..."
+                                value="{{ old('tracking_number', $order->tracking_number) }}"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <h6>Billing Info</h6>
+            <ul>
+                <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>
+                <li>Email: {{ $order->billing_email }}</li>
+                <li>Phone: {{ $order->billing_phone }}</li>
+                <li>Address: {{ $order->billing_address_1 }}, {{ $order->billing_city }}, {{ $order->billing_state }}, {{ $order->billing_postcode }}, {{ $order->billing_country }}</li>
+            </ul>
+            <h6>Shipping Info</h6>
+            <ul>
+                <li>Name: {{ $order->shipping_first_name }} {{ $order->shipping_last_name }}</li>
+                <li>Company: {{ $order->shipping_company }}</li>
+                <li>Address: {{ $order->shipping_address_1 }}, {{ $order->shipping_city }}, {{ $order->shipping_state }}, {{ $order->shipping_postcode }}, {{ $order->shipping_country }}</li>
+                <li>Shipping Method: {{ $order->shipping_method ?? '—' }}</li>
+                <li>Tracking Number: {{ $order->tracking_number ?? '—' }}</li>
+            </ul>
+            <script>
+            (function () {
+                var select = document.getElementById('order-status-select');
+                var shippingFields = document.getElementById('shipping-info-fields');
+                if (!select || !shippingFields) return;
+
+                function toggleShippingFields() {
+                    if (select.value === 'shipped') {
+                        shippingFields.style.display = '';
+                    } else {
+                        shippingFields.style.display = 'none';
+                    }
+                }
+
+                select.addEventListener('change', toggleShippingFields);
+                toggleShippingFields();
+            })();
+            </script>
 
             <h6>Order Items</h6>
             <table class="table">
