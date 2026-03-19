@@ -42,11 +42,38 @@ class OrderController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,paid,processed,shipped,delivered,refunded,partially_refunded,canceled',
+            'shipping_method' => 'nullable|string|max:255',
+            'tracking_number' => 'nullable|string|max:255',
         ]);
 
         $order = Order::findOrFail($id);
+
+        // If coming from the index table and user selected "shipped",
+        // send them to the detailed view to fill in shipping details first.
+        if ($request->status === 'shipped' && $request->input('from') === 'index') {
+            return redirect()
+                ->to(route('admin.orders.show', $order->id) . '?status=shipped#shipping-section')
+                ->with('info', 'To mark this order as shipped, please enter the shipping method and tracking number below.');
+        }
+
+        if ($request->status === 'partially_refunded') {
+            return redirect()
+                ->to(route('admin.orders.show', $order->id) . '#refunds')
+                ->with('info', 'To issue a partial refund, please enter the amount in the Partial Refund section below.');
+        }
+
         $previousStatus = $order->status;
         $order->status = $request->status;
+
+        if ($request->status === 'shipped') {
+            $request->validate([
+                'shipping_method' => 'required|string|max:255',
+                'tracking_number' => 'required|string|max:255',
+            ]);
+            $order->shipping_method = $request->input('shipping_method');
+            $order->tracking_number = $request->input('tracking_number');
+        }
+
         $order->save();
 
         if ($previousStatus !== $request->status) {

@@ -108,7 +108,9 @@ Route::prefix('admin')->name('admin.')->group(function(){
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/users', [UserController::class, 'users'])->name('users');
         Route::get('/subscribers/export', [SubscriberController::class, 'export'])->name('subscribers.export');
-        Route::post('/subscribers/bulk-delete', [SubscriberController::class, 'destroyBulk'])->name('subscribers.bulkDelete');
+        // Allow both POST and DELETE so bulk delete works even if _method=DELETE is present in the request
+        Route::match(['post', 'delete'], '/subscribers/bulk-delete', [SubscriberController::class, 'destroyBulk'])
+            ->name('subscribers.bulkDelete');
         Route::resource("/subscribers", SubscriberController::class);
         Route::resource('contact-inquiries', App\Http\Controllers\Admin\ContactInquiryController::class)->only(['index', 'show']);
         Route::resource("/users", UserController::class);
