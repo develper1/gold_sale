@@ -15,6 +15,22 @@
           <div style="font-size:14px;color:#555;margin-top:8px;">Thank you for your purchase. Your order is on its way.</div>
         </div>
 
+        <div style="margin:0 0 16px;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;">
+          <div style="background:#f9fafb;padding:10px 14px;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.5px;">
+            Shipment Details
+          </div>
+          <div style="padding:14px;text-align:left;">
+            <p style="margin:0 0 8px;font-size:14px;line-height:20px;color:#111111;">
+              <strong>Method of Shipment:</strong>
+              {{ $order->shipping_method ?: 'Not provided' }}
+            </p>
+            <p style="margin:0;font-size:14px;line-height:20px;color:#111111;">
+              <strong>Tracking Number:</strong>
+              {{ $order->tracking_number ?: 'Not provided' }}
+            </p>
+          </div>
+        </div>
+
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
           You can track your order or visit our website if you have any questions.
         </p>

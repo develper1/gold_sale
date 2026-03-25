@@ -9,9 +9,9 @@
 
         <div style="background:#fef3c7;border:2px solid #d97706;border-radius:6px;padding:20px;margin:16px 0;text-align:center;">
           <p style="margin:0 0 12px;font-size:16px;line-height:1.6;color:#92400e;">
-            <strong>Your order #{{ $order->id }} has been canceled and refunded.</strong>
+            <strong>Your order #{{ $order->id }} has been canceled.</strong>
           </p>
-          <div style="font-size:14px;color:#555;margin-top:8px;">A full refund of ${{ number_format($order->total ?? 0, 2) }} has been processed. You should see it in your account within a few business days, depending on your payment method.</div>
+          <div style="font-size:14px;color:#555;margin-top:8px;">This order has been canceled. If you have any questions, please contact our office.</div>
         </div>
 
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">

@@ -20,7 +20,7 @@ class OrderCanceledNotification extends Mailable
 
     public function build()
     {
-        return $this->subject('Order #' . $this->order->id . ' – Canceled & Refunded')
+        return $this->subject('Order #' . $this->order->id . ' – Canceled')
                     ->view('emails.order-canceled');
     }
 }

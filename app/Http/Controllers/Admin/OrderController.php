@@ -121,28 +121,30 @@ class OrderController extends Controller
     }
 
     /**
-     * Cancel order: full refund via PayPal and set status to canceled.
+     * Cancel order without processing a refund.
      */
     public function cancelOrder(Request $request, $id)
     {
         $order = Order::findOrFail($id);
-        $result = app(RefundService::class)->cancelOrder($order, $request->input('reason'));
 
-        if ($result['success']) {
-            try {
-                $order->refresh();
-                Mail::to($order->billing_email)->send(new OrderCanceledNotification($order));
-            } catch (\Throwable $e) {
-                Log::error('Order canceled email failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
-            }
-            return redirect()->route('admin.orders.show', $order->id)->with('success', $result['message']);
+        if ($order->status === 'canceled') {
+            return redirect()->route('admin.orders.show', $order->id)->with('info', 'Order is already canceled.');
         }
 
-        $redirect = redirect()->route('admin.orders.show', $order->id)->with('error', $result['error'] ?? 'Failed to cancel order.');
-        if (!empty($result['debug'])) {
-            $redirect->with('refund_debug', $result['debug']);
+        try {
+            $order->status = 'canceled';
+            $order->save();
+
+            Mail::to($order->billing_email)->send(new OrderCanceledNotification($order));
+        } catch (\Throwable $e) {
+            Log::error('Order cancel operation failed', [
+                'order_id' => $order->id,
+                'error' => $e->getMessage(),
+            ]);
+            return redirect()->route('admin.orders.show', $order->id)->with('error', 'Failed to cancel order.');
         }
-        return $redirect;
+
+        return redirect()->route('admin.orders.show', $order->id)->with('success', 'Order canceled.');
     }
 
     /**
