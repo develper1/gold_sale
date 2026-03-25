@@ -11,9 +11,14 @@
     @if($isPaidAtOrder)
     <p class="text-success"><strong>Thank you! Your payment has been received.</strong> We will process your order shortly.</p>
     @else
-    <p><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
-        with your order number to make payment. Payment must be received within 48 hours of order placement
-        or the order will be automatically canceled.</strong></p>
+    <p>
+        <strong>
+            To complete payment for your order, follow instructions received in your
+            email confirmation. You must contact our office with your order number
+            within <strong>24 hours</strong> with any questions to affect payment. Payment must be
+            received within <strong>48 hours</strong> or the order will be automatically canceled.
+        </strong>
+    </p>
 
     @if(in_array($order->payment_method, ['ach', 'bank_wire', 'wire']))
     <p>
@@ -26,7 +31,7 @@
     @if($order->payment_method === 'zelle')
     <p>
         Payment via Zelle must be sent to 
-        <a href="mailto:Zelle@OasisMint.com">Zelle@OasisMint.com</a>
+        <a href="mailto:Sales@oasismint.com">Sales@oasismint.com</a>
         within 24 hours of Order Confirmation.
     </p>
     @endif
