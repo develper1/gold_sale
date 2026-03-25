@@ -112,9 +112,12 @@ img {
 /* Logo */
 
 .logo {
-    height: 75px;
+    /* Prevent logo squashing in email clients */
+    max-width: 180px;
+    width: auto;
+    height: auto;
     max-height: 75px;
-    width: 75px;
+    display: block;
 }
 
 /* Body */
