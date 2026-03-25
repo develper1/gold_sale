@@ -308,10 +308,33 @@ $billingCompany = old('billing_company', '');
                                 </div>
                                 <div id="payment" class="checkout-payment">
                                     <ul class="payment-methods methods custom-radio">
+                                         <li class="payment-method">
+                                             <input type="radio" class="input-radio" name="payment_method" value="bank_wire" id="payment_method_bank_wire">
+                                             <label for="payment_method_bank_wire">Bank Wire</label>
+                                         </li>
+                                         <li class="payment-method">
+                                             <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
+                                             <label for="payment_method_ach">ACH / Echeck</label>
+                                         </li>
+                                        <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="paypal" id="payment_method_paypal">
+                                            <!-- <label for="payment_method_paypal">PayPal / Credit Card</label> -->
+                                            <label for="payment_method_paypal">Credit Card / PayPal</label>
+                                            <div class="payment-box">
+                                                <p>To pay via credit card, please use the paypal option.</p>
+                                            </div>
+                                            {{-- <div class="payment-box">
+                                                <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal account.</p>
+                                            </div> --}}
+                                        </li>
+                                         <li class="payment-method">
+                                            <input type="radio" class="input-radio" name="payment_method" value="zelle" id="payment_method_zelle">
+                                            <label for="payment_method_zelle">Zelle</label>
+                                         </li>
 
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="cheque" id="payment_method_cheque" checked>
-                                            <label for="payment_method_cheque">Check payments</label>
+                                            <label for="payment_method_cheque">Certified Check</label>
                                             {{-- <div class="payment-box">
                                                 <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
                                             </div> --}}
@@ -327,28 +350,6 @@ $billingCompany = old('billing_company', '');
                                             <input type="radio" class="input-radio" name="payment_method" value="credit_card" id="payment_method_credit_card">
                                             <label for="payment_method_credit_card">Credit Card</label>
                                         </li>--}}
-                                        <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="paypal" id="payment_method_paypal">
-                                            <label for="payment_method_paypal">PayPal / Credit Card</label>
-                                            <div class="payment-box">
-                                                <p>To pay via credit card, please use the paypal option.</p>
-                                            </div>
-                                            {{-- <div class="payment-box">
-                                                <p>Pay via PayPal; you can pay with your credit card if you don’t have a PayPal account.</p>
-                                            </div> --}}
-                                        </li>
-                                         <li class="payment-method">
-                                             <input type="radio" class="input-radio" name="payment_method" value="bank_wire" id="payment_method_bank_wire">
-                                             <label for="payment_method_bank_wire">Bank Wire</label>
-                                         </li>
-                                         <li class="payment-method">
-                                             <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
-                                             <label for="payment_method_ach">ACH / Echeck</label>
-                                         </li>
-                                         <li class="payment-method">
-                                            <input type="radio" class="input-radio" name="payment_method" value="zelle" id="payment_method_zelle">
-                                            <label for="payment_method_zelle">Zelle</label>
-                                         </li>
                                     </ul>
                                     <div id="credit-card-fields" style="display:none; margin-top: 20px;">
                                        <div class="payment-form px-3 py-3 row m-0">
@@ -404,10 +405,14 @@ $billingCompany = old('billing_company', '');
                                             <p id="agree-terms-error" class="text-danger" style="display:none; margin-top: 4px;">You must agree to the Sales Policy, Returns & Exchanges Policy, Terms of Sale, and Anti Money Laundering Policy to complete your order.</p>
                                         </div>
                                         <div id="manual-payment-message" class="manual-payment-message">
-                                            After placing order below, please call our office within 2 business days with your order number to make payment and complete your order.
+                                            <!-- After placing order below, please call our office within 2 business days with your order number to make payment and complete your order. -->
+                                            Upon placing
+                                            order below, you are confirming your commitment to make full payment within
+                                            two business days. Please contact our office with your order number to
+                                            confirm payment. An email confirmation with instruction will follow.
                                         </div>
                                         <div id="checkout-errors" style="display:none;"></div>
-                                        <button type="submit" name="checkout_place_order" id="place-order-btn" class="button alt">Place Order</button>
+                                        <button type="submit" name="checkout_place_order" id="place-order-btn" class="button alt">Confirm Order</button>
                                         <div id="checkout-loading" style="display:none;margin-top:10px;"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...</div>
                                         <div id="paypal-button-container" class="mt-3" style="display:none;width: 100%;"></div>
                                     </div>
