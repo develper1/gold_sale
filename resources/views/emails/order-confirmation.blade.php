@@ -22,25 +22,27 @@
             <strong>Thank you! Your payment has been received.</strong> We will process your order shortly.
         </p>
         @else
-        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;"><strong>To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong>
-        with your order number to make payment. Payment must be received within 48 hours of order placement
-        or the order will be automatically canceled.</strong></p>
-
-        @if(in_array($order->payment_method, ['ach', 'bank_wire', 'wire']))
-        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
-            You MUST email the accounts department at 
-            <a href="mailto:Payments@OasisMint.com" style="color:#2563eb;text-decoration:none;">Payments@OasisMint.com</a>
-            to request account and routing information within 2 business days of order confirmation.
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
+            <strong>Thank you for your order!</strong><br>
+            To complete payment for your order, follow instructions below.
         </p>
-        @endif
 
-        @if($order->payment_method === 'zelle')
-        <p style="margin:0 0 12px;font-size:14px;line-height:20px;color:#111111;">
-            Payment via Zelle must be sent to 
-            <a href="mailto:Zelle@OasisMint.com" style="color:#2563eb;text-decoration:none;">Zelle@OasisMint.com</a>
-            within 24 hours of Order Confirmation.
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
+            <strong>Wire/ACH or eCheck Instructions:</strong><br>
+            Bank of America Routing #026009593<br>
+            Account of Oasis Mint LLC #483110079771<br>
+            1234 Saint Johns Place #130426<br>
+            Brooklyn, NY 11213<br><br>
+
+            <strong>Zelle payments to:</strong> Sales@oasismint.com
         </p>
-        @endif
+
+        <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
+            Once payment is received by our office, an email confirmation will be sent
+            to you. You must contact our office with your order number within <strong>24 hours</strong>
+            with any questions to affect payment. Payment must be received within <strong>48 hours</strong>
+            or the order will be automatically canceled.
+        </p>
         @endif
 
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;">
@@ -132,7 +134,7 @@
                 @if($order->payment_method === 'zelle')
                   <div style="background:#fff7ed;border-radius:4px;padding:12px;margin-top:8px;text-align:center;">
                     <div style="font-size:13px;color:#9a3412;font-weight:bold;">⚡ Send ${{ number_format($order->total, 2) }} via Zelle</div>
-                    <div style="font-size:18px;font-weight:bold;color:#2563eb;margin:4px 0;">Zelle@OasisMint.com</div>
+                    <div style="font-size:18px;font-weight:bold;color:#2563eb;margin:4px 0;">Sales@oasismint.com</div>
                     <div style="font-size:12px;color:#9a3412;">Due within 24 hours</div>
                   </div>
                 @endif
