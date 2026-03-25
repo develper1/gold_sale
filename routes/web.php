@@ -43,9 +43,9 @@ use App\Models\MetalPrice;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-})->name('index');
+// Route::get('/', function () {
+//     return view('index');
+// })->name('index');
 
 Route::get('/landing', function () {
     return view('index');
@@ -86,7 +86,7 @@ Route::post('/contact', [App\Http\Controllers\ContactController::class, 'submit'
 // Route::get('/thumbs', function () {
 //     return view('thumbs');
 // });
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::post('/subscriber', [SubscriberController::class, 'store'])->name('subscriber.store');
 Route::post('/subscriber/detail', [SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
