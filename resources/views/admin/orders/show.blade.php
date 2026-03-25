@@ -194,11 +194,11 @@
                         @endphp
                         @if($remaining > 0)
                             <div class="d-flex flex-wrap gap-2 mb-3">
-                                <form action="{{ route('admin.orders.cancel', $order->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Cancel this order and issue a full refund?');">
+                                <!-- <form action="{{ route('admin.orders.cancel', $order->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Cancel this order and issue a full refund?');">
                                     @csrf
                                     <input type="hidden" name="reason" value="Order canceled by admin">
                                     <button type="submit" class="btn btn-warning btn-sm">Cancel Order (Full Refund)</button>
-                                </form>
+                                </form> -->
                                 <form action="{{ route('admin.orders.refund', $order->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Issue full refund of ${{ number_format($remaining, 2) }}?');">
                                     @csrf
                                     <button type="submit" class="btn btn-secondary btn-sm">Full Refund (${{ number_format($remaining, 2) }})</button>
