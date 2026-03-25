@@ -11,7 +11,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <x-page-header 
     title="Shopping Cart" 
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Shop', 'url' => '/thumbs'],
         ['label' => 'Shopping Cart']
     ]" 
