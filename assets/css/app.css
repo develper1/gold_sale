@@ -11034,6 +11034,11 @@ body.home.title-6 .block-newsletter .newsletter-title {
 /**
  * 9.2. Forget Password
  */
+.page-forget-password .reset-password {
+    /* Keep the form inputs at a comfortable width instead of stretching full screen */
+    max-width: 420px;
+    margin: 0 auto;
+}
 .page-forget-password .reset-password .form-row {
     margin: 0;
     margin-bottom: 15px;
