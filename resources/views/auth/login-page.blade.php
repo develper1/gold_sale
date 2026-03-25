@@ -13,7 +13,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <x-page-header 
     title="Login / Register" 
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Login / Register']
     ]" 
 />

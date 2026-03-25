@@ -12,7 +12,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <x-page-header 
     title="Terms of Sale" 
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Terms of Sale']
     ]" 
 />

@@ -12,7 +12,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <x-page-header 
     :title="($subcategory ?? null)?->name ?? ($category ?? null)?->name ?? 'Oasis Mint - Gold, Silver, and Investment Treasures'"
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Shop', 'url' => '/thumbs'],
         ['label' => ($subcategory ?? null)?->name ?? ($category ?? null)?->name ?? '']
     ]" 

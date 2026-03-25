@@ -12,7 +12,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <x-page-header 
     title="Frequently Asked Questions" 
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Frequently Asked Questions']
     ]" 
 />

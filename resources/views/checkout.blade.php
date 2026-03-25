@@ -31,7 +31,7 @@ $billingCompany = old('billing_company', '');
 <x-page-header 
     title="Checkout" 
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Shop', 'url' => '/thumbs'],
         ['label' => 'Checkout']
     ]" 

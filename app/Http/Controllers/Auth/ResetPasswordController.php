@@ -28,7 +28,8 @@ class ResetPasswordController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    // protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Get the password reset validation rules.
@@ -89,7 +90,7 @@ class ResetPasswordController extends Controller
             }
         );
 
-        return redirect('/home')->with('success', 'Your password has been reset successfully!');
+        return redirect('/')->with('success', 'Your password has been reset successfully!');
     }
 
 

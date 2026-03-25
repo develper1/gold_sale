@@ -69,7 +69,8 @@ class UserLoginController extends Controller
     {
         session()->forget('cart');
         Auth::guard('web')->logout();
-        return redirect('/home');
+        return redirect('/');
+        // return redirect('/home');
     }
 
     public function showForgetPassForm()

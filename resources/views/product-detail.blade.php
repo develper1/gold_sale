@@ -11,7 +11,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <x-page-header 
     title="{{ $product->name }}" 
     :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/home'],
+        ['label' => 'Home', 'url' => '/'],
         ['label' => 'Shop', 'url' => '/thumbs'],
         ['label' => $product->subCategory->category->name, 'url' => route('shop.category', $product->subCategory->category->slug)],
         ['label' => $product->subCategory->name, 'url' => route('shop.subcategory', $product->subCategory->slug)],
