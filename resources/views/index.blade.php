@@ -63,6 +63,9 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
                                 <div class="col-md-3 email-form-row">
                                     <button class="btn btn-primary btn-xl w-100 text-dark" id="submitButton" type="submit">Notify Me!</button>
                                 </div>
+                                <div class="col-md-12 email-form-row mt-3">
+                                    <div class="g-recaptcha d-inline-block" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                </div>
                                 <div class="col-md-12" id="show-thankyou-message" style="display: none">
                                     <div class="col-md-12">
                                         <h6 class="text-white">Thank you for your submission. Do you have another 30 seconds to get special promotions and pricing? <a href=".detailed-form" class="show-detailed-form" style="cursor: pointer;">Click HERE</a></h6>
@@ -193,6 +196,7 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <!-- <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script> -->
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
         <script>
             $(document).ready(function() {
@@ -207,6 +211,16 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
 
                 $('#email-form').on('submit', function(e) {
                     e.preventDefault();
+
+                    var recaptchaResponse = '';
+                    if (typeof grecaptcha !== 'undefined') {
+                        recaptchaResponse = grecaptcha.getResponse();
+                    }
+
+                    if (!recaptchaResponse) {
+                        alert('Please complete the CAPTCHA verification.');
+                        return;
+                    }
                     
                     $.ajax({
                         url: '{{ route("subscriber.store") }}',
@@ -214,6 +228,7 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
                         headers: { 'X-Requested-With': 'XMLHttpRequest' },
                         data: {
                             email: $('#email').val(),
+                            'g-recaptcha-response': recaptchaResponse,
                             // source: 'landing',
                             _token: '{{ csrf_token() }}'
                         },
@@ -229,6 +244,9 @@ Your secure source for Gold, Silver, Platinum and other precious metals, coins a
                         error: function(xhr) {
                             if(xhr.status === 422) {
                                 alert(xhr.responseJSON.message);
+                                if (typeof grecaptcha !== 'undefined') {
+                                    grecaptcha.reset();
+                                }
                             } else {
                                 alert('Something went wrong. Please try again.');
                             }

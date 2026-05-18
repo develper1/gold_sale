@@ -7,6 +7,7 @@ use App\Models\SubscriberDetail;
 use App\Mail\SubscriberWelcome;
 use App\Mail\AdminSubscriberNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,10 @@ class SubscriberController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email'
+            'email' => 'required|email',
+            'g-recaptcha-response' => 'required',
+        ], [
+            'g-recaptcha-response.required' => 'Please complete the CAPTCHA verification.',
         ]);
 
         $isAjax = $request->ajax() || $request->wantsJson();
@@ -30,6 +34,25 @@ class SubscriberController extends Controller
                 ->withErrors($validator)
                 ->withInput()
                 ->with('error', $validator->errors()->first());
+        }
+
+        $recaptchaVerification = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [
+            'secret' => config('services.recaptcha.secret_key'),
+            'response' => $request->input('g-recaptcha-response'),
+            'remoteip' => $request->ip(),
+        ]);
+
+        if (!$recaptchaVerification->json('success')) {
+            $captchaError = 'CAPTCHA verification failed. Please try again.';
+
+            if ($isAjax) {
+                return response()->json(['status' => 'error', 'message' => $captchaError], 422);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['g-recaptcha-response' => $captchaError])
+                ->with('error', $captchaError);
         }
 
         // Check for duplicate email (case-insensitive) — do not allow duplicates

@@ -1,6 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 	@include('layouts.header')
+	<style>
+		/* Keep footer newsletter layout clean when reCAPTCHA is enabled. */
+		.block-newsletter .newsletter-form.newsletter-form-with-captcha {
+			display: block;
+			max-width: 360px;
+		}
+		.block-newsletter .newsletter-form.newsletter-form-with-captcha input[type='email'] {
+			margin-bottom: 10px;
+		}
+		.block-newsletter .newsletter-form.newsletter-form-with-captcha .newsletter-captcha-wrap {
+			margin: 10px 0 12px;
+			overflow: hidden;
+		}
+		.block-newsletter .newsletter-form.newsletter-form-with-captcha .btn-submit {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 150px;
+		}
+		.block-newsletter .newsletter-form.newsletter-form-with-captcha .btn-submit:before {
+			content: none;
+		}
+		.block-newsletter .newsletter-form.newsletter-form-with-captcha .btn-submit input[type='submit'] {
+			height: 44px;
+			line-height: 44px;
+			padding: 0 18px;
+			font-size: 13px;
+			font-weight: 600;
+			color: #fff;
+		}
+		@media (max-width: 420px) {
+			.block-newsletter .newsletter-form.newsletter-form-with-captcha .g-recaptcha {
+				transform: scale(0.88);
+				transform-origin: left top;
+			}
+			.block-newsletter .newsletter-form.newsletter-form-with-captcha .newsletter-captcha-wrap {
+				height: 68px;
+			}
+		}
+	</style>
 	
 	<body class="home home-4 title-4">
 		<div id="page" class="hfeed page-wrapper">
@@ -155,9 +195,15 @@
 											<h2 class="block-title">Our Newsletter</h2>
 											<div class="block-content">
 												<div class="newsletter-text">Sign up for the latest offers and exclusives.</div>
-												<form action="{{ route('subscriber.store') }}" method="POST" class="newsletter-form">
+												<form action="{{ route('subscriber.store') }}" method="POST" class="newsletter-form newsletter-form-with-captcha">
 													@csrf
 													<input type="email" name="email" placeholder="Email address" required>
+													<div class="newsletter-captcha-wrap">
+														<div class="g-recaptcha" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+													</div>
+													@error('g-recaptcha-response')
+														<span class="invalid-feedback" style="color: #dc3545; display: block; margin-top: 5px;" role="alert">{{ $message }}</span>
+													@enderror
 													<label class="btn-submit" for="newsletter-submit">
 														<input type="submit" id="newsletter-submit" value="Subscribe">
 													</label>
@@ -205,6 +251,8 @@
 		</div>
 
         @include('layouts.footer')
+
+		<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 
 

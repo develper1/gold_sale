@@ -355,7 +355,8 @@ class ShopController extends Controller
             $requestedQuantity = $currentCartQuantity + $quantity;
             
             if ($requestedQuantity > $product->quantity_available) {
-                $message = 'Insufficient stock. Only ' . $product->quantity_available . ' items available.';
+                // $message = 'Insufficient stock. Only ' . $product->quantity_available . ' items available.';
+                $message = 'The item you have selected is currently unavailable or sold out. Please contact Customer Service for more information: Support@OasisMint.com.';
                 if ($currentCartQuantity > 0) {
                     $message .= ' You already have ' . $currentCartQuantity . ' in your cart.';
                 }
@@ -455,7 +456,8 @@ class ShopController extends Controller
                 if ($quantity > $product->quantity_available) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Insufficient stock. Only ' . $product->quantity_available . ' items available.'
+                        // 'message' => 'Insufficient stock. Only ' . $product->quantity_available . ' items available.'
+                        'message' => 'The item you have selected is currently unavailable or sold out. Please contact Customer Service for more information: Support@OasisMint.com.'
                     ], 422);
                 }
             }
