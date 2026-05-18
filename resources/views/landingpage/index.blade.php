@@ -49,6 +49,9 @@
                                 <div class="col-md-4 mt-3">
                                     <button class="btn btn-primary btn-xl w-100" id="submitButton" type="submit">Next</button>
                                 </div>
+                                <div class="col-md-12 mt-3">
+                                    <div class="g-recaptcha d-inline-block" data-sitekey="{{ config('services.recaptcha.site_key') }}"></div>
+                                </div>
                             </div>
                             <div class="row" id="show-thankyou-message" style="display: none">
                                 <div class="col-md-12">
@@ -172,6 +175,7 @@
         <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
         <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
         <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
         <script>
             $(document).ready(function() {
@@ -186,12 +190,23 @@
 
                 $('#email-form').on('submit', function(e) {
                     e.preventDefault();
+
+                    var recaptchaResponse = '';
+                    if (typeof grecaptcha !== 'undefined') {
+                        recaptchaResponse = grecaptcha.getResponse();
+                    }
+
+                    if (!recaptchaResponse) {
+                        alert('Please complete the CAPTCHA verification.');
+                        return;
+                    }
                     
                     $.ajax({
                         url: '{{ route("subscriber.store") }}',
                         method: 'POST',
                         data: {
                             email: $('#email').val(),
+                            'g-recaptcha-response': recaptchaResponse,
                             _token: '{{ csrf_token() }}'
                         },
                         success: function(response) {
@@ -206,6 +221,9 @@
                         error: function(xhr) {
                             if(xhr.status === 422) {
                                 alert(xhr.responseJSON.message);
+                                if (typeof grecaptcha !== 'undefined') {
+                                    grecaptcha.reset();
+                                }
                             } else {
                                 alert('Something went wrong. Please try again.');
                             }
