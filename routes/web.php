@@ -31,6 +31,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AccountController;
 use App\Services\MetalPriceService;
 use App\Models\MetalPrice;
+use App\Http\Controllers\PlaidController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,13 +92,13 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 Route::post('/subscriber', [SubscriberController::class, 'store'])->name('subscriber.store');
 Route::post('/subscriber/detail', [SubscriberController::class, 'storeDetail'])->name('subscriber.storeDetail');
 
-Route::prefix('admin')->name('admin.')->group(function(){
+Route::prefix('admin')->name('admin.')->group(function () {
 
-    Route::middleware([GuestAdminMiddleware::class])->group(function(){
+    Route::middleware([GuestAdminMiddleware::class])->group(function () {
 
         Route::controller(AdminAuthController::class)->group(function () {
             Route::get('/login', 'index');
-            Route::post('/login','login')->name('login');
+            Route::post('/login', 'login')->name('login');
         });
 
     });
@@ -139,7 +140,7 @@ Route::prefix('admin')->name('admin.')->group(function(){
 });
 
 // Auth::routes();
-Route::middleware([GuestUserMiddleware::class])->group(function(){
+Route::middleware([GuestUserMiddleware::class])->group(function () {
 
     Route::get('/login', [UserLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [UserLoginController::class, 'login'])->name('login.submit');
@@ -178,6 +179,9 @@ Route::group(['middleware' => ['auth:web', 'user', 'verified', 'profile.complete
 
     Route::post('/account/update', [AccountController::class, 'update'])->name('account.update');
 
+    // Plaid Routes
+    Route::post('/plaid/create-link-token', [PlaidController::class, 'createLinkToken'])->name('plaid.create-link-token');
+
 
 });
 
@@ -204,7 +208,8 @@ Route::get('/products/{product}/tier-prices-modal', [ShopController::class, 'get
 
 Route::get('/admin/products/spot-price', function (\Illuminate\Http\Request $request) {
     $type = $request->input('type');
-    if (!$type) return response()->json(['success' => false, 'message' => 'Type required'], 400);
+    if (!$type)
+        return response()->json(['success' => false, 'message' => 'Type required'], 400);
     $metalPriceService = app(\App\Services\MetalPriceService::class);
     $spotPrice = $metalPriceService->getSpotPrice($type);
     return response()->json(['success' => true, 'spot_price' => $spotPrice]);
@@ -215,11 +220,11 @@ Route::get('/state-fee/{code}', function ($code) {
     if (!$stateFee) {
         return response()->json(['amount' => 0, 'fee_type' => 'flat']);
     }
-    
+
     // Get subtotal from request if available
     $subtotal = request('subtotal', 0);
     $calculatedAmount = $stateFee->calculateFee($subtotal);
-    
+
     return response()->json([
         'amount' => $calculatedAmount,
         'fee_type' => $stateFee->fee_type,
@@ -240,9 +245,9 @@ Route::post('/validate-coupon', [OrderController::class, 'validateCoupon'])->nam
  * Public JSON endpoint for latest metal prices from DB (used by frontend JS).
  */
 Route::get('/metal-prices/latest', function () {
-    $base     = 'USD';
-    $rates    = [];
-    $changes  = [];
+    $base = 'USD';
+    $rates = [];
+    $changes = [];
     $percents = [];
 
     MetalPrice::query()
@@ -255,15 +260,15 @@ Route::get('/metal-prices/latest', function () {
 
             $rates[$key] = (float) $latest->price;
             // These may be null for older rows before the columns existed, so default to 0
-            $changes[$key]  = isset($latest->change) ? (float) $latest->change : 0.0;
+            $changes[$key] = isset($latest->change) ? (float) $latest->change : 0.0;
             $percents[$key] = isset($latest->percent) ? (float) $latest->percent : 0.0;
         });
 
     return response()->json([
         'success' => true,
-        'base'     => $base,
-        'rates'    => $rates,
-        'changes'  => $changes,
+        'base' => $base,
+        'rates' => $rates,
+        'changes' => $changes,
         'percents' => $percents,
     ]);
 })->name('metal-prices.latest');

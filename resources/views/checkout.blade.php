@@ -315,6 +315,20 @@ $billingCompany = old('billing_company', '');
                                          <li class="payment-method">
                                              <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
                                              <label for="payment_method_ach">ACH / Echeck</label>
+                                             <div id="plaid-ach-container" style="display:none; padding: 15px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; margin-top: 10px; margin-bottom: 10px;">
+                                                 <p style="margin-bottom: 12px; font-size: 14px; color: #555;">Please link your bank account to authorize ACH payment.</p>
+                                                 <button type="button" id="plaid-link-btn" class="button alt" style="background: #111; color: #fff; padding: 8px 16px; font-weight: 600; border-radius: 4px; border: none; font-size: 14px; text-transform: uppercase;">
+                                                     <i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account
+                                                 </button>
+                                                 <div id="plaid-linked-info" style="display:none; margin-top: 12px; color: #28a745; font-weight: 600; font-size: 14px;">
+                                                     <i class="fa fa-check-circle" style="margin-right: 4px;"></i> Linked Bank: <span id="plaid-bank-name"></span> (••••<span id="plaid-account-mask"></span>)
+                                                 </div>
+                                                 <div id="plaid-error" style="display:none; margin-top: 10px; color: #dc3545; font-size: 14px;"></div>
+                                                 <input type="hidden" name="plaid_public_token" id="plaid_public_token">
+                                                 <input type="hidden" name="plaid_account_id" id="plaid_account_id">
+                                                 <input type="hidden" name="plaid_bank_name" id="plaid_bank_name_input">
+                                                 <input type="hidden" name="plaid_account_mask" id="plaid_account_mask_input">
+                                             </div>
                                          </li>
                                         <li class="payment-method">
                                             <input type="radio" class="input-radio" name="payment_method" value="paypal" id="payment_method_paypal">
@@ -432,6 +446,7 @@ $billingCompany = old('billing_company', '');
 
 @push('scripts')
 
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 @if(env('PAYPAL_SANDBOX'))
     <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}&disable-funding=credit,card,paylater"></script>
 @else
@@ -791,6 +806,72 @@ $(document).ready(function() {
         toggleCreditCardFields();
         togglePaymentButtons();
         handleCreditCardFeeDisplay();
+        togglePlaidFields();
+    });
+
+    // --- Plaid Link Integration ---
+    var plaidHandler = null;
+
+    function togglePlaidFields() {
+        var selected = $('input[name="payment_method"]:checked').val();
+        if (selected === 'ach') {
+            $('#plaid-ach-container').show();
+        } else {
+            $('#plaid-ach-container').hide();
+        }
+    }
+
+    // Initial check
+    togglePlaidFields();
+
+    $('#plaid-link-btn').on('click', function() {
+        var btn = $(this);
+        btn.prop('disabled', true).text('Connecting...');
+        $('#plaid-error').hide().text('');
+
+        $.ajax({
+            url: '{{ route("plaid.create-link-token") }}',
+            method: 'POST',
+            data: {
+                _token: $('input[name="_token"]').val()
+            },
+            success: function(response) {
+                btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account');
+                if (response.link_token) {
+                    plaidHandler = Plaid.create({
+                        token: response.link_token,
+                        onSuccess: function(public_token, metadata) {
+                            $('#plaid_public_token').val(public_token);
+                            $('#plaid_account_id').val(metadata.account_id);
+                            $('#plaid_bank_name_input').val(metadata.institution.name);
+                            $('#plaid_account_mask_input').val(metadata.account.mask);
+
+                            $('#plaid-bank-name').text(metadata.institution.name);
+                            $('#plaid-account-mask').text(metadata.account.mask);
+                            $('#plaid-linked-info').show();
+                            btn.html('<i class="fa fa-university" style="margin-right: 8px;"></i> Change Bank Account');
+                            $('#plaid-error').hide();
+                        },
+                        onExit: function(err, metadata) {
+                            if (err != null) {
+                                $('#plaid-error').text(err.display_message || 'Plaid connection exited.').show();
+                            }
+                        }
+                    });
+                    plaidHandler.open();
+                } else {
+                    $('#plaid-error').text('Could not generate link token. Please try again.').show();
+                }
+            },
+            error: function(xhr) {
+                btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account');
+                var errorMsg = 'Failed to connect to Plaid. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+                $('#plaid-error').text(errorMsg).show();
+            }
+        });
     });
 
 
@@ -999,6 +1080,13 @@ $(document).ready(function() {
             // Let PayPal JS handle it
             return true;
         }
+        if (selected === 'ach') {
+            var publicToken = $('#plaid_public_token').val();
+            if (!publicToken) {
+                $('#checkout-errors').html('<div class="alert alert-danger text-danger">Please link your bank account via Plaid before confirming the order.</div>').show();
+                return false;
+            }
+        }
         e.preventDefault();
         $('#checkout-errors').hide().empty();
         if (!isCheckoutFormValid()) {
@@ -1092,7 +1180,7 @@ $(document).ready(function() {
     $(document).ready(function(){
         function toggleManualPaymentMessage() {
             var selected = $('input[name="payment_method"]:checked').val();
-            var manualMethods = ['bank_wire', 'ach', 'zelle', 'cheque'];
+            var manualMethods = ['bank_wire', 'zelle', 'cheque'];
 
             if (manualMethods.includes(selected)) {
                 $('#manual-payment-message').show();
