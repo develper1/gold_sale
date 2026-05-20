@@ -30,15 +30,23 @@ class PlaidController extends Controller
      */
     public function createLinkToken(Request $request)
     {
-        $clientId = env('PLAID_CLIENT_ID');
-        $secret = env('PLAID_SECRET');
+        $env = env('PLAID_ENV', 'sandbox');
+        $isSandbox = ($env === 'sandbox');
+
+        $clientId = $isSandbox
+            ? env('PLAID_SANDBOX_CLIENT_ID', env('PLAID_CLIENT_ID'))
+            : env('PLAID_LIVE_CLIENT_ID', env('PLAID_CLIENT_ID'));
+
+        $secret = $isSandbox
+            ? env('PLAID_SANDBOX_SECRET', env('PLAID_SECRET'))
+            : env('PLAID_LIVE_SECRET', env('PLAID_SECRET'));
 
         if (!$clientId || !$secret) {
             Log::error('Plaid credentials are not configured in .env');
             return response()->json(['error' => 'Plaid is not configured properly on the server.'], 500);
         }
 
-        $userId = auth()->id() ? (string)auth()->id() : 'guest_' . session()->getId();
+        $userId = auth()->id() ? (string) auth()->id() : 'guest_' . session()->getId();
 
         $payload = [
             'client_id' => $clientId,

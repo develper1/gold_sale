@@ -243,12 +243,20 @@ class OrderController extends Controller
         $transactionId = null;
 
         if ($isAch) {
-            $plaidBaseUrl = env('PLAID_ENV', 'sandbox') === 'production'
-                ? 'https://production.plaid.com'
-                : (env('PLAID_ENV') === 'development' ? 'https://development.plaid.com' : 'https://sandbox.plaid.com');
+            $plaidEnv = env('PLAID_ENV', 'sandbox');
+            $isPlaidSandbox = ($plaidEnv === 'sandbox');
 
-            $clientId = env('PLAID_CLIENT_ID');
-            $secret = env('PLAID_SECRET');
+            $plaidBaseUrl = $isPlaidSandbox
+                ? 'https://sandbox.plaid.com'
+                : ($plaidEnv === 'production' ? 'https://production.plaid.com' : 'https://development.plaid.com');
+
+            $clientId = $isPlaidSandbox
+                ? env('PLAID_SANDBOX_CLIENT_ID', env('PLAID_CLIENT_ID'))
+                : env('PLAID_LIVE_CLIENT_ID', env('PLAID_CLIENT_ID'));
+
+            $secret = $isPlaidSandbox
+                ? env('PLAID_SANDBOX_SECRET', env('PLAID_SECRET'))
+                : env('PLAID_LIVE_SECRET', env('PLAID_SECRET'));
 
             if (!$clientId || !$secret) {
                 Log::error('Plaid credentials are not configured in .env');
