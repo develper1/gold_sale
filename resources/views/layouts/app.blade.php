@@ -211,11 +211,11 @@
 											</div>
 										</div>
 
-										<div class="block block-social">
+										<!-- <div class="block block-social">
 											<ul class="social-link">
 												<li><a href="https://www.instagram.com/oasis.mint" target="_blank"><i class="fa fa-instagram"></i></a></li>
 											</ul>
-										</div>
+										</div> -->
 									</div>
 									
 									

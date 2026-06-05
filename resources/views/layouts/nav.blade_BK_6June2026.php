@@ -300,9 +300,6 @@
                                         <li class="level-0 menu-item">
                                             <a href="{{ route('contact') }}"><span class="menu-item-text">Contact</span></a>
                                         </li>
-                                        <li class="level-0 menu-item instagram-menu-item">
-                                            <a href="https://www.instagram.com/oasis.mint" target="_blank"><i class="fa fa-instagram" style="margin-right: 6px;"></i><span class="menu-item-text">Instagram</span></a>
-                                        </li>
                                     </ul>
                                 </nav>
                             </div>
@@ -347,8 +344,6 @@
                                     <span class="count-wishlist">1</span>
                                 </div> --}}
                                 
-
-
                                 <!-- Cart -->
                                 <div class="mojuri-topcart dropdown light">
                                     <div class="dropdown mini-cart top-cart">
@@ -418,11 +413,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Instagram -->
-                                <div class="login-header icon">
-                                    <a href="https://www.instagram.com/oasis.mint" target="_blank" title="Follow us on Instagram"><i class="fa fa-instagram header-instagram-icon"></i></a>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -440,23 +430,6 @@
             display: none;
         }
     } */
-
-    /* Hide Instagram nav item from desktop menu — mmenu will still include it in mobile slide-out */
-    .header-desktop #menu-main-menu .instagram-menu-item {
-        display: none;
-    }
-
-    /* Desktop header Instagram icon — same look as the account icon-user */
-    .site-header .header-page-link .login-header .header-instagram-icon {
-        font-size: 20px;
-        -webkit-transition: all 0.3s ease;
-        transition: all 0.3s ease;
-        position: relative;
-        top: 1px;
-    }
-    .site-header .header-page-link .login-header .header-instagram-icon:hover {
-        top: -1px;
-    }
 </style>
 <script>
 $(document).ready(function() {
