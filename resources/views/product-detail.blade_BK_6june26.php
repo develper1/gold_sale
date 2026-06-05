@@ -41,17 +41,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                     </div>
                                 </div>
                                 <div class="col-md-10">
-                                    <div class="scroll-image main-image" style="position: relative;">
-                                        @if($product->ribbon_type)
-                                            <div class="product-ribbon ribbon-{{ $product->ribbon_type }}" style="width:100px; height:100px;">
-                                                <span style="top:22px; right:-18px; width:120px; font-size:12px;">
-                                                    @if($product->ribbon_type === 'on_sale') On Sale!
-                                                    @elseif($product->ribbon_type === 'new_item') New Item!
-                                                    @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                    @endif
-                                                </span>
-                                            </div>
-                                        @endif
+                                    <div class="scroll-image main-image">
                                         <div class="image-additional slick-carousel" data-asnavfor=".image-thumbnail" data-fade="true" data-columns4="1" data-columns3="1" data-columns2="1" data-columns1="1" data-columns="1" data-nav="true">
                                             @foreach($product->images as $image)
                                             <div class="img-item slick-slide">

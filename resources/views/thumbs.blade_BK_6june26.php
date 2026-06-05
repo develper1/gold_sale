@@ -110,24 +110,14 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 col-6">
                                                     <div class="products-entry clearfix product-wapper">
                                                         <div class="products-thumb">
-                                                            @if($product->ribbon_type)
-                                                                <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                                                    <span>
-                                                                        @if($product->ribbon_type === 'on_sale') On Sale!
-                                                                        @elseif($product->ribbon_type === 'new_item') New Item!
-                                                                        @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                                        @endif
-                                                                    </span>
-                                                                </div>
-                                                            @endif
                                                             @if($product->images->count() > 0)
                                                                 <div class="product-thumb-hover">
                                                                     <a href="{{ route('shop.product', $product->slug) }}">
-                                                                        <img width="600" height="600"
-                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}"
+                                                                        <img width="600" height="600" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="post-image" alt="{{ $product->name }}">
-                                                                        <img width="600" height="600"
-                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}"
+                                                                        <img width="600" height="600" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="hover-image back" alt="{{ $product->name }}">
                                                                     </a>
                                                                 </div>
@@ -184,21 +174,11 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
                                                 <div class="products-entry clearfix product-wapper">
                                                     <div class="products-thumb">
-                                                        @if($product->ribbon_type)
-                                                            <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                                                <span>
-                                                                    @if($product->ribbon_type === 'on_sale') On Sale!
-                                                                    @elseif($product->ribbon_type === 'new_item') New Item!
-                                                                    @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                                    @endif
-                                                                </span>
-                                                            </div>
-                                                        @endif
                                                         @if($product->images->count() > 0)
                                                             <div class="product-thumb-hover">
                                                                 <a href="{{ route('shop.product', $product->slug) }}">
-                                                                    <img width="600" height="600"
-                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}"
+                                                                    <img width="600" height="600" 
+                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="post-image" alt="{{ $product->name }}">
 
                                                                     @if(isset($product->images[1]))
@@ -270,21 +250,11 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                                 <div class="row">
                                                     <div class="col-md-4">
                                                         <div class="products-thumb">
-                                                            @if($product->ribbon_type)
-                                                                <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                                                    <span>
-                                                                        @if($product->ribbon_type === 'on_sale') On Sale!
-                                                                        @elseif($product->ribbon_type === 'new_item') New Item!
-                                                                        @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                                        @endif
-                                                                    </span>
-                                                                </div>
-                                                            @endif
                                                             @if($product->images->count() > 0)
                                                                 <div class="product-thumb-hover">
                                                                     <a href="{{ route('shop.product', $product->slug) }}">
-                                                                        <img width="600" height="600"
-                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}"
+                                                                        <img width="600" height="600" 
+                                                                             src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                              class="post-image" alt="{{ $product->name }}">
                                                                         @if(isset($product->images[1]))
                                                                              <img width="600" height="600" 
@@ -363,21 +333,11 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                             <div class="row">
                                                 <div class="col-md-4">
                                                     <div class="products-thumb">
-                                                        @if($product->ribbon_type)
-                                                            <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                                                <span>
-                                                                    @if($product->ribbon_type === 'on_sale') On Sale!
-                                                                    @elseif($product->ribbon_type === 'new_item') New Item!
-                                                                    @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                                    @endif
-                                                                </span>
-                                                            </div>
-                                                        @endif
                                                         @if($product->images->count() > 0)
                                                             <div class="product-thumb-hover">
                                                                 <a href="{{ route('shop.product', $product->slug) }}">
-                                                                    <img width="600" height="600"
-                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}"
+                                                                    <img width="600" height="600" 
+                                                                         src="{{ asset('storage/app/public/' . $product->images->first()->image_path) }}" 
                                                                          class="post-image" alt="{{ $product->name }}">
                                                                     @if(isset($product->images[1]))
                                                                          <img width="600" height="600" 

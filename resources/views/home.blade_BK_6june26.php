@@ -87,16 +87,9 @@
                                             <div class="products-entry clearfix product-wapper">
                                                 <div class="products-thumb">
                                                     <div class="product-lable">
-                                                        @if($product->ribbon_type)
-                                                            <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                                                <span>
-                                                                    @if($product->ribbon_type === 'on_sale') On Sale!
-                                                                    @elseif($product->ribbon_type === 'new_item') New Item!
-                                                                    @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                                    @endif
-                                                                </span>
-                                                            </div>
-                                                        @endif
+                                                        {{-- @if($product->is_featured)
+                                                            <div class="hot">Featured</div>
+                                                        @endif --}}
                                                     </div>
                                                     <div class="product-thumb-hover">
                                                         <a href="{{ route('shop.product', $product->slug) }}">
@@ -241,16 +234,7 @@
                                             <div class="products-entry clearfix product-wapper">
                                                 <div class="products-thumb">
                                                     <div class="product-lable">
-                                                        @if($product->ribbon_type)
-                                                            <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                                                <span>
-                                                                    @if($product->ribbon_type === 'on_sale') On Sale!
-                                                                    @elseif($product->ribbon_type === 'new_item') New Item!
-                                                                    @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                                                    @endif
-                                                                </span>
-                                                            </div>
-                                                        @endif
+                                                        {{-- Best Seller label can be added here if needed --}}
                                                     </div>
                                                     <div class="product-thumb-hover">
                                                         <a href="{{ route('shop.product', $product->slug) }}">

@@ -217,33 +217,7 @@
                                         <input type="checkbox" class="custom-control-input" id="is_best_seller" name="is_best_seller" value="1" {{ old('is_best_seller', $product->is_best_seller ?? false) ? 'checked' : '' }}>
                                         <label class="custom-control-label" for="is_best_seller">Best Seller</label>
                                     </div>
-
-                            </div>
-
-                            <div class="form-group mt-3">
-                                <label class="form-label fw-semibold">Product Ribbon</label>
-                                <div class="mt-1">
-                                    <div class="form-check mb-1">
-                                        <input class="form-check-input" type="radio" name="ribbon_type" id="ribbon_none" value=""
-                                            {{ old('ribbon_type', $product->ribbon_type ?? '') === '' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="ribbon_none">None (default)</label>
-                                    </div>
-                                    <div class="form-check mb-1">
-                                        <input class="form-check-input" type="radio" name="ribbon_type" id="ribbon_on_sale" value="on_sale"
-                                            {{ old('ribbon_type', $product->ribbon_type ?? '') === 'on_sale' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="ribbon_on_sale">On Sale!</label>
-                                    </div>
-                                    <div class="form-check mb-1">
-                                        <input class="form-check-input" type="radio" name="ribbon_type" id="ribbon_new_item" value="new_item"
-                                            {{ old('ribbon_type', $product->ribbon_type ?? '') === 'new_item' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="ribbon_new_item">New Item!</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="ribbon_type" id="ribbon_new_lower_price" value="new_lower_price"
-                                            {{ old('ribbon_type', $product->ribbon_type ?? '') === 'new_lower_price' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="ribbon_new_lower_price">New Lower Price!</label>
-                                    </div>
-                                </div>
+                                
                             </div>
                         
                             

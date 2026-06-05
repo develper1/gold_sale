@@ -17,19 +17,9 @@
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="product-card">
                         @if($product->images->count() > 0)
-                            <div class="product-image" style="position: relative;">
-                                @if($product->ribbon_type)
-                                    <div class="product-ribbon ribbon-{{ $product->ribbon_type }}">
-                                        <span>
-                                            @if($product->ribbon_type === 'on_sale') On Sale!
-                                            @elseif($product->ribbon_type === 'new_item') New Item!
-                                            @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
-                                            @endif
-                                        </span>
-                                    </div>
-                                @endif
+                            <div class="product-image">
                                 <a href="{{ route('product.show', $product->slug) }}">
-                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}"
+                                    <img src="{{ asset('storage/' . $product->images->first()->image_path) }}" 
                                          alt="{{ $product->name }}" class="img-fluid">
                                 </a>
                             </div>
