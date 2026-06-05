@@ -1,7 +1,3 @@
-@php
-$sliders = \App\Models\HomeSlider::orderBy('order')->get();
-@endphp
-
 @extends('layouts.app')
 
 @push('styles')
@@ -9,17 +5,18 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 @endpush
 
 @section('content')
-
-{{-- Reusable Slider Component --}}
-<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
-
-<x-page-header 
-    title="Contact Us" 
-    :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/'],
-        ['label' => 'Contact Us']
-    ]" 
-/>
+<div id="title" class="page-title">
+    <div class="section-container">
+        <div class="content-title-heading">
+            <h1 class="text-title-heading">
+                Contact Us
+            </h1>
+        </div>
+        <div class="breadcrumbs">
+            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Contact Us
+        </div>
+    </div>
+</div>
 
 <div id="content" class="site-content" role="main">
     <div class="page-contact">
@@ -53,7 +50,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                             <h2>Phone</h2>
                                         </div>
                                         <div class="item-content">
-                                            (212) 660-GOLD (4653)
+                                            (212) 470-7540
                                         </div>
                                     </div>
                                 </div>

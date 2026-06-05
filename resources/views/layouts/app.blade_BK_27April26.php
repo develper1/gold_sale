@@ -213,28 +213,13 @@
 
 										<div class="block block-social">
 											<ul class="social-link">
-												<li><a href="https://www.instagram.com/oasis.mint" target="_blank"><i class="fa fa-instagram"></i></a></li>
+												<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+												<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+												<li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+												<li><a href="#"><i class="fa fa-behance"></i></a></li>
 											</ul>
 										</div>
 									</div>
-									
-									
-									
-									<div class="col-lg-3 col-md-6 column-4">
-										<div class="block block-newsletter">
-											<h2 class="block-title">Membership</h2>
-											<div class="block-content">
-												
-													<img src="../../../assets/media/ANA_Member.jpg" style="width:50%; max-width:400px" alt="ANA Member" border="0">
-											</div>
-										</div>
-
-									</div>
-								</div>
-								
-								
-								
-								
 								</div>
 							</div>
 						</div>

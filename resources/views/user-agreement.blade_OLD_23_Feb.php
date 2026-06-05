@@ -1,20 +1,18 @@
-@php
-$sliders = \App\Models\HomeSlider::orderBy('order')->get();
-@endphp
 @extends('layouts.app')
 
 @section('content')
-
-{{-- Reusable Slider Component --}}
-<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
-
-<x-page-header 
-    title="Returns & Exchanges Policy" 
-    :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/'],
-        ['label' => 'Returns & Exchanges Policy']
-    ]" 
-/>
+<div id="title" class="page-title">
+    <div class="section-container">
+        <div class="content-title-heading">
+            <h1 class="text-title-heading">
+                Returns &amp; Exchanges Policy
+            </h1>
+        </div>
+        <div class="breadcrumbs">
+            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>Returns &amp; Exchanges Policy
+        </div>
+    </div>
+</div>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -73,7 +71,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 </ul>
 
 <strong>6. Contact Us</strong><br>
-<p>If you believe you&rsquo;ve received an incorrect or defective product, or if you have any questions about your order, please contact us at:<br /> <strong>Email:</strong> info@oasismint.com<br /> <strong>Phone:</strong> (212) 660-GOLD (4653)<br /> <strong>Address:</strong> 1234 St John's Place. Unit #130426. Brooklyn, New York 11213<br /> <b>Business Hours:</b> 9-5 pm - Monday thru Friday</p>
+<p>If you believe you&rsquo;ve received an incorrect or defective product, or if you have any questions about your order, please contact us at:<br /> <strong>Email:</strong> info@oasismint.com<br /> <strong>Phone:</strong> (212) 470-7540<br /> <strong>Address:</strong> 1234 St John's Place. Unit #130426. Brooklyn, New York 11213<br /> <b>Business Hours:</b> 9-5 pm - Monday thru Friday</p>
 <p>At <strong>Oasis Mint</strong>, we value your trust and strive to deliver excellence with every order. Thank you for understanding and respecting our return policy, which is designed to protect both our clients and the integrity of the precious metals market.<strong><br /></strong></p>
                     </div>
                     

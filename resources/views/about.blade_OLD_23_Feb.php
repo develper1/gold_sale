@@ -1,21 +1,18 @@
-@php
-$sliders = \App\Models\HomeSlider::orderBy('order')->get();
-@endphp
-
 @extends('layouts.app')
 
 @section('content')
-{{-- Reusable Slider Component --}}
-<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
-
-
-<x-page-header 
-    title="About Us" 
-    :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/'],
-        ['label' => 'About Us']
-    ]" 
-/>
+<div id="title" class="page-title">
+    <div class="section-container">
+        <div class="content-title-heading">
+            <h1 class="text-title-heading">
+                About Us
+            </h1>
+        </div>
+        <div class="breadcrumbs">
+            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span>About Us
+        </div>
+    </div>
+</div>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -45,9 +42,6 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
         <p>Today, we serve clients from all walks of life—from first-time buyers to seasoned investors—with the honesty and respect they deserve. At Oasis Mint, you're not just purchasing gold or silver; you're building something lasting. Thank you for placing your trust in us."</p>
         — Yossi Malamud<br>Founder & CEO, Oasis Mint
     </blockquote>
-	<br><br>
-	<img src="../../assets/media/ANA_Member.jpg" style="width:50%; max-width:400px" alt="ANA Member" border="0">
-	
                     </div>
                 </div>
                 

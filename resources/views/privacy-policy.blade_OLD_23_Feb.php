@@ -1,21 +1,18 @@
-@php
-$sliders = \App\Models\HomeSlider::orderBy('order')->get();
-@endphp
-
 @extends('layouts.app')
 
 @section('content')
-
-{{-- Reusable Slider Component --}}
-<x-mainslider :sliders="$sliders" height="30vh" autoplay="true" />
-
-<x-page-header 
-    title="Sales Policy" 
-    :breadcrumbs="[
-        ['label' => 'Home', 'url' => '/'],
-        ['label' => 'Sales Policy']
-    ]" 
-/>
+<div id="title" class="page-title">
+    <div class="section-container">
+        <div class="content-title-heading">
+            <h1 class="text-title-heading">
+                Sales Policy
+            </h1>
+        </div>
+        <div class="breadcrumbs">
+            <a href="{{ route('home') }}">Home</a><span class="delimiter"></span> Sales Policy
+        </div>
+    </div>
+</div>
 
 <div id="content" class="site-content" role="main">
     <div class="section-padding">
@@ -74,7 +71,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 
 <strong>10. Customer Support</strong>
 
-<p>If you have any questions or need assistance, our team is here to help. Contact us via:<br /> <strong>Email:</strong> info@oasismint.com<br /> <strong>Phone:</strong> (212) 660-GOLD (4653)<br /> <strong>Address:</strong> 1234 St John's Place. Unit #130426. Brooklyn, New York 11213<br /> <b>Business Hours:</b> 9-5 pm - Monday thru Friday</p>
+<p>If you have any questions or need assistance, our team is here to help. Contact us via:<br /> <strong>Email:</strong> info@oasismint.com<br /> <strong>Phone:</strong> (212) 470-7540<br /> <strong>Address:</strong> 1234 St John's Place. Unit #130426. Brooklyn, New York 11213<br /> <b>Business Hours:</b> 9-5 pm - Monday thru Friday</p>
 
                     </div>
                     
