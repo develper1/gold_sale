@@ -37,30 +37,17 @@ class Order extends Model
         'state_fee',
         'service_fee',
         'total',
-        'refunded_amount',
         'payment_method',
         'status',
         'order_uid',
         'transaction_id',
         'credit_card_fee',
         'credit_card_percentage',
-        'admin_notes',
-        'coupon_code',
-        'coupon_discount',
-        'coupon_description',
-        'plaid_bank_name',
-        'plaid_account_mask',
-        'plaid_account_id',
     ];
 
     public function items()
     {
         return $this->hasMany(OrderItem::class);
-    }
-
-    public function refunds()
-    {
-        return $this->hasMany(OrderRefund::class);
     }
 
     public static function generateOrderUid()
@@ -70,4 +57,4 @@ class Order extends Model
         } while (self::where('order_uid', $uid)->exists());
         return $uid;
     }
-}
+} 

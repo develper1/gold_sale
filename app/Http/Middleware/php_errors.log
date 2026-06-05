@@ -1,0 +1,4 @@
+[26-May-2026 16:15:49 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Auth\Middleware\Authenticate" not found in D:\home\oasismint.com\wwwroot\app\Http\Middleware\Authenticate.php:8
+Stack trace:
+#0 {main}
+  thrown in D:\home\oasismint.com\wwwroot\app\Http\Middleware\Authenticate.php on line 8

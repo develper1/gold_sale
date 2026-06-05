@@ -1,0 +1,4 @@
+[26-May-2026 16:15:49 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Foundation\Support\Providers\EventServiceProvider" not found in D:\home\oasismint.com\wwwroot\app\Providers\EventServiceProvider.php:10
+Stack trace:
+#0 {main}
+  thrown in D:\home\oasismint.com\wwwroot\app\Providers\EventServiceProvider.php on line 10

@@ -33,7 +33,7 @@
           <ul style="margin:0;padding-left:20px;font-size:15px;line-height:1.8;color:#374151;">
             <li>We'll review your message within 24 hours</li>
             <li>You'll receive a detailed response within 48 hours</li>
-            <li>For urgent inquiries, call us at <strong>(212) 470-7540</strong></li>
+            <li>For urgent inquiries, call us at <strong>(212) 660-GOLD (4653)</strong></li>
           </ul>
         </div>
         <div style="background:#f8fafc;border-radius:8px;padding:16px;margin:20px 0;text-align:left;">
@@ -41,7 +41,7 @@
           <p style="margin:0;font-size:15px;line-height:1.6;color:#374151;font-style:italic;">"{{ $message1 ?? 'No message provided' }}"</p>
         </div>
         <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#374151;">Need immediate help?</p>
-        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#374151;"><strong>Phone:</strong> (212) 470-7540 &nbsp;|&nbsp; <strong>Email:</strong> <a href="mailto:Sales@OasisMint.com" style="color:#2563eb;">Sales@OasisMint.com</a></p>
+        <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#374151;"><strong>Phone:</strong> (212) 660-GOLD (4653) &nbsp;|&nbsp; <strong>Email:</strong> <a href="mailto:Sales@OasisMint.com" style="color:#2563eb;">Sales@OasisMint.com</a></p>
         <a href="{{ url('/') }}" target="_blank" style="display:inline-block;background:#2563eb;color:#ffffff!important;text-decoration:none;padding:14px 28px;border-radius:8px;font-weight:600;font-size:15px;">Visit Oasis Mint →</a>
       </td>
     </tr>

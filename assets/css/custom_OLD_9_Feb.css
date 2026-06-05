@@ -1,0 +1,112 @@
+.modal-header {
+    justify-content: space-between;
+}
+.modal-content {
+    margin-top: 100px;
+}
+.top-ticker-section{
+    min-height: 40px;
+    background-color: #022952;
+}
+.ticker-collection{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+ .cbox {
+    color: #fff;
+    font-size: 15px;
+}
+ .homepage-collection-grid-item {
+    flex-basis: auto;
+    width: calc((100% - 0px * 3) / 4);
+    position: relative;
+}
+.c-text {
+    font-weight: 550;
+    color: #fff;
+}
+ .dollar-sign,.currency-rate {
+    font-weight: bold;
+    color: #fff;
+}
+#goldArrow{
+    vertical-align: middle;
+}
+#silverArrow{
+    vertical-align: middle;
+}
+#platinumArrow{
+    vertical-align: middle;
+}
+#palladiumArrow{
+    vertical-align: middle;
+}
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -5px;
+    margin-left: -5px;
+}
+
+.shop-checkout .checkout-review-order .state-fee {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dedede;
+    padding: 20px 0;
+}
+
+.shop-checkout .checkout-review-order .service-fee {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dedede;
+    padding: 20px 0;
+}
+.shop-checkout .checkout-review-order .credit-card-fee {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #dedede;
+    padding: 20px 0;
+}
+
+.coupon-code {
+    margin-top: 30px;
+    align-items: center;
+    border-top: 1px solid #dedede;
+    padding: 20px 0;
+}
+
+/* Quick view layout adjustments for tier pricing table */
+.quickview-popup .quickview-container .img-quickview {
+    width: 40% !important;
+}
+
+.quickview-popup .quickview-container .quickview-single-info {
+    width: 60% !important;
+    padding: 0 30px !important;
+}
+
+.quickview-popup .quickview-container .quickview-single-info .product-content-detail {
+    overflow-x: visible !important;
+    overflow-y: auto;
+}
+
+.quickview-popup .quickview-tier-pricing {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.quickview-popup .quickview-tier-pricing table {
+    width: 100%;
+    min-width: 100%;
+    table-layout: auto;
+}
+
+

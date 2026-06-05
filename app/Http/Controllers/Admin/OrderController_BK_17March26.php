@@ -1,0 +1,181 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Mail\OrderCanceledNotification;
+use App\Mail\OrderDeliveredNotification;
+use App\Mail\OrderPartiallyRefundedNotification;
+use App\Mail\OrderProcessedNotification;
+use App\Mail\OrderRefundedNotification;
+use App\Mail\OrderShippedNotification;
+use App\Mail\PaymentReceivedNotification;
+use App\Models\Order;
+use App\Services\RefundService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
+class OrderController extends Controller
+{
+    public function index()
+    {
+        $orders = Order::latest()->paginate(20);
+        return view('admin.orders.index', compact('orders'));
+    }
+
+    public function show($id)
+    {
+        $order = \App\Models\Order::with(['items', 'items.product.images', 'refunds'])->findOrFail($id);
+        $canRefundViaPayPal = app(RefundService::class)->canRefundViaPayPal($order);
+        return view('admin.orders.show', compact('order', 'canRefundViaPayPal'));
+    }
+
+    public function destroy($id)
+    {
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,paid,processed,shipped,delivered,refunded,partially_refunded,canceled',
+        ]);
+
+        $order = Order::findOrFail($id);
+        $previousStatus = $order->status;
+        $order->status = $request->status;
+        $order->save();
+
+        if ($previousStatus !== $request->status) {
+            try {
+                if ($request->status === 'paid' && $previousStatus === 'pending') {
+                    Mail::to($order->billing_email)->send(new PaymentReceivedNotification($order));
+                } elseif ($request->status === 'processed') {
+                    Mail::to($order->billing_email)->send(new OrderProcessedNotification($order));
+                } elseif ($request->status === 'shipped') {
+                    Mail::to($order->billing_email)->send(new OrderShippedNotification($order));
+                } elseif ($request->status === 'delivered') {
+                    Mail::to($order->billing_email)->send(new OrderDeliveredNotification($order));
+                } elseif ($request->status === 'refunded') {
+                    Mail::to($order->billing_email)->send(new OrderRefundedNotification($order));
+                } elseif ($request->status === 'canceled') {
+                    Mail::to($order->billing_email)->send(new OrderCanceledNotification($order));
+                } elseif ($request->status === 'partially_refunded') {
+                    $amount = (float) ($order->refunded_amount ?? 0);
+                    Mail::to($order->billing_email)->send(new OrderPartiallyRefundedNotification($order, $amount));
+                }
+            } catch (\Throwable $e) {
+                Log::error('Order status email failed', [
+                    'order_id' => $order->id,
+                    'status' => $request->status,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                ]);
+            }
+        }
+
+        return back()->with('success', 'Order status updated to ' . $order->status . '.');
+    }
+
+    public function updateNotes(Request $request, $id)
+    {
+        $request->validate([
+            'admin_notes' => 'nullable|string|max:5000',
+        ]);
+
+        $order = Order::findOrFail($id);
+        $order->admin_notes = $request->input('admin_notes');
+        $order->save();
+
+        return back()->with('success', 'Admin notes saved.');
+    }
+
+    /**
+     * Cancel order: full refund via PayPal and set status to canceled.
+     */
+    public function cancelOrder(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        $result = app(RefundService::class)->cancelOrder($order, $request->input('reason'));
+
+        if ($result['success']) {
+            try {
+                $order->refresh();
+                Mail::to($order->billing_email)->send(new OrderCanceledNotification($order));
+            } catch (\Throwable $e) {
+                Log::error('Order canceled email failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+            }
+            return redirect()->route('admin.orders.show', $order->id)->with('success', $result['message']);
+        }
+
+        $redirect = redirect()->route('admin.orders.show', $order->id)->with('error', $result['error'] ?? 'Failed to cancel order.');
+        if (!empty($result['debug'])) {
+            $redirect->with('refund_debug', $result['debug']);
+        }
+        return $redirect;
+    }
+
+    /**
+     * Full or partial refund via PayPal.
+     */
+    public function refund(Request $request, $id)
+    {
+        $order = Order::findOrFail($id);
+        $refundService = app(RefundService::class);
+
+        $amount = $request->input('amount');
+        $reason = $request->input('reason');
+
+        try {
+            if ($amount === null || $amount === '') {
+                $result = $refundService->fullRefund($order, $reason);
+            } else {
+                $request->validate([
+                    'amount' => 'required|numeric|min:0.01',
+                ]);
+                $result = $refundService->partialRefund($order, (float) $amount, $reason);
+            }
+
+            if ($result['success']) {
+                try {
+                    $order->refresh();
+                    if ($amount === null || $amount === '') {
+                        Mail::to($order->billing_email)->send(new OrderRefundedNotification($order));
+                    } else {
+                        Mail::to($order->billing_email)->send(new OrderPartiallyRefundedNotification($order, (float) $amount));
+                    }
+                } catch (\Throwable $e) {
+                    Log::error('Refund notification email failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
+                }
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => true, 'message' => $result['message']]);
+                }
+                return redirect()->route('admin.orders.show', $order->id)->with('success', $result['message']);
+            }
+
+            $errorMsg = is_string($result['error'] ?? null) ? $result['error'] : 'Refund failed.';
+            $redirect = redirect()->route('admin.orders.show', $order->id)->with('error', $errorMsg);
+            if (!empty($result['debug'])) {
+                $redirect->with('refund_debug', $result['debug']);
+            }
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errorMsg,
+                    'debug' => $result['debug'] ?? null,
+                ], 422);
+            }
+            return $redirect;
+        } catch (\Throwable $e) {
+            \Log::error('Refund error: ' . $e->getMessage(), ['order_id' => $order->id, 'trace' => $e->getTraceAsString()]);
+            $msg = 'An unexpected error occurred. The refund may have been processed—check PayPal and order status.';
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 500);
+            }
+            return redirect()->route('admin.orders.show', $order->id)->with('error', $msg);
+        }
+    }
+} 
