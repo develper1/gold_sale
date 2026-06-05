@@ -184,33 +184,48 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 82px;
-    height: 82px;
+    width: 125px;
+    height: 125px;
     overflow: hidden;
     z-index: 10;
     pointer-events: none;
 }
 .product-ribbon span {
     position: absolute;
-    top: 18px;
-    right: -22px;
-    width: 110px;
-    padding: 5px 0;
+    top: 28px;
+    right: -34px;
+    width: 168px;
+    padding: 8px 0;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 800;
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     color: #fff;
+    background: #b12a2a;
     transform: rotate(45deg);
     display: block;
-    line-height: 1.3;
+    line-height: 1.45;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Ribbon colours */
 .ribbon-on_sale span         { background: #b12a2a; }
 .ribbon-new_item span        { background: #1a7a3a; }
 .ribbon-new_lower_price span { background: #1a4f8a; }
+
+/* Larger ribbon on the product detail page */
+.scroll-image.main-image .product-ribbon {
+    width: 160px;
+    height: 160px;
+}
+.scroll-image.main-image .product-ribbon span {
+    top: 36px;
+    right: -42px;
+    width: 215px;
+    padding: 10px 0;
+    font-size: 13px;
+}
 
 /* Ensure the home-page product thumb is a positioned container for the ribbon */
 .products-thumb {
