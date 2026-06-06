@@ -1,0 +1,121 @@
+@extends('admin.layouts.app')
+
+@section('content')
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="card">
+        <div class="card-header">
+            <h5>Order #{{ $order->id }}</h5>
+        </div>
+        <div class="card-body">
+            <h6>Order Info</h6>
+            <ul>
+                <li>Status: {{ ucfirst($order->status) }}</li>
+                <li>Payment Method: {{ ucfirst($order->payment_method) }}</li>
+                <li>Order Comments: {{ $order->order_comments }}</li>
+                <li>Created At: {{ $order->created_at->format('d M Y') }}</li>
+                <li>Transaction ID: {{ $order->transaction_id }}</li>
+            </ul>
+
+            @if($order->status !== 'paid')
+                <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="mb-4">
+                    @csrf
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Update Status</label>
+                            <select name="status" class="form-select">
+                                <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="paid" {{ $order->status === 'paid' ? 'selected' : '' }}>Paid</option>
+                                <option value="canceled" {{ $order->status === 'canceled' ? 'selected' : '' }}>Canceled</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
+            @endif
+            <h6>Billing Info</h6>
+            <ul>
+                <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>
+                <li>Email: {{ $order->billing_email }}</li>
+                <li>Phone: {{ $order->billing_phone }}</li>
+                <li>Address: {{ $order->billing_address_1 }}, {{ $order->billing_city }}, {{ $order->billing_state }}, {{ $order->billing_postcode }}, {{ $order->billing_country }}</li>
+            </ul>
+            <h6>Shipping Info</h6>
+            <ul>
+                <li>Name: {{ $order->shipping_first_name }} {{ $order->shipping_last_name }}</li>
+                <li>Company: {{ $order->shipping_company }}</li>
+                <li>Address: {{ $order->shipping_address_1 }}, {{ $order->shipping_city }}, {{ $order->shipping_state }}, {{ $order->shipping_postcode }}, {{ $order->shipping_country }}</li>
+            </ul>
+            
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <h6>Order Items</h6>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Image</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($order->items as $item)
+                    <tr>
+                        <td>{{ $item->name }}</td>
+                        <td>
+                            @if($item->product && $item->product->images->count() > 0)
+                                <img src="{{ asset('storage/app/public/' . $item->product->images->first()->image_path) }}" alt="{{ $item->name }}" width="60">
+                            @else
+                                No Image
+                            @endif
+                        </td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>${{ number_format($item->price, 2) }}</td>
+                        <td>${{ number_format($item->price * $item->quantity, 2) }}</td>
+                    </tr>
+                    @endforeach
+                    <tr>
+                        <td colspan="4"></td>
+                        <td>
+                            <span>Subtotal: ${{ number_format($order->subtotal, 2) }}</span><br>
+                            <span>Shipping Fee: ${{ number_format($order->shipping_fee, 2) }}</span><br>
+                            <span>State Fee: ${{ number_format($order->state_fee, 2) }}</span><br>
+                            <span>Service Fee: ${{ number_format($order->service_fee, 2) }}</span><br>
+                            @if($order->payment_method === 'credit_card' || $order->payment_method === 'paypal')
+                            <span>Credit Card Fee: ${{ number_format($order->credit_card_fee, 2) }}</span><br>
+                            @endif
+                            <strong>Total: ${{ number_format($order->total, 2) }}</strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            {{-- Admin Notes --}}
+            <div class="card border mt-4">
+                <div class="card-header py-2">
+                    <h6 class="mb-0">Admin Notes</h6>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('admin.orders.updateNotes', $order->id) }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <textarea name="admin_notes" class="form-control" rows="4" maxlength="5000"
+                                placeholder="Internal notes — not visible to the customer…">{{ old('admin_notes', $order->admin_notes) }}</textarea>
+                            <div class="form-text text-muted">Max 5,000 characters. Never shown to customers.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Save Notes</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+@endsection 

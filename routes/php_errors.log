@@ -1,0 +1,12 @@
+[26-May-2026 16:10:41 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in D:\home\oasismint.com\wwwroot\routes\web.php:51
+Stack trace:
+#0 {main}
+  thrown in D:\home\oasismint.com\wwwroot\routes\web.php on line 51
+[26-May-2026 16:10:41 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Route" not found in D:\home\oasismint.com\wwwroot\routes\api.php:18
+Stack trace:
+#0 {main}
+  thrown in D:\home\oasismint.com\wwwroot\routes\api.php on line 18
+[26-May-2026 16:15:49 UTC] PHP Fatal error:  Uncaught Error: Class "Illuminate\Support\Facades\Broadcast" not found in D:\home\oasismint.com\wwwroot\routes\channels.php:16
+Stack trace:
+#0 {main}
+  thrown in D:\home\oasismint.com\wwwroot\routes\channels.php on line 16
