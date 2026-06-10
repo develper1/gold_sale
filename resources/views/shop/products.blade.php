@@ -23,7 +23,7 @@
                                         <span>
                                             @if($product->ribbon_type === 'on_sale') On Sale!
                                             @elseif($product->ribbon_type === 'new_item') New Item!
-                                            @elseif($product->ribbon_type === 'new_lower_price') New Lower&nbsp;Price!
+                                            @elseif($product->ribbon_type === 'popular_item') Popular &nbsp;Item!
                                             @endif
                                         </span>
                                     </div>

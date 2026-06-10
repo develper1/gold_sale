@@ -25,7 +25,7 @@
     <!-- Site Stylesheet -->
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" type="text/css">
     <link rel="stylesheet" href="{{ asset('assets/css/responsive.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" type="text/css">
+    <link rel="stylesheet" href="{{ asset('assets/css/custom.css?v=2') }}" type="text/css">
     
     
     <!-- Google Web Fonts -->

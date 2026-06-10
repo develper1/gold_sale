@@ -239,9 +239,9 @@
                                         <label class="form-check-label" for="ribbon_new_item">New Item!</label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="ribbon_type" id="ribbon_new_lower_price" value="new_lower_price"
-                                            {{ old('ribbon_type', $product->ribbon_type ?? '') === 'new_lower_price' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="ribbon_new_lower_price">New Lower Price!</label>
+                                        <input class="form-check-input" type="radio" name="ribbon_type" id="ribbon_popular_item" value="popular_item"
+                                            {{ old('ribbon_type', $product->ribbon_type ?? '') === 'popular_item' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="ribbon_popular_item">Popular Item!</label>
                                     </div>
                                 </div>
                             </div>

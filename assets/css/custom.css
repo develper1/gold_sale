@@ -212,7 +212,7 @@
 /* Ribbon colours */
 .ribbon-on_sale span         { background: #b12a2a; }
 .ribbon-new_item span        { background: #1a7a3a; }
-.ribbon-new_lower_price span { background: #1a4f8a; }
+.ribbon-popular_item span { background: #1a4f8a; }
 
 /* Larger ribbon on the product detail page */
 .scroll-image.main-image .product-ribbon {
