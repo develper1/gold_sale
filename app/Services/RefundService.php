@@ -21,6 +21,41 @@ class RefundService
     }
 
     /**
+     * Check if an order can be refunded via Stripe API.
+     * Only settled ACH orders (status=paid, transaction_id starts with pi_) qualify.
+     */
+    public function canRefundViaStripe(Order $order): bool
+    {
+        if (empty($order->transaction_id)) {
+            return false;
+        }
+        return $order->payment_method === 'ach'
+            && $order->status === 'paid'
+            && str_starts_with($order->transaction_id, 'pi_');
+    }
+
+    /**
+     * Issue a refund via Stripe for a PaymentIntent.
+     * Pass null for amount to issue a full refund.
+     */
+    protected function refundStripePaymentIntent(string $paymentIntentId, ?float $amount = null): array
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $params = ['payment_intent' => $paymentIntentId];
+            if ($amount !== null && $amount > 0) {
+                $params['amount'] = (int) round($amount * 100);
+            }
+            $refund = \Stripe\Refund::create($params);
+            return ['success' => true, 'refund_id' => $refund->id];
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            Log::error('Stripe refund failed: ' . $e->getMessage());
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
      * Get PayPal API base URL and credentials.
      */
     protected function getPayPalConfig(): array
@@ -166,7 +201,7 @@ class RefundService
     }
 
     /**
-     * Cancel order: full refund via PayPal + set status to canceled.
+     * Cancel order: full refund via PayPal or Stripe + set status to canceled.
      */
     public function cancelOrder(Order $order, ?string $reason = null): array
     {
@@ -174,16 +209,23 @@ class RefundService
             return ['success' => false, 'error' => 'Order can only be canceled if it is paid, processed, or shipped.'];
         }
 
-        if (!$this->canRefundViaPayPal($order)) {
+        $isPayPalOrder = $this->canRefundViaPayPal($order);
+        $isStripeOrder = $this->canRefundViaStripe($order);
+
+        if (!$isPayPalOrder && !$isStripeOrder) {
             return ['success' => false, 'error' => 'Refund via API is not available for this order. Process manually if needed.'];
         }
 
-        $captureId = $this->getCaptureIdFromPayPalOrder($order->transaction_id);
-        if (!$captureId) {
-            return ['success' => false, 'error' => 'Could not find PayPal capture for this order.'];
+        if ($isPayPalOrder) {
+            $captureId = $this->getCaptureIdFromPayPalOrder($order->transaction_id);
+            if (!$captureId) {
+                return ['success' => false, 'error' => 'Could not find PayPal capture for this order.'];
+            }
+            $result = $this->refundPayPalCapture($captureId, null);
+        } else {
+            $result = $this->refundStripePaymentIntent($order->transaction_id, null);
         }
 
-        $result = $this->refundPayPalCapture($captureId, null); // full refund
         if (!$result['success']) {
             return $result;
         }
@@ -208,7 +250,7 @@ class RefundService
     }
 
     /**
-     * Full refund: refund full remaining amount.
+     * Full refund: refund full remaining amount via PayPal or Stripe.
      */
     public function fullRefund(Order $order, ?string $reason = null): array
     {
@@ -221,16 +263,23 @@ class RefundService
             return ['success' => false, 'error' => 'Order is already fully refunded.'];
         }
 
-        if (!$this->canRefundViaPayPal($order)) {
+        $isPayPalOrder = $this->canRefundViaPayPal($order);
+        $isStripeOrder = $this->canRefundViaStripe($order);
+
+        if (!$isPayPalOrder && !$isStripeOrder) {
             return ['success' => false, 'error' => 'Refund via API is not available for this order. Process manually if needed.'];
         }
 
-        $captureId = $this->getCaptureIdFromPayPalOrder($order->transaction_id);
-        if (!$captureId) {
-            return ['success' => false, 'error' => 'Could not find PayPal capture for this order.'];
+        if ($isPayPalOrder) {
+            $captureId = $this->getCaptureIdFromPayPalOrder($order->transaction_id);
+            if (!$captureId) {
+                return ['success' => false, 'error' => 'Could not find PayPal capture for this order.'];
+            }
+            $result = $this->refundPayPalCapture($captureId, null);
+        } else {
+            $result = $this->refundStripePaymentIntent($order->transaction_id, null);
         }
 
-        $result = $this->refundPayPalCapture($captureId, null); // full refund
         if (!$result['success']) {
             return $result;
         }
@@ -255,7 +304,7 @@ class RefundService
     }
 
     /**
-     * Partial refund.
+     * Partial refund via PayPal or Stripe.
      */
     public function partialRefund(Order $order, float $amount, ?string $reason = null): array
     {
@@ -274,16 +323,23 @@ class RefundService
             return ['success' => false, 'error' => 'Refund amount cannot exceed remaining amount ($' . number_format($remaining, 2) . ').'];
         }
 
-        if (!$this->canRefundViaPayPal($order)) {
+        $isPayPalOrder = $this->canRefundViaPayPal($order);
+        $isStripeOrder = $this->canRefundViaStripe($order);
+
+        if (!$isPayPalOrder && !$isStripeOrder) {
             return ['success' => false, 'error' => 'Refund via API is not available for this order. Process manually if needed.'];
         }
 
-        $captureId = $this->getCaptureIdFromPayPalOrder($order->transaction_id);
-        if (!$captureId) {
-            return ['success' => false, 'error' => 'Could not find PayPal capture for this order.'];
+        if ($isPayPalOrder) {
+            $captureId = $this->getCaptureIdFromPayPalOrder($order->transaction_id);
+            if (!$captureId) {
+                return ['success' => false, 'error' => 'Could not find PayPal capture for this order.'];
+            }
+            $result = $this->refundPayPalCapture($captureId, $amount);
+        } else {
+            $result = $this->refundStripePaymentIntent($order->transaction_id, $amount);
         }
 
-        $result = $this->refundPayPalCapture($captureId, $amount);
         if (!$result['success']) {
             return $result;
         }

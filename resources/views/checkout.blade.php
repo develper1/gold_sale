@@ -315,19 +315,19 @@ $billingCompany = old('billing_company', '');
                                          <li class="payment-method">
                                              <input type="radio" class="input-radio" name="payment_method" value="ach" id="payment_method_ach">
                                              <label for="payment_method_ach">ACH / Echeck</label>
-                                             <div id="plaid-ach-container" style="display:none; padding: 15px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; margin-top: 10px; margin-bottom: 10px;">
-                                                 <p style="margin-bottom: 12px; font-size: 14px; color: #555;">Please link your bank account to authorize ACH payment.</p>
-                                                 <button type="button" id="plaid-link-btn" class="button alt" style="background: #111; color: #fff; padding: 8px 16px; font-weight: 600; border-radius: 4px; border: none; font-size: 14px; text-transform: uppercase;">
+                                             <div id="stripe-ach-container" style="display:none; padding: 15px; background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 4px; margin-top: 10px; margin-bottom: 10px;">
+                                                 <p style="margin-bottom: 12px; font-size: 14px; color: #555;">Securely link your bank account to authorize ACH payment.</p>
+                                                 <button type="button" id="stripe-link-btn" class="button alt" style="background: #111; color: #fff; padding: 8px 16px; font-weight: 600; border-radius: 4px; border: none; font-size: 14px; text-transform: uppercase;">
                                                      <i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account
                                                  </button>
-                                                 <div id="plaid-linked-info" style="display:none; margin-top: 12px; color: #28a745; font-weight: 600; font-size: 14px;">
-                                                     <i class="fa fa-check-circle" style="margin-right: 4px;"></i> Linked Bank: <span id="plaid-bank-name"></span> (••••<span id="plaid-account-mask"></span>)
+                                                 <div id="stripe-linked-info" style="display:none; margin-top: 12px; color: #28a745; font-weight: 600; font-size: 14px;">
+                                                     <i class="fa fa-check-circle" style="margin-right: 4px;"></i> Linked: <span id="stripe-bank-name"></span> (••••<span id="stripe-account-mask"></span>)
                                                  </div>
-                                                 <div id="plaid-error" style="display:none; margin-top: 10px; color: #dc3545; font-size: 14px;"></div>
-                                                 <input type="hidden" name="plaid_public_token" id="plaid_public_token">
-                                                 <input type="hidden" name="plaid_account_id" id="plaid_account_id">
-                                                 <input type="hidden" name="plaid_bank_name" id="plaid_bank_name_input">
-                                                 <input type="hidden" name="plaid_account_mask" id="plaid_account_mask_input">
+                                                 <div id="stripe-error" style="display:none; margin-top: 10px; color: #dc3545; font-size: 14px;"></div>
+                                                 <input type="hidden" name="stripe_payment_method_id" id="stripe_payment_method_id">
+                                                 <input type="hidden" name="stripe_bank_name" id="stripe_bank_name_input">
+                                                 <input type="hidden" name="stripe_account_mask" id="stripe_account_mask_input">
+                                                 <input type="hidden" name="stripe_customer_id" id="stripe_customer_id_input">
                                              </div>
                                          </li>
                                         <li class="payment-method">
@@ -446,7 +446,7 @@ $billingCompany = old('billing_company', '');
 
 @push('scripts')
 
-<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
 @if(env('PAYPAL_SANDBOX'))
     <script src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID') }}&disable-funding=credit,card,paylater"></script>
 @else
@@ -806,72 +806,116 @@ $(document).ready(function() {
         toggleCreditCardFields();
         togglePaymentButtons();
         handleCreditCardFeeDisplay();
-        togglePlaidFields();
+        toggleStripeFields();
     });
 
-    // --- Plaid Link Integration ---
-    var plaidHandler = null;
+    // --- Stripe ACH / Financial Connections Integration ---
+    var stripe = Stripe('{{ env("STRIPE_KEY") }}');
 
-    function togglePlaidFields() {
+    function toggleStripeFields() {
         var selected = $('input[name="payment_method"]:checked').val();
-        if (selected === 'ach') {
-            $('#plaid-ach-container').show();
-        } else {
-            $('#plaid-ach-container').hide();
-        }
+        $('#stripe-ach-container').toggle(selected === 'ach');
     }
 
     // Initial check
-    togglePlaidFields();
+    toggleStripeFields();
 
-    $('#plaid-link-btn').on('click', function() {
+    $('#stripe-link-btn').on('click', async function () {
         var btn = $(this);
         btn.prop('disabled', true).text('Connecting...');
-        $('#plaid-error').hide().text('');
+        $('#stripe-error').hide().text('');
 
-        $.ajax({
-            url: '{{ route("plaid.create-link-token") }}',
-            method: 'POST',
-            data: {
-                _token: $('input[name="_token"]').val()
-            },
-            success: function(response) {
-                btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account');
-                if (response.link_token) {
-                    plaidHandler = Plaid.create({
-                        token: response.link_token,
-                        onSuccess: function(public_token, metadata) {
-                            $('#plaid_public_token').val(public_token);
-                            $('#plaid_account_id').val(metadata.account_id);
-                            $('#plaid_bank_name_input').val(metadata.institution.name);
-                            $('#plaid_account_mask_input').val(metadata.account.mask);
+        try {
+            // Step 1: Get SetupIntent client_secret from backend
+            var response = await fetch('{{ route("stripe.setup-intent") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('input[name="_token"]').val(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                }
+            });
+            var data = await response.json();
 
-                            $('#plaid-bank-name').text(metadata.institution.name);
-                            $('#plaid-account-mask').text(metadata.account.mask);
-                            $('#plaid-linked-info').show();
-                            btn.html('<i class="fa fa-university" style="margin-right: 8px;"></i> Change Bank Account');
-                            $('#plaid-error').hide();
-                        },
-                        onExit: function(err, metadata) {
-                            if (err != null) {
-                                $('#plaid-error').text(err.display_message || 'Plaid connection exited.').show();
-                            }
-                        }
-                    });
-                    plaidHandler.open();
-                } else {
-                    $('#plaid-error').text('Could not generate link token. Please try again.').show();
-                }
-            },
-            error: function(xhr) {
-                btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account');
-                var errorMsg = 'Failed to connect to Plaid. Please try again.';
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMsg = xhr.responseJSON.error;
-                }
-                $('#plaid-error').text(errorMsg).show();
+            if (!data.client_secret) {
+                throw new Error(data.error || 'Could not initialize bank linking.');
             }
-        });
+
+            // Store customer ID so PaymentIntent can be created against the same customer
+            if (data.customer_id) {
+                $('#stripe_customer_id_input').val(data.customer_id);
+            }
+
+            var billingName = (
+                $('input[name="billing_first_name"]').val() + ' ' +
+                $('input[name="billing_last_name"]').val()
+            ).trim();
+            var billingEmail = $('input[name="billing_email"]').val() || undefined;
+
+            // Step 2: Open Stripe Financial Connections modal to collect bank account
+            var collectResult = await stripe.collectBankAccountForSetup({
+                clientSecret: data.client_secret,
+                params: {
+                    payment_method_type: 'us_bank_account',
+                    payment_method_data: {
+                        billing_details: {
+                            name: billingName || 'Account Holder',
+                            email: billingEmail,
+                        }
+                    }
+                },
+                expand: ['payment_method'],
+            });
+
+            if (collectResult.error) {
+                throw new Error(collectResult.error.message || 'Bank account collection failed.');
+            }
+
+            var collectedIntent = collectResult.setupIntent;
+
+            // User closed the modal without completing
+            if (!collectedIntent || collectedIntent.status === 'canceled') {
+                btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account');
+                return;
+            }
+
+            // Extract bank details from the expanded payment_method (available after collect)
+            var collectedPm = collectedIntent.payment_method;
+            var bankName = (collectedPm && typeof collectedPm === 'object' && collectedPm.us_bank_account && collectedPm.us_bank_account.bank_name)
+                ? collectedPm.us_bank_account.bank_name
+                : 'Bank';
+            var last4 = (collectedPm && typeof collectedPm === 'object' && collectedPm.us_bank_account && collectedPm.us_bank_account.last4)
+                ? collectedPm.us_bank_account.last4
+                : '';
+
+            // Step 3: Confirm SetupIntent — presents mandate text and finalises customer consent
+            var confirmResult = await stripe.confirmUsBankAccountSetup(data.client_secret);
+
+            if (confirmResult.error) {
+                throw new Error(confirmResult.error.message || 'Bank account confirmation failed.');
+            }
+
+            var confirmedIntent = confirmResult.setupIntent;
+            var pm = confirmedIntent.payment_method;
+            var paymentMethodId = pm ? (typeof pm === 'object' ? pm.id : pm)
+                                     : (typeof collectedPm === 'object' ? collectedPm.id : collectedPm);
+
+            // Store in hidden fields for form submission
+            $('#stripe_payment_method_id').val(paymentMethodId);
+            $('#stripe_bank_name_input').val(bankName);
+            $('#stripe_account_mask_input').val(last4);
+
+            // Show confirmation to user
+            $('#stripe-bank-name').text(bankName);
+            $('#stripe-account-mask').text(last4);
+            $('#stripe-linked-info').show();
+            $('#stripe-error').hide();
+            btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Change Bank Account');
+
+        } catch (err) {
+            btn.prop('disabled', false).html('<i class="fa fa-university" style="margin-right: 8px;"></i> Link Bank Account');
+            $('#stripe-error').text(err.message || 'Failed to link bank account. Please try again.').show();
+        }
     });
 
 
@@ -1081,9 +1125,9 @@ $(document).ready(function() {
             return true;
         }
         if (selected === 'ach') {
-            var publicToken = $('#plaid_public_token').val();
-            if (!publicToken) {
-                $('#checkout-errors').html('<div class="alert alert-danger text-danger">Please link your bank account via Plaid before confirming the order.</div>').show();
+            var paymentMethodId = $('#stripe_payment_method_id').val();
+            if (!paymentMethodId) {
+                $('#checkout-errors').html('<div class="alert alert-danger text-danger">Please link your bank account before confirming the order.</div>').show();
                 return false;
             }
         }

@@ -18,12 +18,20 @@
         </div>
 
         @php
-          $isPaidAtOrder = in_array($order->payment_method, ['credit_card', 'paypal', 'ach']);
+          $isPaidAtOrder   = in_array($order->payment_method, ['credit_card', 'paypal']);
+          $isAchProcessing = $order->payment_method === 'ach' && in_array($order->status, ['ach_pending', 'paid']);
         @endphp
 
         @if($isPaidAtOrder)
           <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#16a34a;">
             <strong>Thank you! Your payment has been received.</strong> We will process your order shortly.
+          </p>
+        @elseif($isAchProcessing)
+          <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#2563eb;">
+            <strong>Thank you! Your ACH bank payment has been submitted.</strong><br>
+            Your bank account debit is now processing. Funds typically settle within
+            <strong>1–4 business days</strong>. You will receive a payment confirmation
+            email once the payment has cleared.
           </p>
         @else
           <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
@@ -144,15 +152,17 @@
                   PayPal
                 @elseif($order->payment_method === 'zelle')
                   Zelle (Pending)
-                @elseif($order->payment_method === 'ach' || $order->payment_method === 'wire')
-                  Bank Wire/ACH (Pending)
+                @elseif($order->payment_method === 'ach')
+                  ACH Bank Transfer
                 @elseif($order->payment_method === 'check')
                   Check (Pending)
                 @else
                   {{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}
                 @endif
               </div>
-              @if(in_array($order->payment_method, ['zelle', 'ach', 'wire', 'check']))
+              @if($isAchProcessing)
+                <div style="font-size:12px;color:#2563eb;margin-top:4px;">⏳ Bank debit submitted — processing 1–4 business days</div>
+              @elseif(in_array($order->payment_method, ['zelle', 'wire', 'bank_wire', 'cheque']))
                 <div style="font-size:12px;color:#b42318;margin-top:4px;">⚠️ Payment pending - awaiting confirmation</div>
                 @if($order->payment_method === 'zelle')
                   <div style="background:#fff7ed;border-radius:4px;padding:12px;margin-top:8px;text-align:center;">

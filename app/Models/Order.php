@@ -48,9 +48,9 @@ class Order extends Model
         'coupon_code',
         'coupon_discount',
         'coupon_description',
-        'plaid_bank_name',
-        'plaid_account_mask',
-        'plaid_account_id',
+        'stripe_bank_name',
+        'stripe_account_mask',
+        'stripe_payment_method_id',
     ];
 
     public function items()

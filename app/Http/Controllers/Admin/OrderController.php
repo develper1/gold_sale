@@ -27,8 +27,11 @@ class OrderController extends Controller
     public function show($id)
     {
         $order = \App\Models\Order::with(['items', 'items.product.images', 'refunds'])->findOrFail($id);
-        $canRefundViaPayPal = app(RefundService::class)->canRefundViaPayPal($order);
-        return view('admin.orders.show', compact('order', 'canRefundViaPayPal'));
+        $refundService      = app(RefundService::class);
+        $canRefundViaPayPal = $refundService->canRefundViaPayPal($order);
+        $canRefundViaStripe = $refundService->canRefundViaStripe($order);
+        $canRefundViaApi    = $canRefundViaPayPal || $canRefundViaStripe;
+        return view('admin.orders.show', compact('order', 'canRefundViaPayPal', 'canRefundViaStripe', 'canRefundViaApi'));
     }
 
     public function destroy($id)
@@ -41,7 +44,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,paid,processed,shipped,delivered,refunded,partially_refunded,canceled',
+            'status' => 'required|in:pending,paid,processed,shipped,delivered,refunded,partially_refunded,canceled,ach_pending,ach_failed',
             'shipping_method' => 'nullable|string|max:255',
             'tracking_number' => 'nullable|string|max:255',
         ]);

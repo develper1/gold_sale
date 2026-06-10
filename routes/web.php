@@ -31,7 +31,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AccountController;
 use App\Services\MetalPriceService;
 use App\Models\MetalPrice;
-use App\Http\Controllers\PlaidController;
+use App\Http\Controllers\StripeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -179,8 +179,8 @@ Route::group(['middleware' => ['auth:web', 'user', 'verified', 'profile.complete
 
     Route::post('/account/update', [AccountController::class, 'update'])->name('account.update');
 
-    // Plaid Routes
-    Route::post('/plaid/create-link-token', [PlaidController::class, 'createLinkToken'])->name('plaid.create-link-token');
+    // Stripe ACH Routes
+    Route::post('/stripe/setup-intent', [StripeController::class, 'createSetupIntent'])->name('stripe.setup-intent');
 
 
 });
@@ -240,6 +240,9 @@ Route::get('/service-fee/{subtotal}', [\App\Http\Controllers\ShopController::cla
 Route::post('/checkout', [OrderController::class, 'store'])->name('checkout.store');
 Route::get('/order-confirmation/{order}', [OrderController::class, 'confirmation'])->name('order.confirmation');
 Route::post('/validate-coupon', [OrderController::class, 'validateCoupon'])->name('coupon.validate');
+
+// Stripe webhook — outside all auth/middleware groups, CSRF-exempt via VerifyCsrfToken.php
+Route::post('/stripe/webhook', [StripeController::class, 'handleWebhook'])->name('stripe.webhook');
 
 /**
  * Public JSON endpoint for latest metal prices from DB (used by frontend JS).

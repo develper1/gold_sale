@@ -26,8 +26,8 @@ class OrderController extends Controller
 
         if ($isAch) {
             $request->validate([
-                'plaid_public_token' => 'required',
-                'plaid_account_id' => 'required',
+                'stripe_payment_method_id' => 'required|string',
+                'stripe_customer_id'       => 'required|string',
             ]);
         }
 
@@ -243,210 +243,24 @@ class OrderController extends Controller
         $transactionId = null;
 
         if ($isAch) {
-            $plaidEnv = env('PLAID_ENV', 'sandbox');
-            $isPlaidSandbox = ($plaidEnv === 'sandbox');
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            $plaidBaseUrl = $isPlaidSandbox
-                ? 'https://sandbox.plaid.com'
-                : ($plaidEnv === 'production' ? 'https://production.plaid.com' : 'https://development.plaid.com');
-
-            $clientId = $isPlaidSandbox
-                ? env('PLAID_SANDBOX_CLIENT_ID', env('PLAID_CLIENT_ID'))
-                : env('PLAID_LIVE_CLIENT_ID', env('PLAID_CLIENT_ID'));
-
-            $secret = $isPlaidSandbox
-                ? env('PLAID_SANDBOX_SECRET', env('PLAID_SECRET'))
-                : env('PLAID_LIVE_SECRET', env('PLAID_SECRET'));
-
-            if (!$clientId || !$secret) {
-                Log::error('Plaid credentials are not configured in .env');
-                return response()->json(['errors' => ['ach' => 'Plaid is not configured properly on the server.']], 500);
-            }
-
-            // 1. Exchange public token for access token
             try {
-                $exchangeResponse = Http::post($plaidBaseUrl . '/item/public_token/exchange', [
-                    'client_id' => $clientId,
-                    'secret' => $secret,
-                    'public_token' => $request->plaid_public_token,
+                $paymentIntent = \Stripe\PaymentIntent::create([
+                    'amount'               => (int) round($total * 100),
+                    'currency'             => 'usd',
+                    'customer'             => $request->stripe_customer_id,
+                    'payment_method'       => $request->stripe_payment_method_id,
+                    'payment_method_types' => ['us_bank_account'],
+                    'confirm'              => true,
+                    'description'          => 'Order – ' . config('app.name'),
                 ]);
 
-                if (!$exchangeResponse->ok()) {
-                    Log::error('Plaid public token exchange failed: ' . $exchangeResponse->body());
-                    return response()->json(['errors' => ['ach' => 'Failed to link bank account. Please try again.']], 422);
-                }
+                $transactionId = $paymentIntent->id;
 
-                $accessToken = $exchangeResponse->json()['access_token'];
-
-                // 2. Get unmasked routing and account numbers
-                $authResponse = Http::post($plaidBaseUrl . '/auth/get', [
-                    'client_id' => $clientId,
-                    'secret' => $secret,
-                    'access_token' => $accessToken,
-                    'options' => [
-                        'account_ids' => [$request->plaid_account_id]
-                    ]
-                ]);
-
-                if (!$authResponse->ok()) {
-                    Log::error('Plaid auth get failed: ' . $authResponse->body());
-                    return response()->json(['errors' => ['ach' => 'Failed to retrieve bank account details.']], 422);
-                }
-
-                $authData = $authResponse->json();
-
-                // Extract routing & account number matching account_id
-                $achDetails = null;
-                if (!empty($authData['numbers']['ach'])) {
-                    foreach ($authData['numbers']['ach'] as $ach) {
-                        if ($ach['account_id'] === $request->plaid_account_id) {
-                            $achDetails = $ach;
-                            break;
-                        }
-                    }
-                }
-
-                if (!$achDetails) {
-                    Log::error('Matching ACH account details not found in Plaid response');
-                    return response()->json(['errors' => ['ach' => 'Bank account details could not be verified.']], 422);
-                }
-
-                $routingNumber = $achDetails['routing'];
-                $accountNumber = $achDetails['account'];
-
-                // Step 3a: Fetch real account owner name from Plaid Identity
-                // This name MUST match what the bank has on file to pass Authorize.Net eCheck validation.
-                $nameOnAccount = $request->billing_first_name . ' ' . $request->billing_last_name; // safe fallback
-
-                try {
-                    $identityResponse = Http::post($plaidBaseUrl . '/identity/get', [
-                        'client_id' => $clientId,
-                        'secret' => $secret,
-                        'access_token' => $accessToken,
-                    ]);
-
-                    if ($identityResponse->ok()) {
-                        $identityData = $identityResponse->json();
-                        foreach ($identityData['accounts'] ?? [] as $idAcc) {
-                            if ($idAcc['account_id'] === $request->plaid_account_id) {
-                                $ownerName = $idAcc['owners'][0]['names'][0] ?? null;
-                                if ($ownerName) {
-                                    $nameOnAccount = $ownerName;
-                                    Log::info('Using Plaid Identity name for eCheck: ' . $nameOnAccount);
-                                }
-                                break;
-                            }
-                        }
-                    } else {
-                        Log::warning('Plaid /identity/get failed, using billing name as fallback. Response: ' . $identityResponse->body());
-                    }
-                } catch (\Exception $identityEx) {
-                    Log::warning('Plaid Identity fetch failed, using billing name. Error: ' . $identityEx->getMessage());
-                }
-
-                // Bypass Authorize.Net Sandbox NOC (Notice of Change) cache.
-                // Plaid sandbox returns masked X's (not real digits); use known valid
-                // test numbers instead so the schema & NOC checks both pass.
-                if (env('PLAID_ENV', 'sandbox') === 'sandbox' || env('AUTHORIZE_NET_SANDBOX')) {
-                    $routingNumber = '021000021';        // JP Morgan Chase valid routing
-                    $accountNumber = '9' . rand(100000000, 999999999); // 10-digit fake account
-                }
-
-                // Clean nameOnAccount for Authorize.net's 22 character maximum length schema constraint.
-                // If Plaid returned masked data (e.g. XXXXXXXXXX), fallback to the billing name.
-                if (stripos($nameOnAccount, 'xxx') !== false) {
-                    $nameOnAccount = $request->billing_first_name . ' ' . $request->billing_last_name;
-                }
-                if (strlen($nameOnAccount) > 22) {
-                    $nameOnAccount = substr($nameOnAccount, 0, 22);
-                }
-
-                $accountType = 'checking'; // Default fallback
-                if (!empty($authData['accounts'])) {
-                    foreach ($authData['accounts'] as $acc) {
-                        if ($acc['account_id'] === $request->plaid_account_id) {
-                            $subtype = strtolower($acc['subtype'] ?? '');
-                            if (in_array($subtype, ['checking', 'savings', 'businesschecking'])) {
-                                $accountType = $subtype;
-                            }
-                            break;
-                        }
-                    }
-                }
-
-            } catch (\Exception $e) {
-                Log::error('Plaid API Error in OrderController: ' . $e->getMessage());
-                return response()->json(['errors' => ['ach' => 'Error connecting to Plaid API. Please try again.']], 500);
-            }
-
-            // 3. Process the transaction via Authorize.Net eCheck API
-            $isAuthorizeSandbox = env('AUTHORIZE_NET_SANDBOX'); // Set to false for live
-            $apiLoginId = $isAuthorizeSandbox ? env('AUTHORIZE_NET_SANDBOX_API_LOGIN_ID') : env('AUTHORIZE_NET_LIVE_API_LOGIN_ID');
-            $transactionKey = $isAuthorizeSandbox ? env('AUTHORIZE_NET_SANDBOX_TRANSACTION_KEY') : env('AUTHORIZE_NET_LIVE_TRANSACTION_KEY');
-            $endpoint = $isAuthorizeSandbox ? env('AUTHORIZE_NET_SANDBOX_URL') : env('AUTHORIZE_NET_LIVE_URL');
-
-            $payload = [
-                "createTransactionRequest" => [
-                    "merchantAuthentication" => [
-                        "name" => $apiLoginId,
-                        "transactionKey" => $transactionKey
-                    ],
-                    "transactionRequest" => [
-                        "transactionType" => "authCaptureTransaction",
-                        "amount" => $total,
-                        "payment" => [
-                            "bankAccount" => [
-                                "accountType" => $accountType,
-                                "routingNumber" => $routingNumber,
-                                "accountNumber" => $accountNumber,
-                                "nameOnAccount" => $nameOnAccount,
-                                "bankName" => $request->plaid_bank_name ?: 'Bank'
-                            ]
-                        ],
-                        "billTo" => [
-                            "firstName" => $request->billing_first_name,
-                            "lastName" => $request->billing_last_name,
-                            "address" => $request->billing_address_1,
-                            "city" => $request->billing_city,
-                            "state" => $request->billing_state,
-                            "zip" => $request->billing_postcode,
-                            "country" => $request->billing_country,
-                        ]
-                    ]
-                ]
-            ];
-
-            $client = new Client();
-            try {
-                $guzzleResponse = $client->post($endpoint, [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ],
-                    'body' => json_encode($payload),
-                    'http_errors' => false
-                ]);
-                $body = $guzzleResponse->getBody()->getContents();
-                $body = preg_replace('/^\xEF\xBB\xBF/', '', $body);
-                $result = json_decode($body, true);
-
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    Log::error("Authorize.net JSON parsing error: " . json_last_error_msg() . "\nRaw Response:\n" . $body);
-                    return response()->json(['errors' => ['ach' => 'Failed to parse payment response.']], 500);
-                }
-
-            } catch (\Exception $e) {
-                Log::error('Could not connect to payment gateway for ACH: ' . $e->getMessage());
-                return response()->json(['errors' => ['ach' => 'Could not connect to payment gateway.']], 500);
-            }
-
-            if (
-                isset($result['transactionResponse']['responseCode']) &&
-                $result['transactionResponse']['responseCode'] == '1'
-            ) {
-                $transactionId = $result['transactionResponse']['transId'];
-            } else {
-                $error = $result['transactionResponse']['errors'][0]['errorText'] ?? 'ACH payment failed.';
-                return response()->json(['errors' => ['ach' => $error]], 422);
+            } catch (\Stripe\Exception\ApiErrorException $e) {
+                Log::error('Stripe ACH PaymentIntent failed: ' . $e->getMessage());
+                return response()->json(['errors' => ['ach' => 'Bank payment could not be processed: ' . $e->getMessage()]], 422);
             }
         }
 
@@ -572,13 +386,13 @@ class OrderController extends Controller
             'credit_card_percentage' => $creditCardPercentage,
             'total' => $total,
             'payment_method' => $paymentMethod,
-            'status' => $isPaypal || $isCreditCard || $isAch ? 'paid' : 'pending',
+            'status' => ($isPaypal || $isCreditCard) ? 'paid' : ($isAch ? 'ach_pending' : 'pending'),
             'coupon_code' => $couponDiscount > 0 ? ($appliedCoupon['code'] ?? null) : null,
             'coupon_discount' => $couponDiscount,
             'coupon_description' => $couponDiscount > 0 ? ($appliedCoupon['description'] ?? null) : null,
-            'plaid_bank_name' => $isAch ? $request->plaid_bank_name : null,
-            'plaid_account_mask' => $isAch ? $request->plaid_account_mask : null,
-            'plaid_account_id' => $isAch ? $request->plaid_account_id : null,
+            'stripe_bank_name'         => $isAch ? $request->stripe_bank_name         : null,
+            'stripe_account_mask'      => $isAch ? $request->stripe_account_mask      : null,
+            'stripe_payment_method_id' => $isAch ? $request->stripe_payment_method_id : null,
         ]);
 
         foreach ($cart as $item) {
@@ -678,9 +492,13 @@ class OrderController extends Controller
                     ? "<span style='color:green;'>✓ Registered User (ID: {$order->user_id})</span>"
                     : "<span style='color:orange;'>⚠️ Guest Checkout</span>";
 
-                $paymentStatus = $order->status === 'paid'
-                    ? "<span style='color:green;'>PAID</span>"
-                    : "<span style='color:orange;'>PENDING</span>";
+                if ($order->status === 'paid') {
+                    $paymentStatus = "<span style='color:green;'>PAID</span>";
+                } elseif ($order->status === 'ach_pending') {
+                    $paymentStatus = "<span style='color:#2563eb;'>ACH PROCESSING</span>";
+                } else {
+                    $paymentStatus = "<span style='color:orange;'>PENDING</span>";
+                }
 
                 $html = "
                 <!DOCTYPE html>
