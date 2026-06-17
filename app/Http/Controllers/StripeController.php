@@ -26,11 +26,11 @@ class StripeController extends Controller
 
             $customer = \Stripe\Customer::create([
                 'email' => $user->email,
-                'name'  => $user->name,
+                'name' => $user->name,
             ]);
 
             $setupIntent = \Stripe\SetupIntent::create([
-                'customer'             => $customer->id,
+                'customer' => $customer->id,
                 'payment_method_types' => ['us_bank_account'],
                 'payment_method_options' => [
                     'us_bank_account' => [
@@ -43,7 +43,7 @@ class StripeController extends Controller
 
             return response()->json([
                 'client_secret' => $setupIntent->client_secret,
-                'customer_id'   => $customer->id,
+                'customer_id' => $customer->id,
             ]);
 
         } catch (\Stripe\Exception\ApiErrorException $e) {
@@ -58,9 +58,9 @@ class StripeController extends Controller
      */
     public function handleWebhook(Request $request)
     {
-        $payload   = $request->getContent();
+        $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
-        $secret    = env('STRIPE_WEBHOOK_SECRET');
+        $secret = env('STRIPE_WEBHOOK_SECRET');
 
         try {
             $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $secret);
@@ -74,11 +74,14 @@ class StripeController extends Controller
 
         $paymentIntent = $event->data->object;
 
-        match ($event->type) {
-            'payment_intent.succeeded'       => $this->onPaymentSucceeded($paymentIntent),
-            'payment_intent.payment_failed'  => $this->onPaymentFailed($paymentIntent),
-            default                          => null,
-        };
+        switch ($event->type) {
+            case 'payment_intent.succeeded':
+                $this->onPaymentSucceeded($paymentIntent);
+                break;
+            case 'payment_intent.payment_failed':
+                $this->onPaymentFailed($paymentIntent);
+                break;
+        }
 
         return response()->json(['status' => 'ok']);
     }
@@ -120,8 +123,8 @@ class StripeController extends Controller
                 <!DOCTYPE html><html><head><meta charset='UTF-8'></head>
                 <body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
                     <div style='background:#d1fae5;border:1px solid #34d399;padding:15px;border-radius:4px;margin-bottom:15px;'>
-                        <h2 style='margin:0;color:#065f46;'>✅ ACH Payment Settled – Order #{$order->id}</h2>
-                        <p style='margin:6px 0 0;color:#065f46;'>The bank debit has cleared. Order is now <strong>Paid</strong>.</p>
+                        <h2 style='margin:0;color:#065f46;'>✅ Bank Payment Settled – Order #{$order->id}</h2>
+                        <p style='margin:6px 0 0;color:#065f46;'>The bank payment has cleared. Order is now <strong>Paid</strong>.</p>
                     </div>
                     <p>
                         <a href='" . route('admin.orders.show', $order->id) . "'
@@ -133,7 +136,7 @@ class StripeController extends Controller
                         <h3 style='margin-top:0;'>Order Summary</h3>
                         <table style='width:100%;'>
                             <tr><td><strong>Order ID:</strong></td><td>#{$order->id}</td></tr>
-                            <tr><td><strong>Payment:</strong></td><td>ACH Bank Transfer – <span style='color:green;'>SETTLED</span></td></tr>
+                            <tr><td><strong>Payment:</strong></td><td>Bank Transfer – <span style='color:green;'>SETTLED</span></td></tr>
                             <tr><td><strong>Total:</strong></td><td><strong>$" . number_format($order->total, 2) . "</strong></td></tr>
                         </table>
                     </div>
@@ -174,7 +177,7 @@ class StripeController extends Controller
                 ";
                 Mail::html($html, function ($message) use ($order, $adminEmail) {
                     $message->to($adminEmail)
-                        ->subject("✅ ACH Payment Settled – Order #{$order->id} – {$order->billing_email}");
+                        ->subject("✅ Bank Payment Settled – Order #{$order->id} – {$order->billing_email}");
                 });
             }
         } catch (\Exception $e) {
@@ -231,8 +234,8 @@ class StripeController extends Controller
                 <!DOCTYPE html><html><head><meta charset='UTF-8'></head>
                 <body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;'>
                     <div style='background:#fee2e2;border:1px solid #f87171;padding:15px;border-radius:4px;margin-bottom:15px;'>
-                        <h2 style='margin:0;color:#991b1b;'>❌ ACH Payment Failed – Order #{$order->id}</h2>
-                        <p style='margin:6px 0 0;color:#991b1b;'>The bank debit was rejected. Inventory has been restored.</p>
+                        <h2 style='margin:0;color:#991b1b;'>❌ Bank Payment Failed – Order #{$order->id}</h2>
+                        <p style='margin:6px 0 0;color:#991b1b;'>The bank transfer/debit was rejected. Inventory has been restored.</p>
                     </div>
                     <div style='background:#fff3cd;border:1px solid #ffc107;padding:10px;margin:10px 0;border-radius:4px;'>
                         ⚠️ <strong>Failure Reason:</strong> {$failReason}
@@ -247,7 +250,7 @@ class StripeController extends Controller
                         <h3 style='margin-top:0;'>Order Summary</h3>
                         <table style='width:100%;'>
                             <tr><td><strong>Order ID:</strong></td><td>#{$order->id}</td></tr>
-                            <tr><td><strong>Payment:</strong></td><td>ACH Bank Transfer – <span style='color:#dc3545;'>FAILED</span></td></tr>
+                            <tr><td><strong>Payment:</strong></td><td>Bank Transfer – <span style='color:#dc3545;'>FAILED</span></td></tr>
                             <tr><td><strong>Total:</strong></td><td><strong>$" . number_format($order->total, 2) . "</strong></td></tr>
                         </table>
                     </div>
@@ -288,7 +291,7 @@ class StripeController extends Controller
                 ";
                 Mail::html($html, function ($message) use ($order, $adminEmail) {
                     $message->to($adminEmail)
-                        ->subject("❌ ACH Payment Failed – Order #{$order->id} – {$order->billing_email}");
+                        ->subject("❌ Bank Payment Failed – Order #{$order->id} – {$order->billing_email}");
                 });
             }
         } catch (\Exception $e) {

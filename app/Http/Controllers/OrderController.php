@@ -23,11 +23,19 @@ class OrderController extends Controller
         $isPaypal = $paymentMethod === 'paypal';
         $isCreditCard = $paymentMethod === 'credit_card';
         $isAch = $paymentMethod === 'ach';
+        $isEcheck = $paymentMethod === 'echeck';
+        $isBankWire = $paymentMethod === 'bank_wire';
 
-        if ($isAch) {
+        if ($isAch || $isEcheck) {
             $request->validate([
                 'stripe_payment_method_id' => 'required|string',
-                'stripe_customer_id'       => 'required|string',
+                'stripe_customer_id' => 'required|string',
+            ]);
+        }
+
+        if ($isCreditCard) {
+            $request->validate([
+                'stripe_payment_method_id' => 'required|string',
             ]);
         }
 
@@ -242,110 +250,107 @@ class OrderController extends Controller
         // Authorize.Net ACH/eCheck or Credit Card payment via direct API
         $transactionId = null;
 
-        if ($isAch) {
+        if ($isAch || $isEcheck) {
             \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
             try {
                 $paymentIntent = \Stripe\PaymentIntent::create([
-                    'amount'               => (int) round($total * 100),
-                    'currency'             => 'usd',
-                    'customer'             => $request->stripe_customer_id,
-                    'payment_method'       => $request->stripe_payment_method_id,
+                    'amount' => (int) round($total * 100),
+                    'currency' => 'usd',
+                    'customer' => $request->stripe_customer_id,
+                    'payment_method' => $request->stripe_payment_method_id,
                     'payment_method_types' => ['us_bank_account'],
-                    'confirm'              => true,
-                    'description'          => 'Order – ' . config('app.name'),
+                    'confirm' => true,
+                    'description' => 'Order – ' . config('app.name'),
                 ]);
 
                 $transactionId = $paymentIntent->id;
 
             } catch (\Stripe\Exception\ApiErrorException $e) {
-                Log::error('Stripe ACH PaymentIntent failed: ' . $e->getMessage());
-                return response()->json(['errors' => ['ach' => 'Bank payment could not be processed: ' . $e->getMessage()]], 422);
+                Log::error('Stripe ACH/Echeck PaymentIntent failed: ' . $e->getMessage());
+                $errKey = $isAch ? 'ach' : 'echeck';
+                return response()->json(['errors' => [$errKey => 'Bank payment could not be processed: ' . $e->getMessage()]], 422);
             }
         }
 
         if ($isCreditCard) {
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            $isAuthorizeSandbox = env('AUTHORIZE_NET_SANDBOX'); // Set to false for live
-
-            $apiLoginId = $isAuthorizeSandbox ? env('AUTHORIZE_NET_SANDBOX_API_LOGIN_ID') : env('AUTHORIZE_NET_LIVE_API_LOGIN_ID');
-            $transactionKey = $isAuthorizeSandbox ? env('AUTHORIZE_NET_SANDBOX_TRANSACTION_KEY') : env('AUTHORIZE_NET_LIVE_TRANSACTION_KEY');
-            $endpoint = $isAuthorizeSandbox ? env('AUTHORIZE_NET_SANDBOX_URL') : env('AUTHORIZE_NET_LIVE_URL');
-
-            $expMonth = $request->cc_month;
-            $expYear = $request->cc_year;
-            $expDate = $expYear . '-' . str_pad($expMonth, 2, '0', STR_PAD_LEFT);
-
-            $payload = [
-                "createTransactionRequest" => [
-                    "merchantAuthentication" => [
-                        "name" => $apiLoginId,
-                        "transactionKey" => $transactionKey
-                    ],
-                    "transactionRequest" => [
-                        "transactionType" => "authCaptureTransaction",
-                        "amount" => $total,
-                        "payment" => [
-                            "creditCard" => [
-                                "cardNumber" => str_replace(' ', '', $request->cc_no),
-                                "expirationDate" => $expDate,
-                                "cardCode" => $request->CVV
-                            ]
-                        ],
-                        "billTo" => [
-                            "firstName" => $request->billing_first_name,
-                            "lastName" => $request->billing_last_name,
-                            "address" => $request->billing_address_1,
-                            "city" => $request->billing_city,
-                            "state" => $request->billing_state,
-                            "zip" => $request->billing_postcode,
-                            "country" => $request->billing_country,
-                        ]
-                    ]
-                ]
-            ];
-
-            $client = new Client();
             try {
-                $guzzleResponse = $client->post($endpoint, [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                    ],
-                    'body' => json_encode($payload),
-                    'http_errors' => false
+                $paymentIntent = \Stripe\PaymentIntent::create([
+                    'amount' => (int) round($total * 100),
+                    'currency' => 'usd',
+                    'payment_method' => $request->stripe_payment_method_id,
+                    'payment_method_types' => ['card'],
+                    'confirm' => true,
+                    'description' => 'Order – ' . config('app.name'),
                 ]);
-                $body = $guzzleResponse->getBody()->getContents();
-                // Fix 1: Remove BOM
-                $body = preg_replace('/^\xEF\xBB\xBF/', '', $body);
 
-                // Fix 2: Validate JSON
-                $result = json_decode($body, true);
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    die("JSON Error: " . json_last_error_msg() . "\nRaw Response:\n" . $body);
+                $transactionId = $paymentIntent->id;
+
+            } catch (\Stripe\Exception\ApiErrorException $e) {
+                Log::error('Stripe Credit Card processing failed: ' . $e->getMessage());
+                return response()->json(['errors' => ['credit_card' => 'Payment failed: ' . $e->getMessage()]], 422);
+            }
+        }
+
+        if ($isBankWire) {
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            try {
+                $stripeCustomer = \Stripe\Customer::create([
+                    'email' => $request->billing_email,
+                    'name' => trim($request->billing_first_name . ' ' . $request->billing_last_name),
+                ]);
+
+                $paymentIntent = \Stripe\PaymentIntent::create([
+                    'amount' => (int) round($total * 100),
+                    'currency' => 'usd',
+                    'customer' => $stripeCustomer->id,
+                    'payment_method_types' => ['customer_balance'],
+                    'payment_method_data' => [
+                        'type' => 'customer_balance',
+                    ],
+                    'payment_method_options' => [
+                        'customer_balance' => [
+                            'funding_type' => 'bank_transfer',
+                            'bank_transfer' => [
+                                'type' => 'us_bank_transfer',
+                            ],
+                        ],
+                    ],
+                    'confirm' => true,
+                    'return_url' => url('/'),
+                ], [
+                    'expand' => ['next_action.display_bank_transfer_instructions.financial_addresses']
+                ]);
+
+                $transactionId = $paymentIntent->id;
+
+                $nextAction = $paymentIntent->next_action;
+                $wireDetails = null;
+                if ($nextAction && $nextAction->type === 'display_bank_transfer_instructions') {
+                    $instructions = $nextAction->display_bank_transfer_instructions;
+                    $reference = $instructions->reference ?? null;
+                    $financialAddress = $instructions->financial_addresses[0] ?? null;
+                    if ($financialAddress && $financialAddress->type === 'aba') {
+                        $aba = $financialAddress->aba;
+                        $wireDetails = [
+                            'bank_name' => $aba->bank_name ?? 'Stripe Virtual Bank',
+                            'routing_number' => $aba->routing_number ?? '',
+                            'account_number' => $aba->account_number ?? '',
+                            'reference' => $reference,
+                        ];
+                    }
+                }
+
+                if (!$wireDetails) {
+                    throw new \Exception('Failed to generate virtual bank details from Stripe.');
                 }
 
             } catch (\Exception $e) {
-                $error = 'Could not connect to payment gateway: ' . $e->getMessage();
-                if ($request->expectsJson() || $request->ajax()) {
-                    return response()->json(['errors' => ['credit_card' => $error]], 422);
-                } else {
-                    return back()->withErrors(['credit_card' => $error])->withInput();
-                }
-            }
-
-            if (
-                isset($result['transactionResponse']['responseCode']) &&
-                $result['transactionResponse']['responseCode'] == '1'
-            ) {
-                $transactionId = $result['transactionResponse']['transId'];
-                // Payment successful
-            } else {
-                $error = $result['transactionResponse']['errors'][0]['errorText'] ?? 'Payment failed.';
-                if ($request->expectsJson() || $request->ajax()) {
-                    return response()->json(['errors' => ['credit_card' => $error]], 422);
-                } else {
-                    return back()->withErrors(['credit_card' => $error])->withInput();
-                }
+                Log::error('Stripe Bank Wire creation failed: ' . $e->getMessage());
+                return response()->json(['errors' => ['bank_wire' => 'Bank wire payment could not be initiated: ' . $e->getMessage()]], 422);
             }
         }
 
@@ -356,7 +361,7 @@ class OrderController extends Controller
         $order = Order::create([
             'user_id' => \Auth::id(),
             'order_uid' => Order::generateOrderUid(),
-            'transaction_id' => $isPaypal ? $paypalOrderId : (($isCreditCard || $isAch) ? $transactionId : null),
+            'transaction_id' => $isPaypal ? $paypalOrderId : (($isCreditCard || $isAch || $isEcheck || $isBankWire) ? $transactionId : null),
             'billing_first_name' => $request->billing_first_name,
             'billing_last_name' => $request->billing_last_name,
             'billing_email' => $request->billing_email,
@@ -386,13 +391,13 @@ class OrderController extends Controller
             'credit_card_percentage' => $creditCardPercentage,
             'total' => $total,
             'payment_method' => $paymentMethod,
-            'status' => ($isPaypal || $isCreditCard) ? 'paid' : ($isAch ? 'ach_pending' : 'pending'),
+            'status' => ($isPaypal || $isCreditCard) ? 'paid' : (($isAch || $isEcheck || $isBankWire) ? 'ach_pending' : 'pending'),
             'coupon_code' => $couponDiscount > 0 ? ($appliedCoupon['code'] ?? null) : null,
             'coupon_discount' => $couponDiscount,
             'coupon_description' => $couponDiscount > 0 ? ($appliedCoupon['description'] ?? null) : null,
-            'stripe_bank_name'         => $isAch ? $request->stripe_bank_name         : null,
-            'stripe_account_mask'      => $isAch ? $request->stripe_account_mask      : null,
-            'stripe_payment_method_id' => $isAch ? $request->stripe_payment_method_id : null,
+            'stripe_bank_name' => ($isAch || $isEcheck) ? $request->stripe_bank_name : ($isBankWire ? json_encode($wireDetails) : null),
+            'stripe_account_mask' => ($isAch || $isEcheck) ? $request->stripe_account_mask : null,
+            'stripe_payment_method_id' => ($isAch || $isEcheck || $isCreditCard) ? $request->stripe_payment_method_id : null,
         ]);
 
         foreach ($cart as $item) {
