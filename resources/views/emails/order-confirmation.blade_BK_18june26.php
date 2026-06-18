@@ -18,14 +18,8 @@
         </div>
 
         @php
-          $isPaidAtOrder = in_array($order->payment_method, ['credit_card', 'paypal']);
-          $isAchProcessing = in_array($order->payment_method, ['ach', 'echeck']) && in_array($order->status, ['payment_pending', 'paid']);
-          $isBankWireStripe = ($order->payment_method === 'bank_wire');
-
-          $wireDetails = null;
-          if ($isBankWireStripe && !empty($order->stripe_bank_name)) {
-            $wireDetails = json_decode($order->stripe_bank_name, true);
-          }
+          $isPaidAtOrder   = in_array($order->payment_method, ['credit_card', 'paypal']);
+          $isAchProcessing = $order->payment_method === 'ach' && in_array($order->status, ['ach_pending', 'paid']);
         @endphp
 
         @if($isPaidAtOrder)
@@ -34,44 +28,11 @@
           </p>
         @elseif($isAchProcessing)
           <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#2563eb;">
-            <strong>Thank you! Your bank payment has been submitted.</strong><br>
+            <strong>Thank you! Your ACH bank payment has been submitted.</strong><br>
             Your bank account debit is now processing. Funds typically settle within
-            <strong>3–5 business days</strong>. You will receive a payment confirmation
+            <strong>1–4 business days</strong>. You will receive a payment confirmation
             email once the payment has cleared.
           </p>
-        @elseif($isBankWireStripe && $wireDetails)
-          <div
-            style="background:#f0fdf4;border:2px solid #bbf7d0;border-radius:6px;padding:16px 24px;margin:16px 0;text-align:left;color:#166534;">
-            <h4 style="margin:0 0 8px;font-size:15px;font-weight:bold;color:#166534;">Stripe Bank Wire Instructions</h4>
-            <p style="margin:0 0 12px;font-size:13px;line-height:18px;color:#1e293b;">
-              Please initiate a wire transfer from your bank to the virtual account below.
-              <strong>You must include the Memo / Reference code to ensure automated payment matching.</strong>
-            </p>
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
-              style="font-size:13px;color:#334155;margin-left: 8px;">
-              <tr>
-                <td style="padding:4px 0;font-weight:bold;width:150px;padding-left:8px">Bank Name:</td>
-                <td style="padding:4px 0;">{{ $wireDetails['bank_name'] ?? 'Stripe Virtual Bank' }}</td>
-              </tr>
-              <tr>
-                <td style="padding:4px 0;font-weight:bold;padding-left:8px">Routing Number (ABA):</td>
-                <td style="padding:4px 0;">{{ $wireDetails['routing_number'] ?? '' }}</td>
-              </tr>
-              <tr>
-                <td style="padding:4px 0;font-weight:bold;padding-left:8px">Account Number:</td>
-                <td style="padding:4px 0;">{{ $wireDetails['account_number'] ?? '' }}</td>
-              </tr>
-              <tr>
-                <td style="padding:4px 0;font-weight:bold;color:#dc2626;padding-left:8px">Memo / Reference Code:</td>
-                <td style="padding:4px 0;font-weight:bold;color:#dc2626;padding-left:8px">
-                  {{ $wireDetails['reference'] ?? '' }}
-                </td>
-              </tr>
-            </table>
-            <p style="margin:12px 0 0;font-size:11px;color:#64748b;font-style:italic;margin-left: 8px;">
-              Wires typically clear within 1 business day.
-            </p>
-          </div>
         @else
           <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
             <strong>Thank you for your order!</strong><br>
@@ -79,15 +40,13 @@
           </p>
 
           <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
-            @if($order->payment_method === 'zelle')
-              <strong>Zelle payments to:</strong> Sales@oasismint.com
-            @else
-              <strong>Certified Check Instructions:</strong><br>
-              Please mail your check to our office at:<br>
-              Oasis Mint LLC<br>
-              1234 Saint Johns Place #130426<br>
-              Brooklyn, NY 11213
-            @endif
+            <strong>Wire/ACH or eCheck Instructions:</strong><br>
+            Bank of America Routing #026009593<br>
+            Account of Oasis Mint LLC #483110079771<br>
+            1234 Saint Johns Place #130426<br>
+            Brooklyn, NY 11213<br><br>
+
+            <strong>Zelle payments to:</strong> Sales@oasismint.com
           </p>
 
           <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
@@ -101,9 +60,9 @@
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;">
 
         <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#111111;">
-          If any payment — including credit card, ACH, or eCheck — is returned unpaid or charged back, you authorize us
-          to debit your account for the full outstanding amount, plus a $50 service fee, along with any fees assessed by
-          your financial institution.
+          If any form of payment is returned unpaid or returned, the office or authorized agent may debit my account for
+          the full amount with a service fee of $50 plus any actual charges assessed by this office and from your
+          financial institution as a result of the dishonored check or chargeback.
         </p>
         <!-- <p style="margin:0 0 16px;font-size:14px;line-height:20px;color:#b42318;">
             To complete payment for your order, please call our office within <strong>2 business days (48 hours)</strong> with your order number to make payment.
@@ -190,27 +149,20 @@
                 @if($order->payment_method === 'credit_card')
                   Credit Card
                 @elseif($order->payment_method === 'paypal')
-                  Paypal
-                @elseif($order->payment_method === 'ach')
-                  ACH
-                @elseif($order->payment_method === 'echeck')
-                  Echeck
-                @elseif($order->payment_method === 'bank_wire')
-                  Bank Wire
+                  PayPal
                 @elseif($order->payment_method === 'zelle')
-                  Zelle
-                @elseif($order->payment_method === 'cheque')
-                  Certified Check
+                  Zelle (Pending)
+                @elseif($order->payment_method === 'ach')
+                  ACH Bank Transfer
+                @elseif($order->payment_method === 'check')
+                  Check (Pending)
                 @else
                   {{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}
                 @endif
               </div>
               @if($isAchProcessing)
-                <div style="font-size:12px;color:#2563eb;margin-top:4px;">⏳ Bank debit submitted — processing 3–5 business
-                  days</div>
-              @elseif($isBankWireStripe)
-                <div style="font-size:12px;color:#16a34a;margin-top:4px;">⏳ Bank wire initiated — awaiting transfer</div>
-              @elseif(in_array($order->payment_method, ['zelle', 'cheque']))
+                <div style="font-size:12px;color:#2563eb;margin-top:4px;">⏳ Bank debit submitted — processing 1–4 business days</div>
+              @elseif(in_array($order->payment_method, ['zelle', 'wire', 'bank_wire', 'cheque']))
                 <div style="font-size:12px;color:#b42318;margin-top:4px;">⚠️ Payment pending - awaiting confirmation</div>
                 @if($order->payment_method === 'zelle')
                   <div style="background:#fff7ed;border-radius:4px;padding:12px;margin-top:8px;text-align:center;">

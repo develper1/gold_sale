@@ -415,17 +415,21 @@
                                             <li class="payment-method">
                                                 <input type="radio" class="input-radio" name="payment_method" value="paypal"
                                                     id="payment_method_paypal">
-                                                <label for="payment_method_paypal">Paypal ( via Paypal )</label>
+                                                <label for="payment_method_paypal">Paypal</label>
                                             </li>
                                         </ul>
                                         <div id="credit-card-fields" style="display:none; margin-top: 20px;">
                                             <div class="payment-form px-3 py-3">
                                                 <div class="form-group mb-0">
-                                                    <label for="card-element" style="font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #333;">Credit or Debit Card</label>
-                                                    <div id="card-element" class="form-control" style="background: white; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; min-height: 42px; box-sizing: border-box;">
+                                                    <label for="card-element"
+                                                        style="font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #333;">Credit
+                                                        or Debit Card</label>
+                                                    <div id="card-element" class="form-control"
+                                                        style="background: white; padding: 12px; border: 1px solid #ced4da; border-radius: 4px; min-height: 42px; box-sizing: border-box;">
                                                         <!-- A Stripe Element will be inserted here. -->
                                                     </div>
-                                                    <div id="card-errors" class="text-danger mt-2" style="font-size: 13px; display: none;" role="alert"></div>
+                                                    <div id="card-errors" class="text-danger mt-2"
+                                                        style="font-size: 13px; display: none;" role="alert"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -536,7 +540,7 @@
                     displayError.textContent = '';
                     $('#card-errors').hide();
                 }
-                
+
                 // Clear the stripe_payment_method_id when details are modified
                 $('#stripe_payment_method_id').val('');
             });
@@ -569,8 +573,8 @@
                     @endforeach
                 @endif
 
-            // If all items are non-physical, shipping is 0
-            if (hasNonPhysicalOnly) {
+                // If all items are non-physical, shipping is 0
+                if (hasNonPhysicalOnly) {
                     shippingFee = 0;
                     $('.shipping-fee-amount').text('$0.00');
                     $('#shipping_fee').val(0);
@@ -642,8 +646,8 @@
                     @endforeach
                 @endif
 
-            // Apply proportional coupon discount to gold/silver base
-            var baseTotal = parseFloat($('.subtotal-price span').text().replace('$', '').replace(/,/g, ''));
+                // Apply proportional coupon discount to gold/silver base
+                var baseTotal = parseFloat($('.subtotal-price span').text().replace('$', '').replace(/,/g, ''));
                 var goldSilverAfterDiscount = goldSilverSubtotal;
                 if (couponDiscount > 0 && baseTotal > 0) {
                     var discountRatio = couponDiscount / baseTotal;
@@ -1171,7 +1175,7 @@
                     if (!paymentMethodId) {
                         e.preventDefault();
                         $('#checkout-errors').hide().empty();
-                        
+
                         if (!isCheckoutFormValid()) {
                             $('#checkout-errors').html('<div class="alert alert-danger">Please fill in all required fields correctly.</div>').show();
                             return false;
@@ -1179,14 +1183,14 @@
 
                         $('#checkout-loading').show();
                         $('#place-order-btn').prop('disabled', true);
-                        
+
                         var billingName = (
                             $('input[name="billing_first_name"]').val() + ' ' +
                             $('input[name="billing_last_name"]').val()
                         ).trim();
                         var billingEmail = $('input[name="billing_email"]').val();
                         var billingPhone = $('input[name="billing_phone"]').val();
-                        
+
                         stripe.createPaymentMethod({
                             type: 'card',
                             card: card,
@@ -1203,7 +1207,7 @@
                                     country: $('#billing_country').val() || undefined
                                 }
                             }
-                        }).then(function(result) {
+                        }).then(function (result) {
                             if (result.error) {
                                 $('#checkout-loading').hide();
                                 $('#place-order-btn').prop('disabled', false);

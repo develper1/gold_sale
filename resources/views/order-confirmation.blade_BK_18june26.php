@@ -7,72 +7,12 @@
                 style="font-size: 15px; font-weight: bold; color: #2563eb; letter-spacing: 1px;">{{ $order->id }}</strong>.
         </p>
         @php
-            $isPaidAtOrder = in_array($order->payment_method, ['credit_card', 'paypal']);
-            $isBankPaymentProcessing = in_array($order->payment_method, ['ach', 'echeck']);
-            $isBankWireStripe = ($order->payment_method === 'bank_wire');
-
-            $wireDetails = null;
-            if ($isBankWireStripe && !empty($order->stripe_bank_name)) {
-                $wireDetails = json_decode($order->stripe_bank_name, true);
-            }
-
-            $paymentMethodNames = [
-                'credit_card' => 'Credit Card',
-                'paypal' => 'Paypal',
-                'ach' => 'ACH',
-                'echeck' => 'Echeck',
-                'bank_wire' => 'Bank Wire',
-                'zelle' => 'Zelle',
-                'cheque' => 'Certified Check'
-            ];
-            $friendlyPaymentMethod = $paymentMethodNames[$order->payment_method] ?? ucfirst($order->payment_method);
+            $isPaidAtOrder = in_array($order->payment_method, ['credit_card', 'paypal', 'ach']);
         @endphp
 
         @if($isPaidAtOrder)
             <p class="text-success"><strong>Thank you! Your payment has been received.</strong> We will process your order
                 shortly.</p>
-        @elseif($isBankPaymentProcessing)
-            <div
-                style="background-color: #d1fae5; border: 1px solid #34d399; color: #065f46; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
-                <h4 style="margin: 0 0 5px; font-weight: bold;"><i class="fa fa-university"></i> Bank Payment Processing</h4>
-                <p style="margin: 0; font-size: 14px;">Your bank account payment has been successfully initiated. Please note
-                    that ACH/eCheck transfers take 3-5 business days to clear. Your order will be processed once the payment has
-                    settled.</p>
-            </div>
-        @elseif($isBankWireStripe && $wireDetails)
-            <div
-                style="background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 20px 32px; border-radius: 6px; margin-bottom: 20px;">
-                <h4 style="margin: 0 0 10px; font-weight: bold;"><i class="fa fa-university"></i> Stripe Bank Wire Instructions
-                </h4>
-                <p style="margin: 0 0 15px; font-size: 14px; color: #1e293b;">To complete your order, please initiate a wire
-                    transfer from your bank using the virtual routing and account details below. <strong>You must include the
-                        Memo / Reference code to ensure automated payment matching.</strong></p>
-                <table
-                    style="width: 100%; max-width: 500px; border-collapse: collapse; font-size: 14px; color: #334155; margin-bottom: 10px; margin-left: 10px;">
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 8px 0; font-weight: 600;padding-left:8px">Bank Name:</td>
-                        <td style="padding: 8px 0;padding-left:8px">{{ $wireDetails['bank_name'] ?? 'Stripe Virtual Bank' }}
-                        </td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 8px 0; font-weight: 600;padding-left:8px">Routing Number (ABA):</td>
-                        <td style="padding: 8px 0;padding-left:8px">{{ $wireDetails['routing_number'] ?? '' }}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 8px 0; font-weight: 600;padding-left:8px">Account Number:</td>
-                        <td style="padding: 8px 0;padding-left:8px">{{ $wireDetails['account_number'] ?? '' }}</td>
-                    </tr>
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 8px 0; font-weight: 600; color: #dc2626;padding-left:8px">Memo / Reference
-                            Code:</td>
-                        <td style="padding: 8px 0; font-weight: bold; color: #dc2626;padding-left:8px">{{
-                $wireDetails['reference'] ?? '' }}</td>
-                    </tr>
-                </table>
-                <p style="margin: 15px 0 0; font-size: 12px; color: #64748b; font-style: italic; margin-left: 10px;">Note: Wire
-                    transfers typically
-                    clear within 1 business day. Your order status will update to Paid as soon as the transfer completes.</p>
-            </div>
         @else
             <p>
                 <strong>
@@ -82,6 +22,14 @@
                     received within <strong>48 hours</strong> or the order will be automatically canceled.
                 </strong>
             </p>
+
+            @if(in_array($order->payment_method, ['ach', 'bank_wire', 'wire']))
+                <p>
+                    You MUST email the accounts department at
+                    <a href="mailto:Payments@OasisMint.com">Payments@OasisMint.com</a>
+                    to request account and routing information within 2 business days of order confirmation.
+                </p>
+            @endif
 
             @if($order->payment_method === 'zelle')
                 <p>
@@ -93,17 +41,16 @@
         @endif
 
         <hr>
-        <p>If any payment — including credit card, ACH, or eCheck — is returned unpaid or charged back, you authorize us to
-            debit your account for the full outstanding amount, plus a $50 service fee, along with any fees assessed by your
-            financial institution.</p>
+        <p>If any form of payment is returned unpaid or returned, the office or authorized agent may debit my account for
+            the full amount with a service fee of $50 plus any actual charges assessed by this office and from your
+            financial institution as a result of the dishonored check or chargeback.</p>
 
 
         <h3>Order Details</h3>
         <ul>
             <li>Name: {{ $order->billing_first_name }} {{ $order->billing_last_name }}</li>
             <li>Email: {{ $order->billing_email }}</li>
-            <li>Payment Method: {{ $friendlyPaymentMethod }}</li>
-            <li>Status: {{ $order->status === 'payment_pending' ? 'Pending Bank Settlement' : ucfirst($order->status) }}</li>
+            <li>Status: {{ ucfirst($order->status) }}</li>
         </ul>
         <h3>Billing Info</h3>
         <ul>

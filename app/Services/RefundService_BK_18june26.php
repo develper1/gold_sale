@@ -17,19 +17,20 @@ class RefundService
         if (empty($order->transaction_id)) {
             return false;
         }
-        return in_array($order->payment_method, ['paypal', 'credit_card'], true)
-            && !str_starts_with($order->transaction_id, 'pi_');
+        return in_array($order->payment_method, ['paypal', 'credit_card'], true);
     }
 
     /**
      * Check if an order can be refunded via Stripe API.
+     * Only settled ACH orders (status=paid, transaction_id starts with pi_) qualify.
      */
     public function canRefundViaStripe(Order $order): bool
     {
         if (empty($order->transaction_id)) {
             return false;
         }
-        return in_array($order->payment_method, ['ach', 'echeck', 'credit_card', 'bank_wire'], true)
+        return $order->payment_method === 'ach'
+            && $order->status === 'paid'
             && str_starts_with($order->transaction_id, 'pi_');
     }
 

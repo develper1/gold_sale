@@ -78,8 +78,8 @@
                             <option value="refunded" {{ $currentStatus === 'refunded' ? 'selected' : '' }}>Refunded</option>
                             <option value="partially_refunded" {{ $currentStatus === 'partially_refunded' ? 'selected' : '' }}>Partially Refunded</option>
                             <option value="canceled" {{ $currentStatus === 'canceled' ? 'selected' : '' }}>Canceled</option>
-                            <option value="Payment_pending" {{ $currentStatus === 'Payment_pending' ? 'selected' : '' }}>Payment Pending</option>
-                            <option value="Payment_failed" {{ $currentStatus === 'Payment_failed' ? 'selected' : '' }}>Payment Failed</option>
+                            <option value="ach_pending" {{ $currentStatus === 'ach_pending' ? 'selected' : '' }}>ACH Pending</option>
+                            <option value="ach_failed" {{ $currentStatus === 'ach_failed' ? 'selected' : '' }}>ACH Failed</option>
                         </select>
                     </div>
                     <div class="col-md-4" id="shipping-info-fields" style="display: none;">
