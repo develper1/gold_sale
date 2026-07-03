@@ -367,4 +367,6 @@
     </section>
 </div>
 
+<x-whatsapp-widget />
+
 @endsection

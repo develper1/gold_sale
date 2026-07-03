@@ -24,16 +24,6 @@
                         </span>
                     @enderror
                 </div>
-                <div class="mb-3">
-                    <label for="whatsapp_number" class="form-label">WhatsApp Number</label>
-                    <input type="text" name="whatsapp_number" id="whatsapp_number" class="form-control @error('whatsapp_number') is-invalid @enderror" value="{{ old('whatsapp_number', $whatsapp_number) }}" placeholder="+1 212-660-4653">
-                    <small class="text-muted">Used for the homepage WhatsApp popup and the footer "Join Us" button. Include the country code. Leave blank to use the default.</small>
-                    @error('whatsapp_number')
-                        <span class="invalid-feedback" role="alert">
-                            <strong>{{ $message }}</strong>
-                        </span>
-                    @enderror
-                </div>
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
         </div>

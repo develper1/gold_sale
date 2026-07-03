@@ -12,23 +12,20 @@ class SettingsController extends Controller
     {
         $setting = Setting::first();
         $credit_card_percentage = $setting ? $setting->credit_card_percentage : null;
-        $whatsapp_number = $setting ? $setting->whatsapp_number : null;
-        return view('admin.settings.index', compact('credit_card_percentage', 'whatsapp_number'));
+        return view('admin.settings.index', compact('credit_card_percentage'));
     }
 
     public function update(Request $request)
     {
         $request->validate([
             'credit_card_percentage' => 'required|numeric|min:0|max:100',
-            'whatsapp_number' => 'nullable|string|max:30',
         ]);
         $setting = Setting::first();
         if (!$setting) {
             $setting = new Setting();
         }
         $setting->credit_card_percentage = $request->credit_card_percentage;
-        $setting->whatsapp_number = $request->whatsapp_number;
         $setting->save();
         return redirect()->route('admin.settings.index')->with('success', 'Settings updated successfully.');
     }
-}
+} 

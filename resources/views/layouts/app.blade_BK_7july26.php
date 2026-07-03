@@ -40,41 +40,6 @@
 				height: 68px;
 			}
 		}
-
-		/* Footer WhatsApp "Chat With Us" block */
-		.block-whatsapp .footer-whatsapp-number {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			margin-bottom: 14px;
-			font-size: 15px;
-		}
-		.block-whatsapp .footer-whatsapp-number i {
-			color: #25D366;
-			font-size: 20px;
-		}
-		.block-whatsapp .footer-whatsapp-number a {
-			color: inherit;
-		}
-		.block-whatsapp .footer-whatsapp-btn {
-			display: inline-flex;
-			align-items: center;
-			gap: 8px;
-			padding: 10px 20px;
-			background: #25D366;
-			color: #fff;
-			font-weight: 600;
-			border-radius: 6px;
-			text-decoration: none;
-			transition: background 0.2s ease;
-		}
-		.block-whatsapp .footer-whatsapp-btn:hover {
-			background: #1ebe5b;
-			color: #fff;
-		}
-		.block-whatsapp .footer-whatsapp-btn i {
-			font-size: 18px;
-		}
 	</style>
 	
 	<body class="home home-4 title-4">
@@ -264,22 +229,6 @@
 											</div>
 										</div>
 
-									</div>
-
-									<div class="col-lg-3 col-md-6 column-4">
-										<div class="block block-menu block-whatsapp">
-											<h2 class="block-title">Chat With Us</h2>
-											<div class="block-content">
-												<p class="footer-whatsapp-number">
-													<i class="fa fa-whatsapp" aria-hidden="true"></i>
-													<!-- <a href="tel:{{ \App\Models\Setting::whatsappNumber() }}">{{ \App\Models\Setting::whatsappDisplay() }}</a> -->
-													<a>{{ \App\Models\Setting::whatsappDisplay() }}</a>
-												</p>
-												<a href="https://wa.me/{{ \App\Models\Setting::whatsappNumber() }}?text={{ rawurlencode('Subscribe. My name is: ') }}" class="footer-whatsapp-btn" target="_blank" rel="noopener noreferrer">
-													<i class="fa fa-whatsapp" aria-hidden="true"></i> Join Us
-												</a>
-											</div>
-										</div>
 									</div>
 								</div>
 								
