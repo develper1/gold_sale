@@ -29,11 +29,7 @@ class RefundService
         if (empty($order->transaction_id)) {
             return false;
         }
-        $allowed = array_merge(
-            ['ach', 'echeck', 'credit_card', 'bank_wire'],
-            array_keys(config('express_checkout.methods', []))
-        );
-        return in_array($order->payment_method, $allowed, true)
+        return in_array($order->payment_method, ['ach', 'echeck', 'credit_card', 'bank_wire'], true)
             && str_starts_with($order->transaction_id, 'pi_');
     }
 

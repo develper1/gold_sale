@@ -90,19 +90,7 @@ class StripeController extends Controller
     {
         $order = Order::where('transaction_id', $paymentIntent->id)->first();
 
-        if (!$order) {
-            return;
-        }
-
-        // Express wallet orders (Amazon Pay, Link, Apple Pay) finalise through
-        // their own service (inventory is decremented on success, and dedicated
-        // emails are sent). Idempotent.
-        if (array_key_exists($order->payment_method, config('express_checkout.methods', []))) {
-            app(\App\Services\ExpressCheckoutService::class)->finalizeSucceededOrder($order);
-            return;
-        }
-
-        if ($order->status !== 'payment_pending') {
+        if (!$order || $order->status !== 'payment_pending') {
             return;
         }
 
@@ -203,21 +191,7 @@ class StripeController extends Controller
     {
         $order = Order::where('transaction_id', $paymentIntent->id)->first();
 
-        if (!$order) {
-            return;
-        }
-
-        // Express wallets: no inventory was decremented for a pending order, so
-        // we only flip the status (no restore). Idempotent.
-        if (array_key_exists($order->payment_method, config('express_checkout.methods', []))) {
-            app(\App\Services\ExpressCheckoutService::class)->markFailed(
-                $order,
-                $paymentIntent->last_payment_error->message ?? null
-            );
-            return;
-        }
-
-        if ($order->status !== 'payment_pending') {
+        if (!$order || $order->status !== 'payment_pending') {
             return;
         }
 

@@ -45,7 +45,7 @@
             <h6>Order Info</h6>
             <ul>
                 <li>Status: {{ ucfirst($order->status) }}</li>
-                <li>Payment Method: {{ ucwords(str_replace('_', ' ', $order->payment_method)) }}</li>
+                <li>Payment Method: {{ ucfirst($order->payment_method) }}</li>
                 @if($order->shipping_method || $order->tracking_number)
                 <li>Shipping Method: {{ $order->shipping_method ?? '—' }}</li>
                 <li>Tracking Number: {{ $order->tracking_number ?? '—' }}</li>
@@ -178,8 +178,8 @@
                             <span>Shipping Fee: ${{ number_format($order->shipping_fee, 2) }}</span><br>
                             <span>State Fee: ${{ number_format($order->state_fee, 2) }}</span><br>
                             <span>Service Fee: ${{ number_format($order->service_fee, 2) }}</span><br>
-                            @if(in_array($order->payment_method, array_merge(['credit_card', 'paypal'], array_keys(config('express_checkout.methods', [])))))
-                            <span>Processing Fee: ${{ number_format($order->credit_card_fee, 2) }}</span><br>
+                            @if($order->payment_method === 'credit_card' || $order->payment_method === 'paypal')
+                            <span>Credit Card Fee: ${{ number_format($order->credit_card_fee, 2) }}</span><br>
                             @endif
                             <strong>Total: ${{ number_format($order->total, 2) }}</strong>
                         </td>

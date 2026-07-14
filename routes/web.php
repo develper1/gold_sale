@@ -32,6 +32,7 @@ use App\Http\Controllers\AccountController;
 use App\Services\MetalPriceService;
 use App\Models\MetalPrice;
 use App\Http\Controllers\StripeController;
+use App\Http\Controllers\ExpressCheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -181,6 +182,10 @@ Route::group(['middleware' => ['auth:web', 'user', 'verified', 'profile.complete
 
     // Stripe ACH Routes
     Route::post('/stripe/setup-intent', [StripeController::class, 'createSetupIntent'])->name('stripe.setup-intent');
+
+    // Express wallets (Amazon Pay, Link, Apple Pay) — one method-aware pipeline
+    Route::post('/checkout/express/intent', [ExpressCheckoutController::class, 'createIntent'])->name('express.intent');
+    Route::get('/checkout/express/return', [ExpressCheckoutController::class, 'handleReturn'])->name('express.return');
 
 
 });

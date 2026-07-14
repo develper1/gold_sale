@@ -431,13 +431,6 @@
                                                 <label for="payment_method_link">Link</label>
                                             </li>
                                             @endif
-                                            @if(config('express_checkout.methods.apple_pay.enabled'))
-                                            <li class="payment-method">
-                                                <input type="radio" class="input-radio" name="payment_method"
-                                                    value="apple_pay" id="payment_method_apple_pay">
-                                                <label for="payment_method_apple_pay">Apple Pay</label>
-                                            </li>
-                                            @endif
                                         </ul>
                                         <div id="credit-card-fields" style="display:none; margin-top: 20px;">
                                             <div class="payment-form px-3 py-3">
@@ -502,12 +495,6 @@
                                             <div id="link-button-container" class="mt-3"
                                                 style="display:none;width: 100%;"></div>
                                             <div id="link-errors" class="text-danger mt-2"
-                                                style="display:none;font-size:14px;"></div>
-                                            @endif
-                                            @if(config('express_checkout.methods.apple_pay.enabled'))
-                                            <div id="apple-pay-button-container" class="mt-3"
-                                                style="display:none;width: 100%;"></div>
-                                            <div id="apple-pay-errors" class="text-danger mt-2"
                                                 style="display:none;font-size:14px;"></div>
                                             @endif
                                         </div>
@@ -1085,7 +1072,6 @@
                     $('#paypal-button-container').show();
                     $('#amazon-pay-button-container').hide();
                     $('#link-button-container').hide();
-                    $('#apple-pay-button-container').hide();
                     $('#place-order-btn').hide();
                     // Render PayPal button if not already rendered
                     if (!$('#paypal-button-container').data('paypal-rendered')) {
@@ -1148,29 +1134,19 @@
                 } else if (selected === 'amazon_pay') {
                     $('#paypal-button-container').hide();
                     $('#link-button-container').hide();
-                    $('#apple-pay-button-container').hide();
                     $('#amazon-pay-button-container').show();
                     $('#place-order-btn').hide();
                     initExpressWallet('amazon_pay', '#amazon-pay-button-container', '#amazon-pay-errors');
                 } else if (selected === 'link') {
                     $('#paypal-button-container').hide();
                     $('#amazon-pay-button-container').hide();
-                    $('#apple-pay-button-container').hide();
                     $('#link-button-container').show();
                     $('#place-order-btn').hide();
                     initExpressWallet('link', '#link-button-container', '#link-errors');
-                } else if (selected === 'apple_pay') {
-                    $('#paypal-button-container').hide();
-                    $('#amazon-pay-button-container').hide();
-                    $('#link-button-container').hide();
-                    $('#apple-pay-button-container').show();
-                    $('#place-order-btn').hide();
-                    initExpressWallet('apple_pay', '#apple-pay-button-container', '#apple-pay-errors');
                 } else {
                     $('#paypal-button-container').hide();
                     $('#amazon-pay-button-container').hide();
                     $('#link-button-container').hide();
-                    $('#apple-pay-button-container').hide();
                     $('#place-order-btn').show();
                 }
             }
@@ -1207,53 +1183,20 @@
 
                 var ece = elements.create('expressCheckout', { paymentMethods: pm });
 
-                // Render the element off-screen so it can initialise and report
-                // availability even while its radio isn't the current selection.
-                // (Stripe's Express Checkout Element won't initialise inside a
-                // display:none container.)
-                var $c = $(containerSel);
-                var OFFSCREEN = { position: 'absolute', left: '-99999px', top: '0', display: 'block', width: '320px' };
-                var RESET = { position: '', left: '', top: '', width: '' };
-                $c.css(OFFSCREEN);
-
                 // Show a loader until the wallet button is ready (slow networks)
                 showPaymentLoader(containerSel);
 
-                function revealIfSelected() {
-                    $c.css(RESET);
-                    $c.css('display', $('input[name="payment_method"]:checked').val() === walletKey ? 'block' : 'none');
-                }
-                function hideWalletOption() {
-                    $c.css(RESET).hide();
-                    $('#payment_method_' + walletKey).closest('li').hide();
-                    // If it happened to be the selected method, fall back to the default.
-                    if ($('input[name="payment_method"]:checked').val() === walletKey) {
-                        $('#payment_method_ach').prop('checked', true).trigger('change');
-                    }
-                }
-
                 ece.on('ready', function (event) {
                     hidePaymentLoader(containerSel);
-                    // Hide the whole radio option when this wallet isn't usable on the
-                    // visitor's device/browser (e.g. Apple Pay on Chrome/Windows).
-                    var eceKeyMap = { amazon_pay: 'amazonPay', link: 'link', apple_pay: 'applePay' };
-                    var apm = event && event.availablePaymentMethods;
-                    var available = apm && apm[eceKeyMap[walletKey]];
-                    // TEMP DEBUG — remove once wallet availability is confirmed
-                    console.log('[express-wallet] ' + walletKey + ' → available=' + !!available, 'availablePaymentMethods:', apm);
-                    if (!available) {
-                        hideWalletOption();
-                        return;
+                    // If the wallet isn't available on this device/browser, tell the user.
+                    if (!event || !event.availablePaymentMethods) {
+                        $(errorsSel).text('This payment option is not available on this device or browser.').show();
                     }
-                    revealIfSelected();
                 });
 
-                ece.on('loaderror', function (e) {
+                ece.on('loaderror', function () {
                     hidePaymentLoader(containerSel);
-                    // TEMP DEBUG — remove once wallet availability is confirmed
-                    console.warn('[express-wallet] ' + walletKey + ' loaderror', e);
-                    // Treat a load failure like unavailability so no dead option remains.
-                    hideWalletOption();
+                    $(errorsSel).text('Unable to load this payment option. Please refresh and try again, or choose another method.').show();
                 });
 
                 ece.mount(containerSel);
@@ -1313,17 +1256,6 @@
             togglePaymentButtons();
             // Listen for payment method change
             $('input[name="payment_method"]').on('change', togglePaymentButtons);
-
-            // Probe express-wallet availability on load so unavailable options
-            // (e.g. Apple Pay on Chrome) are hidden before the user clicks them.
-            @php $enabledExpressWallets = array_keys(array_filter(config('express_checkout.methods', []), fn ($m) => $m['enabled'] ?? false)); @endphp
-            @json($enabledExpressWallets).forEach(function (key) {
-                var container = '#' + key.replace(/_/g, '-') + '-button-container';
-                var errors = '#' + key.replace(/_/g, '-') + '-errors';
-                if ($(container).length) {
-                    initExpressWallet(key, container, errors);
-                }
-            });
             // Place order button handler for non-PayPal
             $('#place-order-btn').on('click', function (e) {
                 if (!isCheckoutFormValid()) {
