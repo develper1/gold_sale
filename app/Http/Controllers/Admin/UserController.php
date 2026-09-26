@@ -45,6 +45,56 @@ class UserController extends Controller
         return view('admin.users.show', compact('user'));
     }
 
+    public function create()
+    {
+        return view('admin.users.create');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|max:255|unique:users,email',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ],
+            'allow_different_shipping' => 'nullable|boolean',
+            'shipping_country' => 'nullable|string|max:255',
+            'shipping_address_1' => 'nullable|string|max:255',
+            'shipping_address_2' => 'nullable|string|max:255',
+            'shipping_city' => 'nullable|string|max:255',
+            'shipping_state' => 'nullable|string|max:255',
+            'shipping_postcode' => 'nullable|string|max:50',
+        ], [
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
+        ]);
+
+        $user = User::create([
+            'name'     => $validated['name'],
+            'email'    => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'allow_different_shipping' => $request->boolean('allow_different_shipping'),
+            'shipping_country' => $validated['shipping_country'] ?? null,
+            'shipping_address_1' => $validated['shipping_address_1'] ?? null,
+            'shipping_address_2' => $validated['shipping_address_2'] ?? null,
+            'shipping_city' => $validated['shipping_city'] ?? null,
+            'shipping_state' => $validated['shipping_state'] ?? null,
+            'shipping_postcode' => $validated['shipping_postcode'] ?? null,
+        ]);
+
+        // email_verified_at isn't mass-assignable; admin-created accounts are pre-verified
+        // so the customer skips the email verification step.
+        $user->forceFill(['email_verified_at' => now()])->save();
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'User created successfully.');
+    }
+
     public function edit($id)
     {
         $user = User::where('is_admin', 0)->findOrFail($id);

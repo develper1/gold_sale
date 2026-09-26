@@ -55,12 +55,18 @@ class UserLoginController extends Controller
         if (Auth::guard('web')->attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            if (!Auth::guard('web')->user()->is_admin) {
-                return redirect()->intended(route('cart.view'));
-            } else {
+            $user = Auth::guard('web')->user();
+
+            if ($user->is_admin) {
                 Auth::guard('web')->logout();
                 return back()->withErrors(['email' => 'Unauthorized.']);
             }
+
+            if (!$user->profile_completed_at) {
+                return redirect()->route('account.complete-profile');
+            }
+
+            return redirect()->intended(route('cart.view'));
         }
         return back()->withErrors(['email' => 'Invalid credentials.'])->withInput();
     }

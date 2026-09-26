@@ -24,6 +24,9 @@
                     <input type="hidden" name="sort_by" value="{{ $sortBy }}">
                     <input type="hidden" name="sort_dir" value="{{ $sortDir }}">
                     <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="{{ route('admin.users.create') }}" class="btn btn-success text-nowrap">
+                        <i class="fa-solid fa-user-plus me-1"></i> Add User
+                    </a>
                 </form>
             </div>
         </div>
