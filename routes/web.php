@@ -258,19 +258,23 @@ Route::get('/metal-prices/latest', function () {
     $changes = [];
     $percents = [];
 
-    MetalPrice::query()
-        ->orderByDesc('fetched_at')
-        ->get()
-        ->groupBy('code')
-        ->each(function ($group, $code) use (&$rates, &$changes, &$percents, $base) {
-            $latest = $group->first();
-            $key = $base . $code;
+    $codes = ['XAU-ASK', 'XAG-ASK', 'XPT-ASK', 'XPD-ASK'];
 
-            $rates[$key] = (float) $latest->price;
-            // These may be null for older rows before the columns existed, so default to 0
-            $changes[$key] = isset($latest->change) ? (float) $latest->change : 0.0;
-            $percents[$key] = isset($latest->percent) ? (float) $latest->percent : 0.0;
-        });
+    foreach ($codes as $code) {
+        $latest = MetalPrice::where('code', $code)
+            ->orderByDesc('fetched_at')
+            ->first();
+
+        if (! $latest) {
+            continue;
+        }
+
+        $key = $base . $code;
+        $rates[$key] = (float) $latest->price;
+        // These may be null for older rows before the columns existed, so default to 0
+        $changes[$key] = isset($latest->change) ? (float) $latest->change : 0.0;
+        $percents[$key] = isset($latest->percent) ? (float) $latest->percent : 0.0;
+    }
 
     return response()->json([
         'success' => true,

@@ -173,29 +173,16 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <script>
 $(document).ready(function() {
-    // With two reCAPTCHA widgets, first (login) = widget 0, second (register) = widget 1
-    // var loginWidgetId = 0;
-    var registerWidgetId = 1;
-    // Client-side captcha validation for login form
-    // document.getElementById('login-form')?.addEventListener('submit', function(e) {
-    //     if (typeof grecaptcha !== 'undefined') {
-    //         var response = grecaptcha.getResponse(loginWidgetId);
-    //         if (!response || response.length === 0) {
-    //             e.preventDefault();
-    //             alert('Please complete the CAPTCHA verification.');
-    //             return false;
-    //         }
-    //     }
-    // });
     // Client-side captcha validation for register form
+    // Reads the response directly from this form's own reCAPTCHA textarea instead of a
+    // hardcoded widget index, since the footer newsletter form on this page also renders
+    // its own reCAPTCHA widget and shifts the widget index depending on render order.
     document.getElementById('register-form')?.addEventListener('submit', function(e) {
-        if (typeof grecaptcha !== 'undefined') {
-            var response = grecaptcha.getResponse(registerWidgetId);
-            if (!response || response.length === 0) {
-                e.preventDefault();
-                alert('Please complete the CAPTCHA verification.');
-                return false;
-            }
+        var textarea = document.querySelector('#register-form-section textarea[name="g-recaptcha-response"]');
+        if (!textarea || !textarea.value) {
+            e.preventDefault();
+            alert('Please complete the CAPTCHA verification.');
+            return false;
         }
     });
     @if($errors->has('register_email') || $errors->has('register_name') || $errors->has('register_password'))
