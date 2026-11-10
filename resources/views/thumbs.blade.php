@@ -719,7 +719,7 @@ $(document).ready(function() {
                         qtyInput.data('inventory-type', product.inventory_type);
                         
                         if (product.quantity_available > 0) {
-                            inventoryInfo = '<p style="font-size: 14px; color: #666; margin-top: 10px;"><strong>Available:</strong> ' + product.quantity_available + '</p>';
+                            inventoryInfo = '<p style="font-size: 14px; color: #666; margin-top: 10px;"><strong>In stock</strong></p>';
                             // Check initial quantity and disable button if needed
                             var initialQty = parseInt(qtyInput.val()) || 1;
                             if (initialQty > product.quantity_available) {

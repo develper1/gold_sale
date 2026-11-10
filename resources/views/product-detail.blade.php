@@ -118,7 +118,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                     Availability: 
                                     <span>
                                         @if($isInStock)
-                                            In stock ({{ $availableQty }} available)
+                                            In stock
                                         @else
                                             Out of stock
                                         @endif
@@ -270,7 +270,7 @@ $(document).ready(function() {
             if (value < maxQty) {
                 input.val(value + 1);
             } else {
-                alert('Maximum available quantity is ' + maxQty);
+                alert('The requested quantity is not available.');
             }
         } else {
             input.val(value + 1);
@@ -297,7 +297,7 @@ $(document).ready(function() {
         // Validate quantity for limited inventory
         if (inventoryType === 'limited' && maxQty) {
             if (quantity > maxQty) {
-                alert('You cannot order more than ' + maxQty + ' items. Only ' + maxQty + ' available in stock.');
+                alert('The requested quantity is not available. Please reduce the quantity or contact Customer Service: Support@OasisMint.com.');
                 return false;
             }
             if (quantity <= 0) {

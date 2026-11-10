@@ -76,11 +76,7 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                                     <input type="number" class="qty" step="1" min="1" max="{{ isset($item['inventory_type']) && $item['inventory_type'] === 'limited' && isset($item['quantity_available']) ? $item['quantity_available'] : '' }}" name="quantity" value="{{ $item['quantity'] }}" title="Qty" size="4" placeholder="" inputmode="numeric" autocomplete="off" data-product-id="{{ $item['id'] }}" data-max-quantity="{{ isset($item['inventory_type']) && $item['inventory_type'] === 'limited' && isset($item['quantity_available']) ? $item['quantity_available'] : '' }}" data-inventory-type="{{ $item['inventory_type'] ?? 'unlimited' }}">
                                                     <button type="button" class="quantity-button plus">+</button>
                                                 </div>
-                                                @if(isset($item['inventory_type']) && $item['inventory_type'] === 'limited' && isset($item['quantity_available']))
-                                                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                                                        Available: {{ $item['quantity_available'] }}
-                                                    </p>
-                                                @endif
+                                                {{-- Inventory count hidden from customers (max qty is still enforced via data-max-quantity) --}}
                                             </td>
                                             <td class="product-subtotal">
                                                 <span class="price item-total">${{ number_format($item['price'] * $item['quantity'], 2) }}</span>
