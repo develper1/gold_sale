@@ -19,6 +19,15 @@ class StripeController extends Controller
      */
     public function createSetupIntent(Request $request)
     {
+        // ACH_ECHECK_ENABLED toggle: no bank linking while ACH/eCheck is disabled (see config/services.php).
+        if (!config('services.ach_echeck_enabled')) {
+            Log::warning('Blocked Stripe setup-intent request: ACH/eCheck payments are disabled.', [
+                'user_id' => optional($request->user())->id,
+                'ip' => $request->ip(),
+            ]);
+            return response()->json(['error' => 'ACH/eCheck payments are temporarily unavailable.'], 403);
+        }
+
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {

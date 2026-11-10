@@ -26,6 +26,15 @@ class OrderController extends Controller
         $isEcheck = $paymentMethod === 'echeck';
         $isBankWire = $paymentMethod === 'bank_wire';
 
+        // ACH_ECHECK_ENABLED toggle: block ACH/eCheck while disabled (see config/services.php).
+        if (($isAch || $isEcheck) && !config('services.ach_echeck_enabled')) {
+            Log::warning('Blocked ' . $paymentMethod . ' order attempt: ACH/eCheck payments are disabled.', [
+                'user_id' => optional($request->user())->id,
+                'ip' => $request->ip(),
+            ]);
+            return response()->json(['errors' => [$paymentMethod => 'ACH/eCheck payments are temporarily unavailable. Please choose another payment method.']], 422);
+        }
+
         if ($isAch || $isEcheck) {
             $request->validate([
                 'stripe_payment_method_id' => 'required|string',

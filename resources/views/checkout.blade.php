@@ -355,6 +355,9 @@
                                     </div>
                                     <div id="payment" class="checkout-payment">
                                         <ul class="payment-methods methods custom-radio">
+                                            {{-- ACH_ECHECK_ENABLED toggle: ACH/eCheck hidden while disabled (see config/services.php) --}}
+                                            @php $achEnabled = config('services.ach_echeck_enabled'); @endphp
+                                            @if ($achEnabled)
                                             <li class="payment-method">
                                                 <input type="radio" class="input-radio" name="payment_method" value="ach"
                                                     id="payment_method_ach" checked>
@@ -392,9 +395,10 @@
                                                     id="payment_method_echeck">
                                                 <label for="payment_method_echeck">Echeck </label>
                                             </li>
+                                            @endif
                                             <li class="payment-method">
                                                 <input type="radio" class="input-radio" name="payment_method"
-                                                    value="credit_card" id="payment_method_credit_card">
+                                                    value="credit_card" id="payment_method_credit_card" @unless ($achEnabled) checked @endunless>
                                                 <label for="payment_method_credit_card">Credit card </label>
                                             </li>
                                             <li class="payment-method">
@@ -1228,7 +1232,7 @@
                     $('#payment_method_' + walletKey).closest('li').hide();
                     // If it happened to be the selected method, fall back to the default.
                     if ($('input[name="payment_method"]:checked').val() === walletKey) {
-                        $('#payment_method_ach').prop('checked', true).trigger('change');
+                        $('#payment_method_{{ config('services.ach_echeck_enabled') ? 'ach' : 'credit_card' }}').prop('checked', true).trigger('change');
                     }
                 }
 

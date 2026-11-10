@@ -40,4 +40,9 @@ return [
         'secret_key' => env('RECAPTCHA_SECRET_KEY'),
     ],
 
+    // ACH / eCheck temporarily disabled at client request (2026-10-30).
+    // To re-enable: set ACH_ECHECK_ENABLED=true in .env, then run `php artisan config:clear`.
+    // Search the code for "ACH_ECHECK_ENABLED" to find every place this toggle is used.
+    'ach_echeck_enabled' => env('ACH_ECHECK_ENABLED', false),
+
 ];

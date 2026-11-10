@@ -21,6 +21,8 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
     ]" 
 />
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <div id="content" class="site-content" role="main">
     <div class="page-contact">
         <section class="section section-padding">
@@ -49,20 +51,20 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                             <div class="row">
                                 <div class="col-md-4 sm-m-b-30">
                                     <div class="info-item">
-                                        <div class="item-tilte">
+                                        <div class="item-tilte" style="font-size:1.4rem">
                                             <h2>Phone</h2>
                                         </div>
-                                        <div class="item-content">
-                                            (212) 660-GOLD (4653)
+                                        <div class="item-content" style="font-size:1.4rem">
+                                            <a href="https://wa.me/12126604653" target="_blank" class="kingster-top-bar-social-icon" title="whatsapp"><i class="fa fa-whatsapp" style="font-size:32px;color:green"></i></a> &nbsp;&nbsp;<a href="tel:+12126604653">(212) 660-GOLD (4653)</a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4 sm-m-b-30">
                                     <div class="info-item">
-                                        <div class="item-tilte">
+                                        <div class="item-tilte" style="font-size:1.4rem">
                                             <h2>Customer Service</h2>
                                         </div>
-                                        <div class="item-content">
+                                        <div class="item-content" style="font-size:1.4rem">
                                             <p>Monday to Friday</p>
                                             <p>9:00am - 5:00pm EST</p>
                                             <p>Saturday and Sunday closed</p>
@@ -71,10 +73,10 @@ $sliders = \App\Models\HomeSlider::orderBy('order')->get();
                                 </div>
                                 <div class="col-md-4">
                                     <div class="info-item">
-                                        <div class="item-tilte">
+                                        <div class="item-tilte" style="font-size:1.4rem">
                                             <h2>Email</h2>
                                         </div>
-                                        <div class="item-content small-width">
+                                        <div class="item-content small-width" style="font-size:1.4rem">
                                             info@oasismint.com
                                         </div>
                                     </div>
